@@ -1,22 +1,8 @@
--- Insert Roles
-INSERT INTO roles (id, role_name) VALUES 
-    (uuid_generate_v4(), 'ADMIN'),
-    (uuid_generate_v4(), 'MANAGER'),
-    (uuid_generate_v4(), 'INVENTORY_CLERK');
-
--- Insert Users
-INSERT INTO users (id, username, email, password) VALUES 
-    (uuid_generate_v4(), 'admin_user', 'admin@example.com', 'securepassword'),
-    (uuid_generate_v4(), 'manager_user', 'manager@example.com', 'securepassword'),
-    (uuid_generate_v4(), 'clerk_user', 'clerk@example.com', 'securepassword');
-
--- Assign Roles to Users (Many-to-Many)
-INSERT INTO user_roles (user_role_id, user_id, role_id) 
-SELECT uuid_generate_v4(), u.id, r.id 
-FROM users u, roles r 
-WHERE (u.username = 'admin_user' AND r.role_name = 'ADMIN') 
-   OR (u.username = 'manager_user' AND r.role_name = 'MANAGER') 
-   OR (u.username = 'clerk_user' AND r.role_name = 'INVENTORY_CLERK');
+-- -- Insert Users with a Single Role
+-- INSERT INTO users (id, username, email, password, role) VALUES 
+--     (uuid_generate_v4(), 'admin_user', 'admin@example.com', 'securepassword', 'ROLE_ADMIN'),
+--     (uuid_generate_v4(), 'manager_user', 'manager@example.com', 'securepassword', 'ROLE_MANAGER'),
+--     (uuid_generate_v4(), 'clerk_user', 'clerk@example.com', 'securepassword', 'ROLE_INV_CLERK');
 
 -- Insert Warehouses
 INSERT INTO warehouse (id, name, location, max_capacity) VALUES 

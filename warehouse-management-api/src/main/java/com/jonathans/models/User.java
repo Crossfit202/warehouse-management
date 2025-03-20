@@ -1,99 +1,83 @@
 package com.jonathans.models;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.UUID;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import jakarta.persistence.*;
+import lombok.*;
 
 @Entity
 @Table(name = "users")
-public class User {
-	
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString
+public class User implements UserDetails {
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private UUID id;
-	
+
 	@Column(unique = true, nullable = false)
 	private String username;
-	
+
 	@Column(unique = true, nullable = false)
 	private String email;
-	
-	@Column(unique = true, nullable = false)
+
+	@Column(nullable = false)
 	private String password;
-	
-	@Column(name = "created_at", updatable = false)
+
+	@Column(nullable = false)
+	private String role; // Changed from Enum to String for role
+
+	@Column(name = "created_at", nullable = false, updatable = false)
 	private LocalDateTime createdAt = LocalDateTime.now();
-	
-	 @ManyToMany(fetch = FetchType.EAGER)
-	    @JoinTable(
-	        name = "user_roles",
-	        joinColumns = @JoinColumn(name = "user_id"),
-	        inverseJoinColumns = @JoinColumn(name = "role_id")
-	    )
-	    private Set<Role> roles = new HashSet<>(); // A user can have multiple roles
 
-	    // Constructors
-	    public User() {}
+	@Column(name = "updated_at", nullable = false)
+	private LocalDateTime updatedAt = LocalDateTime.now();
 
-	    public User(String username, String email, String password) {
-	        this.username = username;
-	        this.email = email;
-	        this.password = password;
-	    }
+	@PreUpdate
+	public void onUpdate() {
+		updatedAt = LocalDateTime.now();
+	}
 
-	    // Getters and Setters
-	    public UUID getId() {
-	        return id;
-	    }
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		return Collections.singleton(new SimpleGrantedAuthority(role)); // Using role as a string
+	}
 
-	    public void setId(UUID id) {
-	        this.id = id;
-	    }
+	@Override
+	public String getUsername() {
+		return username;
+	}
 
-	    public String getUsername() {
-	        return username;
-	    }
+	@Override
+	public String getPassword() {
+		return password;
+	}
 
-	    public void setUsername(String username) {
-	        this.username = username;
-	    }
+	@Override
+	public boolean isAccountNonExpired() {
+		return true;
+	}
 
-	    public String getEmail() {
-	        return email;
-	    }
+	@Override
+	public boolean isAccountNonLocked() {
+		return true;
+	}
 
-	    public void setEmail(String email) {
-	        this.email = email;
-	    }
+	@Override
+	public boolean isCredentialsNonExpired() {
+		return true;
+	}
 
-	    public String getPassword() {
-	        return password;
-	    }
-
-	    public void setPassword(String password) {
-	        this.password = password;
-	    }
-
-	    public LocalDateTime getCreatedAt() {
-	        return createdAt;
-	    }
-
-	    public Set<Role> getRoles() {
-	        return roles;
-	    }
-
-	    public void setRoles(Set<Role> roles) {
-	        this.roles = roles;
-	    }
-
-	    // Override toString() for debugging
-	    @Override
-	    public String toString() {
-	        return "User{id=" + id + 
-	               ", username='" + username + '\'' + 
-	               ", email='" + email + '\'' + 
-	               ", roles=" + roles + '}';
-	    }
+	@Override
+	public boolean isEnabled() {
+		return true;
+	}
 }

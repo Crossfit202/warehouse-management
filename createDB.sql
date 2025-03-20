@@ -1,6 +1,5 @@
 -- Drop all tables first
 DROP TABLE IF EXISTS 
-    user_roles, 
     warehouse_inventory, 
     inventory_movement, 
     warehouse_personnel, 
@@ -9,38 +8,28 @@ DROP TABLE IF EXISTS
     inventory_items, 
     storage_locations, 
     warehouse, 
-    users, 
-    roles 
+    users 
 CASCADE;
 
 -- Drop ENUM types if they exist
-DROP TYPE IF EXISTS movement_type_enum, personnel_status_enum, alert_status_enum CASCADE;
-
+DROP TYPE IF EXISTS movement_type_enum, role_enum, personnel_status_enum, alert_status_enum CASCADE;
 
 -- Enable UUID extension (needed for UUID primary keys)
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
--- User Table
+-- User Table (role as VARCHAR now)
 CREATE TABLE users (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     username VARCHAR(255) UNIQUE NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    role VARCHAR(255) NOT NULL DEFAULT 'USER',  -- Changed ENUM to VARCHAR with default
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Role Table
-CREATE TABLE roles (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    role_name VARCHAR(50) UNIQUE NOT NULL
-);
-
--- User Roles (Many-to-Many)
-CREATE TABLE user_roles (
-    user_role_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
-    role_id UUID REFERENCES roles(id) ON DELETE CASCADE
-);
+-- Add index for quick user lookup
+CREATE INDEX idx_users_username ON users(username);
 
 -- Warehouse Table
 CREATE TABLE warehouse (
@@ -48,10 +37,29 @@ CREATE TABLE warehouse (
     name VARCHAR(255) UNIQUE NOT NULL,
     location VARCHAR(255) NOT NULL,
     max_capacity INT NOT NULL CHECK (max_capacity > 0),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Storage Locations
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = CURRENT_TIMESTAMP;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER users_update_timestamp
+BEFORE UPDATE ON users
+FOR EACH ROW
+EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER warehouse_update_timestamp
+BEFORE UPDATE ON warehouse
+FOR EACH ROW
+EXECUTE FUNCTION update_updated_at_column();
+
+-- Storage Locations Table
 CREATE TABLE storage_locations (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name VARCHAR(255) UNIQUE NOT NULL,
@@ -65,7 +73,7 @@ CREATE TABLE warehouse_storage_locations (
     storage_location_id UUID REFERENCES storage_locations(id) ON DELETE CASCADE
 );
 
--- Inventory Items
+-- Inventory Items Table
 CREATE TABLE inventory_items (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     sku VARCHAR(50) UNIQUE NOT NULL,
@@ -74,6 +82,9 @@ CREATE TABLE inventory_items (
     description TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Add index for fast SKU lookups
+CREATE INDEX idx_inventory_items_sku ON inventory_items(sku);
 
 -- Warehouse Inventory (Many-to-Many)
 CREATE TABLE warehouse_inventory (
@@ -84,40 +95,35 @@ CREATE TABLE warehouse_inventory (
     UNIQUE (warehouse_id, item_id) -- Prevents duplicate warehouse-item entries
 );
 
--- Inventory Movement Log
-CREATE TYPE movement_type_enum AS ENUM ('ADD', 'REMOVE', 'TRANSFER');
-
+-- Inventory Movement Log (movement_type as VARCHAR)
 CREATE TABLE inventory_movement (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     item_id UUID REFERENCES inventory_items(id) ON DELETE CASCADE,
     from_warehouse UUID REFERENCES warehouse(id) ON DELETE SET NULL,
     to_warehouse UUID REFERENCES warehouse(id) ON DELETE SET NULL,
     quantity INT NOT NULL CHECK (quantity > 0),
-    movement_type movement_type_enum NOT NULL,
+    movement_type VARCHAR(255) NOT NULL, -- Changed ENUM to VARCHAR
     time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     user_id UUID REFERENCES users(id) ON DELETE SET NULL
 );
 
--- Warehouse Personnel (Users assigned to Warehouses)
--- Create the ENUM type first
-CREATE TYPE personnel_status_enum AS ENUM ('ACTIVE', 'INACTIVE');
-
--- Now use the ENUM type in the table definition
+-- Warehouse Personnel (status as VARCHAR)
 CREATE TABLE warehouse_personnel (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     user_id UUID REFERENCES users(id) ON DELETE CASCADE,
     warehouse_id UUID REFERENCES warehouse(id) ON DELETE CASCADE,
-    status personnel_status_enum DEFAULT 'ACTIVE'
+    status VARCHAR(255) DEFAULT 'ACTIVE' -- Changed ENUM to VARCHAR
 );
 
+-- Add indexes for warehouse personnel relationships
+CREATE INDEX idx_warehouse_personnel_user ON warehouse_personnel(user_id);
+CREATE INDEX idx_warehouse_personnel_warehouse ON warehouse_personnel(warehouse_id);
 
--- Alerts Table (For warehouse capacity alerts)
-CREATE TYPE alert_status_enum AS ENUM ('NEW', 'IN PROGRESS', 'RESOLVED');
-
+-- Alerts Table (status as VARCHAR)
 CREATE TABLE alerts (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     warehouse_id UUID REFERENCES warehouse(id) ON DELETE CASCADE,
     message TEXT NOT NULL,
-    status alert_status_enum DEFAULT 'NEW',
+    status VARCHAR(255) DEFAULT 'NEW', -- Changed ENUM to VARCHAR
     time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

@@ -1,6 +1,5 @@
 package com.jonathans.DTOS;
 
-import java.util.Set;
 import java.util.UUID;
 
 public class UserDTO {
@@ -8,18 +7,19 @@ public class UserDTO {
     private UUID id;
     private String username;
     private String email;
-    private String password;  // ✅ Added password field
-    private Set<String> roles;
+    private String password;
+    private String role;
 
     // Constructors
-    public UserDTO() {}
+    public UserDTO() {
+    }
 
-    public UserDTO(UUID id, String username, String email, String password, Set<String> roles) {
+    public UserDTO(UUID id, String username, String email, String password, String role) {
         this.id = id;
         this.username = username;
         this.email = email;
         this.password = password;
-        this.roles = roles;
+        this.role = role;
     }
 
     // Getters and Setters
@@ -55,21 +55,20 @@ public class UserDTO {
         this.password = password;
     }
 
-    public Set<String> getRoles() {
-        return roles;
+    public String getRole() {
+        return role;
     }
 
-    public void setRoles(Set<String> roles) {
-        this.roles = roles;
+    public void setRole(String role) {
+        this.role = role;
     }
 
-    // Override toString() for debugging
     @Override
     public String toString() {
         return "UserDTO{id=" + id +
                 ", username='" + username + '\'' +
                 ", email='" + email + '\'' +
-                ", password='" + password + '\'' +  // ✅ Now includes password
-                ", roles=" + roles + '}';
+                ", password='" + password + '\'' +
+                ", role=" + role + '}';
     }
 }

@@ -1,25 +1,11 @@
 package com.jonathans.DTOS;
 
-import java.util.Set;
-
 public class UserRequestDTO {
-
     private String username;
     private String email;
     private String password;
-    private Set<String> roles; // Role names for assignment
+    private String role; // Now a single role string like "ROLE_USER"
 
-    // Constructors
-    public UserRequestDTO() {}
-
-    public UserRequestDTO(String username, String email, String password, Set<String> roles) {
-        this.username = username;
-        this.email = email;
-        this.password = password;
-        this.roles = roles;
-    }
-
-    // Getters and Setters
     public String getUsername() {
         return username;
     }
@@ -44,19 +30,28 @@ public class UserRequestDTO {
         this.password = password;
     }
 
-    public Set<String> getRoles() {
-        return roles;
+    public UserRequestDTO(String username, String email, String password, String role) {
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.role = role;
     }
 
-    public void setRoles(Set<String> roles) {
-        this.roles = roles;
+    public String getRole() {
+        return role;
     }
 
-    // Override toString() for debugging
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    public UserRequestDTO() {
+    }
+
     @Override
     public String toString() {
-        return "UserRequestDTO{username='" + username + '\'' +
-                ", email='" + email + '\'' +
-                ", roles=" + roles + '}';
+        return "UserRequestDTO [username=" + username + ", email=" + email + ", password=" + password + ", role=" + role
+                + "]";
     }
+
 }

@@ -32,17 +32,17 @@ public class UserController {
     }
 
     // ✅ CREATE NEW USER
-    @PostMapping
-    public ResponseEntity<UserDTO> createUser(@RequestBody UserRequestDTO userRequestDTO) {
-        return userService.createUser(userRequestDTO);
+    @PostMapping("/register")
+    public ResponseEntity<String> registerUser(@RequestBody UserRequestDTO userRequestDTO) {
+        userService.registerUser(userRequestDTO);
+        return ResponseEntity.ok("User registered successfully");
     }
-    
- // ✅ UPDATE USER (PUT)
+
+    // ✅ UPDATE USER (PUT)
     @PutMapping("/{userId}")
     public ResponseEntity<UserDTO> updateUser(
-            @PathVariable UUID userId, 
-            @RequestBody UserRequestDTO userRequestDTO
-    ) {
+            @PathVariable UUID userId,
+            @RequestBody UserRequestDTO userRequestDTO) {
         return userService.updateUser(userId, userRequestDTO);
     }
 
