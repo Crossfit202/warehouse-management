@@ -8,9 +8,12 @@ import com.jonathans.repositories.UserRepository;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.core.Authentication;
 
 import java.util.List;
 import java.util.UUID;
@@ -21,9 +24,13 @@ public class UserService {
 
     private final UserRepository userRepository;
     private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
+    private AuthenticationManager authManager;
+    private JWTService jwtService;
 
     // Constructor injection
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, AuthenticationManager authManager, JWTService jwtService) {
+        this.jwtService = jwtService;
+        this.authManager = authManager;
         this.userRepository = userRepository;
     }
 
@@ -108,4 +115,27 @@ public class UserService {
                 user.getPassword(),
                 user.getRole());
     }
+
+    // Verify login credentials
+    public ResponseEntity<String> verify(UserRequestDTO userRequestDTO) {
+        try {
+            // Authenticate the user using the AuthenticationManager
+            Authentication authentication = authManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(userRequestDTO.getUsername(),
+                            userRequestDTO.getPassword()));
+
+            // If authentication is successful
+            if (authentication.isAuthenticated()) {
+                String token = jwtService.generateToken(userRequestDTO.getUsername());
+                return ResponseEntity.ok(token);
+            }
+        } catch (Exception e) {
+            // Log the exception for debugging
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
+        }
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
+    }
+
 }

@@ -38,6 +38,12 @@ public class UserController {
         return ResponseEntity.ok("User registered successfully");
     }
 
+    @PostMapping("/login")
+    public ResponseEntity<String> loginUser(@RequestBody UserRequestDTO userRequestDTO) {
+        // String token = userService.loginUser(userRequestDTO);
+        return userService.verify(userRequestDTO);
+    }
+
     // ✅ UPDATE USER (PUT)
     @PutMapping("/{userId}")
     public ResponseEntity<UserDTO> updateUser(

@@ -9,34 +9,32 @@ import jakarta.persistence.*;
 @Table(name = "warehouse")
 public class Warehouse {
 
-	@Id 
+	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private UUID id;
-	
+
 	@Column(unique = true, nullable = false)
 	private String name;
-	
+
 	@Column(nullable = false)
 	private String location;
-	
+
 	@Column(nullable = false)
 	private int max_capacity;
-	
+
 	@Column(nullable = false, updatable = false)
 	private LocalDateTime created_at = LocalDateTime.now();
 
-
 	public Warehouse() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
-	 public Warehouse(String name, String location, int maxCapacity) {
-	        this.name = name;
-	        this.location = location;
-	        this.max_capacity = maxCapacity;
-	        this.created_at = LocalDateTime.now(); // ✅ Ensure `createdAt` is set
-	    }
+	public Warehouse(String name, String location, int maxCapacity) {
+		this.name = name;
+		this.location = location;
+		this.max_capacity = maxCapacity;
+		this.created_at = LocalDateTime.now(); // ✅ Ensure `createdAt` is set
+	}
 
 	public UUID getId() {
 		return id;
@@ -83,7 +81,5 @@ public class Warehouse {
 		return "Warehouse [id=" + id + ", name=" + name + ", location=" + location + ", max_capacity=" + max_capacity
 				+ ", created_at=" + created_at + "]";
 	}
-	
-	
 
 }
