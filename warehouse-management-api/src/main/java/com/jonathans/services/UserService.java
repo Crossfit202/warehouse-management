@@ -138,4 +138,14 @@ public class UserService {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
     }
 
+    // Get a user by their email
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmail(email).orElse(null); // Assuming you are using Optional to return the user
+    }
+
+    // Save the user in the database
+    public void saveUser(User user) {
+        userRepository.save(user);
+    }
+
 }
