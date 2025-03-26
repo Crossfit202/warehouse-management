@@ -31,3 +31,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# application.properties
+/Users/imac/Desktop/Work/Inventory_Management/warehouse-management-api/src/main/resources/application.properties
