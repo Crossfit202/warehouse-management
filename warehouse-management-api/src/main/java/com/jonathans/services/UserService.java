@@ -2,11 +2,11 @@ package com.jonathans.services;
 
 import com.jonathans.DTOS.UserDTO;
 import com.jonathans.DTOS.UserRequestDTO;
-// import com.jonathans.models.Role;
 import com.jonathans.models.User;
 import com.jonathans.repositories.UserRepository;
-
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -15,7 +15,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.core.Authentication;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -23,11 +25,10 @@ import java.util.stream.Collectors;
 public class UserService {
 
     private final UserRepository userRepository;
-    private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
-    private AuthenticationManager authManager;
-    private JWTService jwtService;
+    private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
+    private final AuthenticationManager authManager;
+    private final JWTService jwtService;
 
-    // Constructor injection
     public UserService(UserRepository userRepository, AuthenticationManager authManager, JWTService jwtService) {
         this.jwtService = jwtService;
         this.authManager = authManager;
@@ -62,12 +63,12 @@ public class UserService {
         newUser.setUsername(userRequestDTO.getUsername());
         newUser.setEmail(userRequestDTO.getEmail());
         newUser.setPassword(encoder.encode(userRequestDTO.getPassword()));
-        newUser.setRole("USER"); // Always default to USER
+        newUser.setRole("ROLE_USER");
 
         userRepository.save(newUser);
     }
 
-    // UPDATE USER (PUT)
+    // UPDATE USER
     @Transactional
     public ResponseEntity<UserDTO> updateUser(UUID userId, UserRequestDTO userRequestDTO) {
         return userRepository.findById(userId).map(existingUser -> {
@@ -78,17 +79,14 @@ public class UserService {
                 existingUser.setEmail(userRequestDTO.getEmail());
             }
             if (userRequestDTO.getPassword() != null) {
-                existingUser.setPassword(userRequestDTO.getPassword());
+                existingUser.setPassword(encoder.encode(userRequestDTO.getPassword()));
             }
             if (userRequestDTO.getRole() != null) {
-                String role = userRequestDTO.getRole();
-
-                // Optional: Basic validation (just in case)
-                if (!role.startsWith("ROLE_")) {
-                    throw new RuntimeException("Invalid role format. Must start with ROLE_");
+                List<String> validRoles = List.of("ROLE_USER", "ROLE_ADMIN", "ROLE_MANAGER");
+                if (!validRoles.contains(userRequestDTO.getRole())) {
+                    throw new RuntimeException("Invalid role. Valid roles are: ROLE_USER, ROLE_ADMIN, ROLE_MANAGER");
                 }
-
-                existingUser.setRole(role);
+                existingUser.setRole(userRequestDTO.getRole());
             }
 
             userRepository.save(existingUser);
@@ -117,35 +115,45 @@ public class UserService {
     }
 
     // Verify login credentials
-    public ResponseEntity<String> verify(UserRequestDTO userRequestDTO) {
+    public ResponseEntity<Map<String, String>> verify(UserRequestDTO userRequestDTO, HttpServletResponse response) {
         try {
-            // Authenticate the user using the AuthenticationManager
             Authentication authentication = authManager.authenticate(
                     new UsernamePasswordAuthenticationToken(userRequestDTO.getUsername(),
                             userRequestDTO.getPassword()));
 
-            // If authentication is successful
             if (authentication.isAuthenticated()) {
                 String token = jwtService.generateToken(userRequestDTO.getUsername());
-                return ResponseEntity.ok(token);
+
+                ResponseCookie cookie = ResponseCookie.from("jwt", token)
+                        .httpOnly(true)
+                        .secure(false) // Set to true in production
+                        .path("/")
+                        .maxAge(3600) // 1 hour
+                        .build();
+
+                response.addHeader("Set-Cookie", cookie.toString());
+
+                // Return a JSON response
+                Map<String, String> responseBody = new HashMap<>();
+                responseBody.put("message", "Login successful!");
+                responseBody.put("username", userRequestDTO.getUsername());
+                return ResponseEntity.ok(responseBody);
             }
         } catch (Exception e) {
-            // Log the exception for debugging
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Invalid credentials"));
         }
 
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Invalid credentials"));
     }
 
     // Get a user by their email
     public User getUserByEmail(String email) {
-        return userRepository.findByEmail(email).orElse(null); // Assuming you are using Optional to return the user
+        return userRepository.findByEmail(email).orElse(null);
     }
 
     // Save the user in the database
     public void saveUser(User user) {
         userRepository.save(user);
     }
-
 }
