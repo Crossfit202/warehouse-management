@@ -122,7 +122,16 @@ public class UserService {
                             userRequestDTO.getPassword()));
 
             if (authentication.isAuthenticated()) {
-                String token = jwtService.generateToken(userRequestDTO.getUsername());
+                // Extract roles from the authenticated user
+                List<String> authorities = authentication.getAuthorities()
+                        .stream()
+                        .map(grantedAuthority -> grantedAuthority.getAuthority())
+                        .collect(Collectors.toList());
+
+                // Generate JWT with roles
+                String token = jwtService.generateToken(userRequestDTO.getUsername(), authorities.get(0)); // Get first
+                                                                                                           // role from
+                                                                                                           // the list
 
                 ResponseCookie cookie = ResponseCookie.from("jwt", token)
                         .httpOnly(true)
@@ -156,4 +165,10 @@ public class UserService {
     public void saveUser(User user) {
         userRepository.save(user);
     }
+
+    public User getUserByUsername(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found with username: " + username));
+    }
+
 }

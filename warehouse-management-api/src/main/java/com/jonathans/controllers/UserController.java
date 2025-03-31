@@ -4,8 +4,6 @@ import com.jonathans.DTOS.UserDTO;
 import com.jonathans.DTOS.UserRequestDTO;
 import com.jonathans.services.UserService;
 
-import jakarta.servlet.http.HttpServletResponse;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,11 +37,6 @@ public class UserController {
     public ResponseEntity<String> registerUser(@RequestBody UserRequestDTO userRequestDTO) {
         userService.registerUser(userRequestDTO);
         return ResponseEntity.ok("User registered successfully");
-    }
-
-    @PostMapping("/login")
-    public ResponseEntity<?> loginUser(@RequestBody UserRequestDTO userRequestDTO, HttpServletResponse response) {
-        return userService.verify(userRequestDTO, response);
     }
 
     // ✅ UPDATE USER (PUT)
