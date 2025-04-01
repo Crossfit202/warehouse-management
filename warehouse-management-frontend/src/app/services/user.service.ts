@@ -13,6 +13,8 @@ export class UserService {
   constructor(private http: HttpClient) { }
 
   getAllUsers(): Observable<User[]> {
-    return this.http.get<User[]>(this.apiUrl)
+    return this.http.get<User[]>(this.apiUrl, {
+      withCredentials: true // ✅ THIS IS CRITICAL
+    });
   }
 }

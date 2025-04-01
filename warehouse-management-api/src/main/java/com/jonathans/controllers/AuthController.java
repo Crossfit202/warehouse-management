@@ -33,7 +33,7 @@ public class AuthController {
             ResponseEntity<?> result = userService.verify(userRequestDTO, response);
 
             if (result.getStatusCode() == HttpStatus.OK) {
-                // Assuming userService.verify() authenticates successfully
+
                 String username = userRequestDTO.getUsername();
                 var user = userService.getUserByUsername(username);
                 String token = jwtService.generateToken(username, user.getRole());

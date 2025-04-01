@@ -2,6 +2,7 @@ package com.jonathans.services;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -31,6 +32,7 @@ public class JWTService {
     public String generateToken(String username, String role) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("role", role);
+        claims.put("authorities", List.of("ROLE_" + role));
 
         return Jwts.builder()
                 .setClaims(claims)
@@ -62,12 +64,12 @@ public class JWTService {
     }
 
     @SuppressWarnings("deprecation")
-    private Claims extractAllClaims(String token) {
+    public Claims extractAllClaims(String token) {
         return Jwts.parser()
                 .setSigningKey(getKey())
                 .build()
-                .parseSignedClaims(token)
-                .getPayload();
+                .parseClaimsJws(token)
+                .getBody();
     }
 
     public boolean validateToken(String token, UserDetails userDetails) {
@@ -86,4 +88,15 @@ public class JWTService {
     private Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
     }
+
+    @SuppressWarnings({ "deprecation", "unchecked" })
+    public List<String> extractAuthorities(String token) {
+        Claims claims = Jwts.parser()
+                .setSigningKey(getKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+        return claims.get("authorities", List.class);
+    }
+
 }

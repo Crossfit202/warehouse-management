@@ -14,6 +14,6 @@ export class WarehouseService {
 
   //GET ALL WAREHOUSES
   getAllWarehouses(): Observable<Warehouse[]> {
-    return this.http.get<Warehouse[]>(this.apiUrl);
+    return this.http.get<Warehouse[]>(this.apiUrl, { withCredentials: true });
   }
 }

@@ -9,7 +9,7 @@ import { Observable, of, tap, catchError, map } from 'rxjs';
 export class AuthService {
 
   private baseUrl = 'http://localhost:8083/auth';
-  private isAuthenticated: boolean = false; // Cache authentication status
+  private isAuthenticated: boolean = false;
 
   constructor(private http: HttpClient, private router: Router) { }
 

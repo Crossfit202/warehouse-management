@@ -17,8 +17,9 @@ public class UserPrincipal implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        // Adding ROLE_ prefix to the role for proper role-based access control
-        return Collections.singleton(new SimpleGrantedAuthority("ROLE_" + user.getRole()));
+        String roleWithPrefix = "ROLE_" + user.getRole();
+        System.out.println(">>> Returning authority: " + roleWithPrefix);
+        return Collections.singleton(new SimpleGrantedAuthority(roleWithPrefix));
     }
 
     @Override
