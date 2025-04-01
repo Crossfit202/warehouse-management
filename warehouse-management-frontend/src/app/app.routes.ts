@@ -33,19 +33,19 @@ export const routes: Routes = [
         path: 'dashboard',
         component: DashboardComponent,
         canActivate: [AuthGuard],
-        data: { role: ['ROLE_USER', 'ROLE_ADMIN', 'ROLE_MANAGER'] }
+        data: { role: ['ADMIN', 'MANAGER'] }
     },
     {
         path: 'admin',
         component: AdminComponent,
         canActivate: [AuthGuard],
-        data: { role: ['ROLE_ADMIN'] }
+        data: { role: ['ADMIN'] }
     },
     {
         path: 'profile',
         component: ProfileComponent,
         canActivate: [AuthGuard],
-        data: { role: ['ROLE_USER', 'ROLE_ADMIN', 'ROLE_MANAGER'] }
+        data: { role: ['USER', 'ADMIN', 'MANAGER', 'INV_CLERK'] }
     },
 
     // Fallback Route

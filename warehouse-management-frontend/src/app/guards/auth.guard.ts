@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, Router, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { AuthService } from '../services/auth.service';
-import { Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+import { map, switchMap, take, tap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -11,14 +11,45 @@ export class AuthGuard implements CanActivate {
 
   constructor(private authService: AuthService, private router: Router) { }
 
+  // canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
+  //   return this.authService.verifyToken().pipe(
+  //     tap(isValid => {
+  //       if (!isValid) {
+  //         console.warn('Not logged in, redirecting to login');
+  //         this.router.navigate(['/login'], { queryParams: { returnUrl: state.url } });
+  //       }
+  //     })
+  //   );
+  // }
+
+
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
     return this.authService.verifyToken().pipe(
-      tap(isValid => {
+      switchMap(isValid => {
         if (!isValid) {
-          console.warn('Not logged in, redirecting to login');
           this.router.navigate(['/login'], { queryParams: { returnUrl: state.url } });
+          return of(false);
         }
+
+        const expectedRoles = route.data['role'] as string[] | undefined;
+
+        return this.authService.getUserRole().pipe(
+          take(1), // ✅ Ensures it only runs once
+          map(userRole => {
+            const role = userRole?.trim().toUpperCase(); // Normalize role
+            const isAuthorized = expectedRoles?.some(r => r.toUpperCase() === role) ?? true;
+
+            if (!isAuthorized) {
+              console.warn(`Access denied for role: ${role}`);
+              this.router.navigate(['/dashboard']);
+            }
+
+            return isAuthorized;
+          })
+        );
       })
     );
   }
+
+
 }
