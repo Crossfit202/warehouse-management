@@ -23,10 +23,6 @@ export const routes: Routes = [
         path: 'warehouses',
         component: WarehousesComponent
     },
-    {
-        path: 'users',
-        component: UsersComponent
-    },
 
     // Protected Routes
     {
@@ -46,6 +42,12 @@ export const routes: Routes = [
         component: ProfileComponent,
         canActivate: [AuthGuard],
         data: { role: ['USER', 'ADMIN', 'MANAGER', 'INV_CLERK'] }
+    },
+    {
+        path: 'users',
+        component: UsersComponent,
+        canActivate: [AuthGuard],
+        data: { role: ['ADMIN', 'MANAGER'] }
     },
 
     // Fallback Route

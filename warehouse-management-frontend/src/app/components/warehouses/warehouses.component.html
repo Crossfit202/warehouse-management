@@ -1,1 +1,11 @@
-<p>warehouses works!</p>
+<h1>WAREHOUSES</h1>
+
+<ul>
+    <li *ngFor="let warehouse of warehouses">
+        <strong>{{ warehouse.name }}</strong>
+        <ul>
+            <li>Location: {{ warehouse.location }}</li>
+            <li>Max Capacity: {{ warehouse.max_capacity }}</li>
+        </ul>
+    </li>
+</ul>
