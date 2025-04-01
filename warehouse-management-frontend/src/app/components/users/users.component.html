@@ -6,10 +6,34 @@
             <li>Email: {{ user.email }}</li>
             <li>Role: {{ user.role }}</li>
             <li>Created: {{ user.formatCreatedAt() }}</li>
-            <li>
-                <button (click)="editUser(user)">Edit</button>
-                <button (click)="deleteUser(user.id)">Delete</button>
-            </li>
         </ul>
+        <button (click)="openEditModal(user)">Edit</button>
+        <button (click)="deleteUser(user.id)">Delete</button>
     </li>
 </ul>
+
+<!-- Edit Modal -->
+<div *ngIf="isEditModalOpen" class="modal-overlay">
+    <div class="modal">
+        <h2>Edit User</h2>
+        <form (ngSubmit)="saveUserChanges()">
+            <label>Username:
+                <input [(ngModel)]="selectedUser!.username" name="username" required />
+            </label>
+            <label>Email:
+                <input [(ngModel)]="selectedUser!.email" name="email" required />
+            </label>
+            <label>Role:
+                <select [(ngModel)]="selectedUser!.role" name="role">
+                    <option value="ROLE_USER">User</option>
+                    <option value="ROLE_ADMIN">Admin</option>
+                    <option value="ROLE_MANAGER">Manager</option>
+                    <option value="ROLE_INV_CLERK">Inventory Clerk</option>
+                </select>
+            </label>
+            <br /><br />
+            <button type="submit">Save</button>
+            <button type="button" (click)="closeEditModal()">Cancel</button>
+        </form>
+    </div>
+</div>

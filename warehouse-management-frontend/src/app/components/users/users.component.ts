@@ -2,17 +2,20 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { User } from '../../models/User';
 import { UserService } from '../../services/user.service';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-users',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './users.component.html',
-  styleUrl: './users.component.css'
+  styleUrls: ['./users.component.css']
 })
 export class UsersComponent implements OnInit {
 
   users: User[] = [];
+  selectedUser: User | null = null;
+  isEditModalOpen: boolean = false;
 
   constructor(private userService: UserService) { }
 
@@ -31,23 +34,43 @@ export class UsersComponent implements OnInit {
         user.created_at,
         user.updated_at
       ));
-      console.log('Created At Type:', typeof this.users[0]?.created_at, 'Value:', this.users[0]?.created_at);
-
     });
   }
 
-  editUser(user: User): void {
-    const updatedUsername = prompt('Edit username', user.username);
-    if (updatedUsername && updatedUsername !== user.username) {
-      const updatedUser: Partial<User> = { username: updatedUsername };
-      this.userService.updateUser(user.id, updatedUser).subscribe({
-        next: (updated) => {
-          user.username = updated.username;
-          console.log('User updated successfully:', updated);
-        },
-        error: (err) => console.error('Failed to update user:', err)
-      });
-    }
+  openEditModal(user: User): void {
+    this.selectedUser = new User(
+      user.id,
+      user.username,
+      user.email,
+      user.password,
+      user.role,
+      user.created_at,
+      user.updated_at
+    );
+
+    this.isEditModalOpen = true;
+  }
+
+  closeEditModal(): void {
+    this.selectedUser = null;
+    this.isEditModalOpen = false;
+  }
+
+  saveUserChanges(): void {
+    if (!this.selectedUser) return;
+
+    const { id, ...updatedData } = this.selectedUser;
+
+    this.userService.updateUser(id, updatedData).subscribe({
+      next: (updated) => {
+        const index = this.users.findIndex(u => u.id === id);
+        if (index !== -1) {
+          this.users[index] = updated;
+        }
+        this.closeEditModal();
+      },
+      error: (err) => console.error('Failed to update user:', err)
+    });
   }
 
   deleteUser(userId: string): void {
@@ -61,6 +84,4 @@ export class UsersComponent implements OnInit {
       });
     }
   }
-
-
 }
