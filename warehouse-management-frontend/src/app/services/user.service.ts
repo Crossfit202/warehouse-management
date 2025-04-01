@@ -17,4 +17,17 @@ export class UserService {
       withCredentials: true // ✅ THIS IS CRITICAL
     });
   }
+
+  updateUser(userId: string, userData: Partial<User>): Observable<User> {
+    return this.http.put<User>(`${this.apiUrl}/${userId}`, userData, {
+      withCredentials: true
+    });
+  }
+
+  deleteUser(userId: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${userId}`, {
+      withCredentials: true
+    });
+  }
+
 }

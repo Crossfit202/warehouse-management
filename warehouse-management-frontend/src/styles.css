@@ -3,3 +3,8 @@ body {
     background-color: rgba(10, 10, 57, 0.752);
     color: white;
 }
+
+/* get rid of bullet points in list */
+ul {
+    list-style-type: none;
+}

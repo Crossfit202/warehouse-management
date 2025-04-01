@@ -38,7 +38,7 @@ public class SecurityConfig {
                         .requestMatchers("/auth/login", "/auth/logout", "/auth/verify").permitAll()
                         .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
                         .requestMatchers("/users", "/users/**")
-                        .hasAnyAuthority("ROLE_USER", "ROLE_ADMIN", "ROLE_MANAGER")
+                        .hasAnyAuthority("ROLE_USER", "ROLE_ADMIN", "ROLE_MANAGER", "ROLE_INV_CLERK")
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))

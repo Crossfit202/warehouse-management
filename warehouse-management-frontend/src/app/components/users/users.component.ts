@@ -36,4 +36,31 @@ export class UsersComponent implements OnInit {
     });
   }
 
+  editUser(user: User): void {
+    const updatedUsername = prompt('Edit username', user.username);
+    if (updatedUsername && updatedUsername !== user.username) {
+      const updatedUser: Partial<User> = { username: updatedUsername };
+      this.userService.updateUser(user.id, updatedUser).subscribe({
+        next: (updated) => {
+          user.username = updated.username;
+          console.log('User updated successfully:', updated);
+        },
+        error: (err) => console.error('Failed to update user:', err)
+      });
+    }
+  }
+
+  deleteUser(userId: string): void {
+    if (confirm('Are you sure you want to delete this user?')) {
+      this.userService.deleteUser(userId).subscribe({
+        next: () => {
+          this.users = this.users.filter(u => u.id !== userId);
+          console.log('User deleted');
+        },
+        error: (err) => console.error('Failed to delete user:', err)
+      });
+    }
+  }
+
+
 }
