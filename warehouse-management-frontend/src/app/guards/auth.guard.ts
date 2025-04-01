@@ -34,14 +34,14 @@ export class AuthGuard implements CanActivate {
         const expectedRoles = route.data['role'] as string[] | undefined;
 
         return this.authService.getUserRole().pipe(
-          take(1), // ✅ Ensures it only runs once
+          take(1),
           map(userRole => {
             const role = userRole?.trim().toUpperCase(); // Normalize role
             const isAuthorized = expectedRoles?.some(r => r.toUpperCase() === role) ?? true;
 
             if (!isAuthorized) {
               console.warn(`Access denied for role: ${role}`);
-              this.router.navigate(['/dashboard']);
+              this.router.navigate(['/unauthorized']);
             }
 
             return isAuthorized;
