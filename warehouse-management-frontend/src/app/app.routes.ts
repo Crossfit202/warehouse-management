@@ -7,6 +7,7 @@ import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { AdminComponent } from './components/admin/admin.component';
 import { ProfileComponent } from './components/profile/profile.component';
 import { AuthGuard } from './guards/auth.guard';
+import { RegisterComponent } from './components/register/register.component';
 
 export const routes: Routes = [
     // Public Routes
@@ -22,6 +23,10 @@ export const routes: Routes = [
     {
         path: 'warehouses',
         component: WarehousesComponent
+    },
+    {
+        path: 'register',
+        component: RegisterComponent
     },
 
     // Protected Routes

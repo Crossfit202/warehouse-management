@@ -7,7 +7,9 @@ import com.jonathans.services.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -34,9 +36,12 @@ public class UserController {
 
     // ✅ CREATE NEW USER
     @PostMapping("/register")
-    public ResponseEntity<String> registerUser(@RequestBody UserRequestDTO userRequestDTO) {
+    public ResponseEntity<Map<String, String>> registerUser(@RequestBody UserRequestDTO userRequestDTO) {
         userService.registerUser(userRequestDTO);
-        return ResponseEntity.ok("User registered successfully");
+
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "User registered successfully");
+        return ResponseEntity.ok(response);
     }
 
     // ✅ UPDATE USER (PUT)
