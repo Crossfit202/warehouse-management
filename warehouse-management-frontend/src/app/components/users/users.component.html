@@ -1,5 +1,9 @@
 <h1>USERS</h1>
 <ul>
-    <li *ngFor="let user of users"></li>
+    <li *ngFor="let user of users">
+        <strong>{{ user.username }}</strong> |
+        Email: {{ user.email }} |
+        Role: {{ user.role }} |
+        Created: {{ user.formatCreatedAt() }}
+    </li>
 </ul>
-<p>users works!</p>

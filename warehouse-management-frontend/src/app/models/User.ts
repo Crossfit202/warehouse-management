@@ -30,8 +30,21 @@ export class User {
 
     //Formatting the date
     public formatCreatedAt(): string {
-        const date = new Date(this.created_at);
+        if (!this.created_at) return 'N/A';
+
+        // Replace the space with 'T' and trim microseconds to milliseconds
+        let cleaned = this.created_at.replace(' ', 'T');
+        cleaned = cleaned.split('.')[0]; // remove microseconds
+
+        const date = new Date(cleaned);
+        if (isNaN(date.getTime())) {
+            console.warn('Invalid date:', this.created_at);
+            return 'Invalid Date';
+        }
+
         return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
     }
+
+
 
 }

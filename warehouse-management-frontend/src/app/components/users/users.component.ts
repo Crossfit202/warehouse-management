@@ -22,8 +22,18 @@ export class UsersComponent implements OnInit {
 
   loadUsers(): void {
     this.userService.getAllUsers().subscribe(data => {
-      this.users = data;
-    })
+      this.users = data.map(user => new User(
+        user.id,
+        user.username,
+        user.email,
+        user.password,
+        user.role,
+        user.created_at,
+        user.updated_at
+      ));
+      console.log('Created At Type:', typeof this.users[0]?.created_at, 'Value:', this.users[0]?.created_at);
+
+    });
   }
 
 }

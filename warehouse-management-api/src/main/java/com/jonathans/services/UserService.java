@@ -111,7 +111,9 @@ public class UserService {
                 user.getUsername(),
                 user.getEmail(),
                 user.getPassword(),
-                user.getRole());
+                user.getRole(),
+                user.getCreatedAt(),
+                user.getUpdatedAt());
     }
 
     // Verify login credentials
