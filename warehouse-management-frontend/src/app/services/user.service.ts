@@ -14,7 +14,7 @@ export class UserService {
 
   getAllUsers(): Observable<User[]> {
     return this.http.get<User[]>(this.apiUrl, {
-      withCredentials: true // ✅ THIS IS CRITICAL
+      withCredentials: true // ✅ THIS IS CRITICAL FOR AUTHORIZATION - SENDS THE JWT TOKEN TO THE JWTFILTER.JAVA
     });
   }
 

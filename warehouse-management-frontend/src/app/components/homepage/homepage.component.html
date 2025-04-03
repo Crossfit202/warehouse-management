@@ -1,1 +1,220 @@
-<h1>Warehouse Inventory Management System Homepage</h1>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Warehouse Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+        body {
+            background-color: #f1f3f5;
+        }
+
+        .dashboard-card {
+            border-radius: 10px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            padding: 1rem;
+            background-color: white;
+        }
+
+        .sidebar {
+            position: fixed;
+            height: 100vh;
+            width: 220px;
+            background: #343a40;
+            color: white;
+            padding: 1rem;
+        }
+
+        .sidebar a {
+            color: white;
+            text-decoration: none;
+            display: block;
+            margin: 10px 0;
+        }
+
+        .content {
+            margin-left: 240px;
+            padding: 2rem;
+        }
+
+        .navbar {
+            margin-left: 240px;
+            padding: 1rem 2rem;
+            background-color: white;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Sidebar Navigation -->
+    <div class="sidebar">
+        <h4>WIMS</h4>
+        <a href="#">Dashboard</a>
+        <a href="#">Warehouses</a>
+        <a href="#">Inventory</a>
+        <a href="#">Movements</a>
+        <a href="#">Alerts</a>
+        <a href="#">Users</a>
+        <a href="#">Settings</a>
+    </div>
+
+    <!-- Top Navbar -->
+    <div class="navbar d-flex justify-content-between align-items-center">
+        <div>
+            <strong>Welcome, <span id="username">Guest</span></strong>
+            <span id="roleDisplay" class="badge bg-secondary ms-2">Role: none</span>
+        </div>
+        <div>
+            <button id="loginBtn" class="btn btn-success btn-sm">Log In as Admin</button>
+            <button id="logoutBtn" class="btn btn-danger btn-sm d-none">Log Out</button>
+        </div>
+    </div>
+
+    <!-- Main Dashboard Content -->
+    <div class="content">
+        <h2>Warehouse Dashboard</h2>
+        <p class="text-muted">Your real-time warehouse summary.</p>
+
+        <!-- KPI Cards -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="dashboard-card">
+                    <h5>Total Items</h5>
+                    <p class="fw-bold">8,500</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="dashboard-card">
+                    <h5>Active Warehouses</h5>
+                    <p class="fw-bold">4</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="dashboard-card">
+                    <h5>Open Alerts</h5>
+                    <p class="fw-bold text-danger">3</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="dashboard-card">
+                    <h5>Recent Movements</h5>
+                    <p class="fw-bold">12 today</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <h4>Quick Actions</h4>
+        <div class="row mb-4" id="quickActions">
+            <div class="col-md-2"><button class="btn btn-primary w-100">➕ Add Inventory</button></div>
+            <div class="col-md-2"><button class="btn btn-secondary w-100">🔄 Log Movement</button></div>
+            <div class="col-md-2"><button class="btn btn-danger w-100">⚠️ Create Alert</button></div>
+            <div class="col-md-2"><button class="btn btn-warning w-100">📦 Manage Warehouses</button></div>
+            <div class="col-md-2"><button class="btn btn-info w-100">👤 Assign Users</button></div>
+        </div>
+
+        <!-- Alerts Section -->
+        <h4>Alerts</h4>
+        <div class="dashboard-card mb-4">
+            <ul class="list-group">
+                <li class="list-group-item d-flex justify-content-between">
+                    Low stock for Item #SK123 in Warehouse A <span class="badge bg-danger">Unresolved</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                    Warehouse B nearing capacity <span class="badge bg-warning">Pending</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                    Power outage alert resolved <span class="badge bg-success">Resolved</span>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Inventory Movements -->
+        <h4>Recent Inventory Movements</h4>
+        <div class="dashboard-card">
+            <table class="table table-sm table-striped">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Item</th>
+                        <th>From</th>
+                        <th>To</th>
+                        <th>Quantity</th>
+                        <th>Type</th>
+                        <th>By</th>
+                        <th>Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>SK123</td>
+                        <td>Warehouse A</td>
+                        <td>Warehouse B</td>
+                        <td>100</td>
+                        <td>Transfer</td>
+                        <td>jsmith</td>
+                        <td>Apr 2, 2025 10:32 AM</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>SK224</td>
+                        <td>Vendor</td>
+                        <td>Warehouse A</td>
+                        <td>300</td>
+                        <td>Inbound</td>
+                        <td>jlee</td>
+                        <td>Apr 2, 2025 9:20 AM</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Simple Mock Login Script -->
+    <script>
+        const loginBtn = document.getElementById('loginBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const username = document.getElementById('username');
+        const roleDisplay = document.getElementById('roleDisplay');
+        const quickActions = document.getElementById('quickActions');
+
+        let user = {
+            isLoggedIn: false,
+            name: 'Admin',
+            role: 'admin'
+        };
+
+        loginBtn.onclick = () => {
+            user.isLoggedIn = true;
+            username.textContent = user.name;
+            roleDisplay.textContent = `Role: ${user.role}`;
+            roleDisplay.classList.replace('bg-secondary', 'bg-success');
+            loginBtn.classList.add('d-none');
+            logoutBtn.classList.remove('d-none');
+            quickActions.style.display = 'flex'; // Show only if admin
+        };
+
+        logoutBtn.onclick = () => {
+            user.isLoggedIn = false;
+            username.textContent = 'Guest';
+            roleDisplay.textContent = 'Role: none';
+            roleDisplay.classList.replace('bg-success', 'bg-secondary');
+            logoutBtn.classList.add('d-none');
+            loginBtn.classList.remove('d-none');
+            quickActions.style.display = 'none';
+        };
+
+        // Default state
+        window.onload = () => {
+            quickActions.style.display = 'none';
+        };
+    </script>
+
+</body>
+
+</html>

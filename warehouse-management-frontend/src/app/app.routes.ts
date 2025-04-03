@@ -9,6 +9,7 @@ import { ProfileComponent } from './components/profile/profile.component';
 import { AuthGuard } from './guards/auth.guard';
 import { RegisterComponent } from './components/register/register.component';
 import { UnauthorizedComponent } from './components/unauthorized/unauthorized.component';
+import { InventoryComponent } from './components/inventory/inventory.component';
 
 export const routes: Routes = [
     // Public Routes
@@ -34,6 +35,7 @@ export const routes: Routes = [
         component: UnauthorizedComponent
     },
 
+
     // Protected Routes
     {
         path: 'dashboard',
@@ -46,6 +48,12 @@ export const routes: Routes = [
         component: AdminComponent,
         canActivate: [AuthGuard],
         data: { role: ['ADMIN'] }
+    },
+    {
+        path: 'inventory',
+        component: InventoryComponent,
+        canActivate: [AuthGuard],
+        data: { role: ['ADMIN', 'MANAGER', 'INV_CLERK'] }
     },
     {
         path: 'profile',

@@ -1,1 +1,12 @@
-<p>inventory works!</p>
+<h1>INVENTORY</h1>
+
+<ul>
+    <li *ngFor="let item of inventory">
+        <strong>{{ item.name }}</strong>
+        <ul>
+            <li>SKU: {{ item.sku }}</li>
+            <li>Description: {{ item.description }}</li>
+            <li>Storage Location: {{ item.storageLocation }}</li>
+        </ul>
+    </li>
+</ul>
