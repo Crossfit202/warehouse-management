@@ -64,6 +64,12 @@ export const routes: Routes = [
         data: { role: ['ADMIN'] }
     },
     {
+        path: 'storage-locations',
+        component: StorageLocationsComponent,
+        canActivate: [AuthGuard],
+        data: { role: ['ADMIN', 'MANAGER', 'INV_CLERK'] }
+    },
+    {
         path: 'inventory',
         component: InventoryComponent,
         canActivate: [AuthGuard],
