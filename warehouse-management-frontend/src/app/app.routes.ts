@@ -10,6 +10,7 @@ import { AuthGuard } from './guards/auth.guard';
 import { RegisterComponent } from './components/register/register.component';
 import { UnauthorizedComponent } from './components/unauthorized/unauthorized.component';
 import { InventoryComponent } from './components/inventory/inventory.component';
+import { StorageLocationsComponent } from './components/storage-locations/storage-locations.component';
 
 export const routes: Routes = [
     // Public Routes
@@ -48,6 +49,12 @@ export const routes: Routes = [
         component: AdminComponent,
         canActivate: [AuthGuard],
         data: { role: ['ADMIN'] }
+    },
+    {
+        path: 'storage-locations',
+        component: StorageLocationsComponent,
+        canActivate: [AuthGuard],
+        data: { role: ['ADMIN', 'MANAGER', 'INV_CLERK'] }
     },
     {
         path: 'inventory',
