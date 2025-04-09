@@ -33,7 +33,7 @@ public class Warehouse {
 		this.name = name;
 		this.location = location;
 		this.max_capacity = maxCapacity;
-		this.created_at = LocalDateTime.now(); // ✅ Ensure `createdAt` is set
+		this.created_at = LocalDateTime.now(); // Set automatically
 	}
 
 	public UUID getId() {

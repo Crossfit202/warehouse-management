@@ -1,0 +1,12 @@
+<h1>ALERTS</h1>
+
+<ul>
+    <li *ngFor="let alert of alerts">
+        <strong>{{ alert.message }}</strong>
+        <ul>
+            <li>Status: {{ alert.status }} </li>
+            <li>Warehouse: {{ alert.warehouse.name }}</li>
+            <li>Time: {{ alert.time }}</li>
+        </ul>
+    </li>
+</ul>
