@@ -5,6 +5,8 @@ import com.jonathans.DTOS.UserRequestDTO;
 import com.jonathans.models.User;
 import com.jonathans.repositories.UserRepository;
 import jakarta.servlet.http.HttpServletResponse;
+
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +31,7 @@ public class UserService {
     private final AuthenticationManager authManager;
     private final JWTService jwtService;
 
-    public UserService(UserRepository userRepository, AuthenticationManager authManager, JWTService jwtService) {
+    public UserService(UserRepository userRepository, @Lazy AuthenticationManager authManager, JWTService jwtService) {
         this.jwtService = jwtService;
         this.authManager = authManager;
         this.userRepository = userRepository;
@@ -171,6 +173,17 @@ public class UserService {
     public User getUserByUsername(String username) {
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found with username: " + username));
+    }
+
+    public User findOrCreateOAuthUser(String email, String name) {
+        return userRepository.findByEmail(email).orElseGet(() -> {
+            User newUser = new User();
+            newUser.setUsername(name);
+            newUser.setEmail(email);
+            newUser.setRole("USER"); // Default role for OAuth users
+            newUser.setPassword(""); // Optional: skip setting a password
+            return userRepository.save(newUser);
+        });
     }
 
 }

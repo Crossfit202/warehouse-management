@@ -14,8 +14,22 @@
         <button type="submit">Login</button>
     </form>
     <p>{{ message }}</p>
+    <hr />
+    <p class="text-center">Or login with:</p>
+
+    <div class="d-flex justify-content-center gap-3">
+        <button class="btn btn-outline-danger" (click)="loginWithGoogle()">
+            <i class="fab fa-google"></i> Google
+        </button>
+        <button class="btn btn-outline-dark" (click)="loginWithGitHub()">
+            <i class="fab fa-github"></i> GitHub
+        </button>
+    </div>
+
 
     <p>Don't have an account?</p>
     <a href="/register">Register</a>
+
+
 
 </div>

@@ -31,4 +31,14 @@ export class LoginComponent {
       }
     });
   }
+
+  // OAuth 
+  loginWithGoogle() {
+    window.location.href = 'http://localhost:8083/oauth2/authorization/google';
+  }
+
+  loginWithGitHub() {
+    window.location.href = 'http://localhost:8083/oauth2/authorization/github';
+  }
+
 }

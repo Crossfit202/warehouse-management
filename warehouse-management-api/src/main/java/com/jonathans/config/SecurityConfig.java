@@ -1,8 +1,8 @@
 package com.jonathans.config;
 
 import com.jonathans.filters.JwtFilter;
+import com.jonathans.security.OAuth2LoginSuccessHandler;
 import com.jonathans.services.CustomUserDetailsService;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -23,10 +23,13 @@ public class SecurityConfig {
 
     private final JwtFilter jwtFilter;
     private final CustomUserDetailsService customUserDetailsService;
+    private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
 
-    public SecurityConfig(JwtFilter jwtFilter, CustomUserDetailsService customUserDetailsService) {
-        this.customUserDetailsService = customUserDetailsService;
+    public SecurityConfig(JwtFilter jwtFilter, CustomUserDetailsService customUserDetailsService,
+            OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler) {
         this.jwtFilter = jwtFilter;
+        this.customUserDetailsService = customUserDetailsService;
+        this.oAuth2LoginSuccessHandler = oAuth2LoginSuccessHandler;
     }
 
     @Bean
@@ -34,8 +37,9 @@ public class SecurityConfig {
         http.csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/users/register", "/unauthorized").permitAll()
-                        .requestMatchers("/auth/login", "/auth/logout", "/auth/verify").permitAll()
+                        .requestMatchers("/users/register", "/unauthorized", "/auth/login", "/auth/logout",
+                                "/auth/verify", "/oauth2/**", "/login/**")
+                        .permitAll()
                         .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
                         .requestMatchers("/users", "/users/**", "/inventory", "/inventory/**", "/storage-locations/**",
                                 "/storage-locations", "/alerts", "/alerts/**")
@@ -43,6 +47,8 @@ public class SecurityConfig {
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .oauth2Login(oauth2 -> oauth2
+                        .successHandler(oAuth2LoginSuccessHandler))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
@@ -77,5 +83,4 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/**", config);
         return source;
     }
-
 }
