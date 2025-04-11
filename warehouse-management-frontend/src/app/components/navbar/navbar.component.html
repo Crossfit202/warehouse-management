@@ -1,0 +1,22 @@
+<!-- Sidebar Navigation -->
+<div class="sidebar">
+    <h4>WIMS</h4>
+    <a href="/dashboard" routerLinkActive="active">Dashboard</a>
+    <a href="/warehouses" routerLinkActive="active">Warehouses</a>
+    <a href="/inventory" routerLinkActive="active">Inventory</a>
+    <a href="/movements" routerLinkActive="active">Movements</a>
+    <a href="/alerts" routerLinkActive="active">Alerts</a>
+    <a href="/users" routerLinkActive="active">Users</a>
+</div>
+
+<!-- Top Navbar -->
+<div class="navbar d-flex justify-content-between align-items-center px-3 py-2 bg-light border-bottom">
+    <div>
+        <strong>Welcome, {{ username || 'Guest' }}</strong>
+        <span class="badge bg-secondary ms-2">Role: {{ role || 'none' }}</span>
+    </div>
+    <div>
+        <button *ngIf="!isLoggedIn" class="btn btn-success btn-sm" (click)="login()">Log In</button>
+        <button *ngIf="isLoggedIn" class="btn btn-danger btn-sm" (click)="logout()">Log Out</button>
+    </div>
+</div>

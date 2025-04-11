@@ -1,13 +1,15 @@
-<h2>Register</h2>
-<form [formGroup]="registerForm" (ngSubmit)="register()">
-    <label for="username">Username</label>
-    <input id="username" formControlName="username" required>
+<div class="content">
+    <h2>Register</h2>
+    <form [formGroup]="registerForm" (ngSubmit)="register()">
+        <label for="username">Username</label>
+        <input id="username" formControlName="username" required>
 
-    <label for="email">Email</label>
-    <input id="email" formControlName="email" type="email" required>
+        <label for="email">Email</label>
+        <input id="email" formControlName="email" type="email" required>
 
-    <label for="password">Password</label>
-    <input id="password" formControlName="password" type="password" required>
+        <label for="password">Password</label>
+        <input id="password" formControlName="password" type="password" required>
 
-    <button type="submit" [disabled]="registerForm.invalid">Register</button>
-</form>
+        <button type="submit" [disabled]="registerForm.invalid">Register</button>
+    </form>
+</div>

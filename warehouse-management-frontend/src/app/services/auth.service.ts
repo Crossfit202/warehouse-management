@@ -19,7 +19,8 @@ export class AuthService {
       .pipe(
         tap(response => {
           console.log('Login successful:', response);
-          this.isAuthenticated = true; // Set authenticated state
+          this.isAuthenticated = true;
+          localStorage.setItem('username', username); // ✅ Store username
         }),
         catchError(error => {
           console.error('Login failed:', error);
@@ -36,6 +37,7 @@ export class AuthService {
         next: () => {
           console.log('Logout successful');
           this.isAuthenticated = false;
+          localStorage.removeItem('username');
           this.router.navigate(['/login']);
         },
         error: (error) => {
@@ -78,6 +80,12 @@ export class AuthService {
         })
       );
   }
+
+  // Get a username for dashboard message
+  getUsername(): string | null {
+    return localStorage.getItem('username');
+  }
+
 
   // ✅ Verify Token
   verifyToken(): Observable<boolean> {

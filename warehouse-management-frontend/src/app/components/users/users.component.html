@@ -1,42 +1,44 @@
-<h1 class="mb-4 text-light">Users</h1>
+<div class="content">
+    <h1 class="mb-4 text-light">Users</h1>
 
-<div class="container">
-    <div class="card mb-3" *ngFor="let user of users">
-        <div class="card-body">
-            <h3 class="card-title mb-2 text-capitalize">{{ user.username }}</h3>
-            <p class="card-text mb-1"><strong>Email:</strong> {{ user.email }}</p>
-            <p class="card-text mb-1"><strong>Role:</strong> {{ user.role }}</p>
-            <p class="card-text mb-3"><strong>Created:</strong> {{ user.formatCreatedAt() }}</p>
-            <button class="btn btn-primary me-2 btn-sm" (click)="openEditModal(user)">Edit</button>
-            <button class="btn btn-danger btn-sm" (click)="deleteUser(user.id)">Delete</button>
+    <div class="container">
+        <div class="card mb-3" *ngFor="let user of users">
+            <div class="card-body">
+                <h3 class="card-title mb-2 text-capitalize">{{ user.username }}</h3>
+                <p class="card-text mb-1"><strong>Email:</strong> {{ user.email }}</p>
+                <p class="card-text mb-1"><strong>Role:</strong> {{ user.role }}</p>
+                <p class="card-text mb-3"><strong>Created:</strong> {{ user.formatCreatedAt() }}</p>
+                <button class="btn btn-primary me-2 btn-sm" (click)="openEditModal(user)">Edit</button>
+                <button class="btn btn-danger btn-sm" (click)="deleteUser(user.id)">Delete</button>
+            </div>
         </div>
     </div>
-</div>
 
-<!-- Edit Modal -->
-<div *ngIf="isEditModalOpen" class="modal-overlay">
-    <div class="modal-content">
-        <h3 class="mb-3">Edit User</h3>
-        <form (ngSubmit)="saveUserChanges()">
-            <div class="mb-3">
-                <label class="form-label">Username</label>
-                <input class="form-control" [(ngModel)]="selectedUser!.username" name="username" required />
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Email</label>
-                <input class="form-control" [(ngModel)]="selectedUser!.email" name="email" required />
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Role</label>
-                <select class="form-select" [(ngModel)]="selectedUser!.role" name="role">
-                    <option value="USER">User</option>
-                    <option value="ADMIN">Admin</option>
-                    <option value="MANAGER">Manager</option>
-                    <option value="INV_CLERK">Inventory Clerk</option>
-                </select>
-            </div>
-            <button type="submit" class="btn btn-success me-2">Save</button>
-            <button type="button" class="btn btn-secondary" (click)="closeEditModal()">Cancel</button>
-        </form>
+    <!-- Edit Modal -->
+    <div *ngIf="isEditModalOpen" class="modal-overlay">
+        <div class="modal-content">
+            <h3 class="mb-3">Edit User</h3>
+            <form (ngSubmit)="saveUserChanges()">
+                <div class="mb-3">
+                    <label class="form-label">Username</label>
+                    <input class="form-control" [(ngModel)]="selectedUser!.username" name="username" required />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Email</label>
+                    <input class="form-control" [(ngModel)]="selectedUser!.email" name="email" required />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Role</label>
+                    <select class="form-select" [(ngModel)]="selectedUser!.role" name="role">
+                        <option value="USER">User</option>
+                        <option value="ADMIN">Admin</option>
+                        <option value="MANAGER">Manager</option>
+                        <option value="INV_CLERK">Inventory Clerk</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-success me-2">Save</button>
+                <button type="button" class="btn btn-secondary" (click)="closeEditModal()">Cancel</button>
+            </form>
+        </div>
     </div>
 </div>

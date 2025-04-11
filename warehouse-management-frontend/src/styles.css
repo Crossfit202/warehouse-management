@@ -8,3 +8,8 @@ body {
 ul {
     list-style-type: none;
 }
+
+.content {
+    margin-left: 240px;
+    padding: 2rem;
+}
