@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { NavbarComponent } from './components/navbar/navbar.component';
+import { AuthService } from './services/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -11,4 +12,10 @@ import { NavbarComponent } from './components/navbar/navbar.component';
     <router-outlet></router-outlet>
   `
 })
-export class AppComponent { }
+export class AppComponent {
+  constructor(private authService: AuthService) { }
+
+  ngonInit() {
+    this.authService.verifyToken().subscribe()
+  }
+}

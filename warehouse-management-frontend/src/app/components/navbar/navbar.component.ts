@@ -1,9 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { CommonModule } from '@angular/common';
+
 
 @Component({
   selector: 'app-navbar',
+  standalone: true,
+  imports: [CommonModule],
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.css']
 })
@@ -15,11 +19,10 @@ export class NavbarComponent implements OnInit {
   constructor(private authService: AuthService, private router: Router) { }
 
   ngOnInit() {
-    this.authService.isLoggedIn().subscribe(isAuth => {
+    this.authService.authStatus$.subscribe(isAuth => {
       this.isLoggedIn = isAuth;
 
       if (isAuth) {
-        // Optional: Replace with your own logic or token parsing
         this.username = this.authService.getUsername();
         this.authService.getUserRole().subscribe(role => {
           this.role = role;
@@ -30,6 +33,7 @@ export class NavbarComponent implements OnInit {
       }
     });
   }
+
 
   login() {
     this.router.navigate(['/login']);

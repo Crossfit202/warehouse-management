@@ -2,11 +2,17 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, of, tap, catchError, map } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
+
+  private authStatus = new BehaviorSubject<boolean>(false); // Tracks live auth status
+  authStatus$ = this.authStatus.asObservable();
+
 
   private baseUrl = 'http://localhost:8083/auth';
   private isAuthenticated: boolean = false;
@@ -19,32 +25,36 @@ export class AuthService {
       .pipe(
         tap(response => {
           console.log('Login successful:', response);
-          this.isAuthenticated = true;
-          localStorage.setItem('username', username); // ✅ Store username
+          this.authStatus.next(true); // ✅ Signal login
+          localStorage.setItem('username', username);
         }),
         catchError(error => {
           console.error('Login failed:', error);
-          this.isAuthenticated = false;
+          this.authStatus.next(false);
           return of(null);
         })
       );
   }
 
+
   // ✅ Logout
   logout(): void {
-    this.http.post(`${this.baseUrl}/logout`, {}, { withCredentials: true })
-      .subscribe({
-        next: () => {
-          console.log('Logout successful');
-          this.isAuthenticated = false;
-          localStorage.removeItem('username');
-          this.router.navigate(['/login']);
-        },
-        error: (error) => {
-          console.error('Logout failed:', error);
-        }
-      });
+    this.http.post(`${this.baseUrl}/logout`, {}, {
+      withCredentials: true,
+      responseType: 'text' as 'json' // 👈 tells Angular to expect plain text
+    }).subscribe({
+      next: () => {
+        console.log('Logout successful');
+        this.isAuthenticated = false;
+        this.router.navigate(['/login']);
+      },
+      error: (error) => {
+        console.error('Logout failed:', error);
+      }
+    });
   }
+
+
 
   // ✅ Check if Logged In
   isLoggedIn(): Observable<boolean> {
@@ -89,16 +99,18 @@ export class AuthService {
 
   // ✅ Verify Token
   verifyToken(): Observable<boolean> {
-    return this.http.get<any>(`${this.baseUrl}/verify`, { withCredentials: true })
-      .pipe(
-        map(response => {
-          console.log('Token verified successfully');
-          return true;
-        }),
-        catchError(error => {
-          console.warn('Token verification failed:', error);
-          return of(false);
-        })
-      );
+    return this.http.get<any>(`${this.baseUrl}/verify`, { withCredentials: true }).pipe(
+      map(response => {
+        console.log('Token verified successfully');
+        this.authStatus.next(true);  // ✅ Valid token
+        return true;
+      }),
+      catchError(error => {
+        console.warn('Token verification failed:', error);
+        this.authStatus.next(false); // ✅ Invalid token
+        return of(false);
+      })
+    );
   }
+
 }
