@@ -84,7 +84,7 @@ public class UserService {
                 existingUser.setPassword(encoder.encode(userRequestDTO.getPassword()));
             }
             if (userRequestDTO.getRole() != null) {
-                List<String> validRoles = List.of("ROLE_USER", "ROLE_ADMIN", "ROLE_MANAGER");
+                List<String> validRoles = List.of("USER", "ADMIN", "MANAGER", "INV_CLERK");
                 if (!validRoles.contains(userRequestDTO.getRole())) {
                     throw new RuntimeException("Invalid role. Valid roles are: ROLE_USER, ROLE_ADMIN, ROLE_MANAGER");
                 }
