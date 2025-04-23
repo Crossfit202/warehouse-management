@@ -57,14 +57,8 @@
         <h4>Alerts</h4>
         <div class="dashboard-card mb-4">
             <ul class="list-group">
-                <li class="list-group-item d-flex justify-content-between">
-                    Low stock for Item #SK123 in Warehouse A <span class="badge bg-danger">Unresolved</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between">
-                    Warehouse B nearing capacity <span class="badge bg-warning">Pending</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between">
-                    Power outage alert resolved <span class="badge bg-success">Resolved</span>
+                <li *ngFor="let alert of alert" class="list-group-item d-flex justify-content-between">
+                    {{alert.message}} <span class="badge-{{alert.status}}">{{alert.status}}</span>
                 </li>
             </ul>
         </div>
