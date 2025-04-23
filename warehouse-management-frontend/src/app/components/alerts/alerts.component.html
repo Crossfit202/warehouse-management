@@ -1,14 +1,22 @@
 <div class="content">
     <h1>ALERTS</h1>
 
+    <!-- Dropdown list -->
+    <select (change)="onSelect($event)">
+        <option *ngFor="let warehouse of warehouses" [value]="warehouse.name">{{warehouse.name}}</option>
+    </select>
+    
+
     <ul>
         <li *ngFor="let alert of alerts">
-            <strong>{{ alert.message }}</strong>
-            <ul>
-                <li>Status: {{ alert.status }} </li>
-                <li>Warehouse: {{ alert.warehouse.name }}</li>
-                <li>Time: {{ alert.time }}</li>
-            </ul>
+            <div *ngIf="alert.warehouse.name === selectedWarehouse">
+                <strong>{{ alert.message }}</strong>
+                <ul>
+                    <li>Status: {{ alert.status }} </li>
+                    <li>Warehouse: {{ alert.warehouse.name }}</li>
+                    <li>Time: {{ alert.time }}</li>
+                </ul>
+            </div>
         </li>
     </ul>
 </div>
