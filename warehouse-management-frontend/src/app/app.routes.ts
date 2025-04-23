@@ -25,10 +25,6 @@ export const routes: Routes = [
         component: LoginComponent
     },
     {
-        path: 'warehouses',
-        component: WarehousesComponent
-    },
-    {
         path: 'register',
         component: RegisterComponent
     },
@@ -44,6 +40,11 @@ export const routes: Routes = [
         component: DashboardComponent,
         canActivate: [AuthGuard],
         data: { role: ['ADMIN', 'MANAGER'] }
+    },
+    {
+        path: 'warehouses',
+        component: WarehousesComponent,
+        data: { role: ['ADMIN', 'MANAGER', 'INV_CLERK'] }
     },
     {
         path: 'storage-locations',

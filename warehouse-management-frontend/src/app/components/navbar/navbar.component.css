@@ -2,9 +2,8 @@
     width: 200px;
     position: fixed;
     height: 100vh;
-    background-color: #343a40;
+    background-color: black;
     padding-top: 1rem;
-    color: white;
 }
 
 .sidebar h4 {

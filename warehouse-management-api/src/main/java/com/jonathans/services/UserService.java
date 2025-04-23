@@ -133,9 +133,9 @@ public class UserService {
                         .collect(Collectors.toList());
 
                 // Generate JWT with roles
-                String token = jwtService.generateToken(userRequestDTO.getUsername(), authorities.get(0)); // Get first
-                                                                                                           // role from
-                                                                                                           // the list
+                String rawRole = authorities.get(0);
+                String normalizedRole = rawRole.startsWith("ROLE_") ? rawRole.substring(5) : rawRole;
+                String token = jwtService.generateToken(userRequestDTO.getUsername(), normalizedRole);
 
                 ResponseCookie cookie = ResponseCookie.from("jwt", token)
                         .httpOnly(true)
