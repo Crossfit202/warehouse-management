@@ -37,7 +37,7 @@ export class AlertsComponent implements OnInit {
     this.warehouseService.getAllWarehouses().subscribe(data => {
       this.warehouses = data;
       
-      // input the first warehouse name to 
+      // input the first warehouse name to selectedWarehouse
       if (this.warehouses.length > 0) {
         this.selectedWarehouse = this.warehouses[0].name;
       }

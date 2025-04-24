@@ -14,6 +14,11 @@
     <div class="content">
         <h2>Warehouse Dashboard</h2>
 
+        <!-- Dropdown list -->
+        <select (change)="onSelect($event)">
+            <option *ngFor="let warehouse of warehouses" [value]="warehouse.name">{{warehouse.name}}</option>
+        </select>
+
 
         <!-- KPI Cards -->
         <div class="row mb-4">
@@ -57,11 +62,16 @@
         <h4>Alerts</h4>
         <div class="dashboard-card mb-4">
             <ul class="list-group">
-                <li *ngFor="let alert of alert" class="list-group-item d-flex justify-content-between">
-                    {{alert.message}} <span class="badge-{{alert.status}}">{{alert.status}}</span>
-                </li>
+                <ng-container *ngFor="let alert of alerts">     <!-- Run through the list of alerts and make sure they match the warehouse selected -->
+                    <li *ngIf="alert.warehouse.name === selectedWarehouse" class="list-group-item d-flex justify-content-between">
+                        <ul>
+                            <li><li>{{alert.message}} <span class="badge-{{alert.status}}">{{alert.status}}</span></li>
+                        </ul>
+                    </li>
+                </ng-container>
             </ul>
         </div>
+
 
         <!-- Inventory Movements -->
         <h4>Recent Inventory Movements</h4>
