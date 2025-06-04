@@ -3,8 +3,11 @@ package com.jonathans.services;
 import com.jonathans.DTOS.InventoryItemDTO;
 import com.jonathans.models.InventoryItem;
 import com.jonathans.models.StorageLocation;
+import com.jonathans.models.WarehouseInventory;
 import com.jonathans.repositories.InventoryItemRepository;
 import com.jonathans.repositories.StorageLocationRepository;
+import com.jonathans.repositories.WarehouseInventoryRepository;
+
 import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,16 +16,22 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class InventoryItemService {
 
     private final InventoryItemRepository inventoryItemRepository;
     private final StorageLocationRepository storageLocationRepository;
+    private final WarehouseInventoryRepository warehouseInventoryRepository;
 
-    public InventoryItemService(InventoryItemRepository inventoryItemRepository, StorageLocationRepository storageLocationRepository) {
+    public InventoryItemService(
+            InventoryItemRepository inventoryItemRepository,
+            StorageLocationRepository storageLocationRepository,
+            WarehouseInventoryRepository warehouseInventoryRepository) {
         this.inventoryItemRepository = inventoryItemRepository;
         this.storageLocationRepository = storageLocationRepository;
+        this.warehouseInventoryRepository = warehouseInventoryRepository;
     }
 
     public List<InventoryItemDTO> getAllItems() {
@@ -50,7 +59,8 @@ public class InventoryItemService {
             storageLocation = locationOpt.get();
         }
 
-        InventoryItem item = new InventoryItem(itemDTO.getSku(), itemDTO.getName(), itemDTO.getDescription(), storageLocation);
+        InventoryItem item = new InventoryItem(itemDTO.getSku(), itemDTO.getName(), itemDTO.getDescription(),
+                storageLocation);
         item = inventoryItemRepository.save(item);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(convertToDTO(item));
@@ -64,10 +74,9 @@ public class InventoryItemService {
             existingItem.setDescription(itemDTO.getDescription());
 
             if (itemDTO.getStorageLocationId() != null) {
-                Optional<StorageLocation> locationOpt = storageLocationRepository.findById(itemDTO.getStorageLocationId());
-                if (locationOpt.isPresent()) {
-                    existingItem.setStorageLocation(locationOpt.get());
-                }
+                Optional<StorageLocation> locationOpt = storageLocationRepository
+                        .findById(itemDTO.getStorageLocationId());
+                locationOpt.ifPresent(existingItem::setStorageLocation);
             }
 
             inventoryItemRepository.save(existingItem);
@@ -89,7 +98,23 @@ public class InventoryItemService {
                 item.getSku(),
                 item.getName(),
                 item.getDescription(),
-                item.getStorageLocation() != null ? item.getStorageLocation().getId() : null
+                item.getStorageLocation() != null ? item.getStorageLocation().getId() : null,
+                null // quantity is unknown in this context
         );
+    }
+
+    public List<InventoryItemDTO> getItemsByWarehouseId(UUID warehouseId) {
+        List<WarehouseInventory> entries = warehouseInventoryRepository.findByWarehouseId(warehouseId);
+
+        return entries.stream()
+                .map(entry -> new InventoryItemDTO(
+                        entry.getItem().getId(),
+                        entry.getItem().getSku(),
+                        entry.getItem().getName(),
+                        entry.getItem().getDescription(),
+                        entry.getItem().getStorageLocation() != null ? entry.getItem().getStorageLocation().getId()
+                                : null,
+                        entry.getQuantity()))
+                .collect(Collectors.toList());
     }
 }

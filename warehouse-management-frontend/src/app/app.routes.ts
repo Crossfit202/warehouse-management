@@ -12,6 +12,7 @@ import { UnauthorizedComponent } from './components/unauthorized/unauthorized.co
 import { InventoryComponent } from './components/inventory/inventory.component';
 import { StorageLocationsComponent } from './components/storage-locations/storage-locations.component';
 import { AlertsComponent } from './components/alerts/alerts.component';
+import { MovementsComponent } from './components/movements/movements.component';
 
 export const routes: Routes = [
     // Public Routes
@@ -44,6 +45,7 @@ export const routes: Routes = [
     {
         path: 'warehouses',
         component: WarehousesComponent,
+        canActivate: [AuthGuard],
         data: { role: ['ADMIN', 'MANAGER', 'INV_CLERK'] }
     },
     {
@@ -87,6 +89,12 @@ export const routes: Routes = [
         component: UsersComponent,
         canActivate: [AuthGuard],
         data: { role: ['ADMIN', 'MANAGER'] }
+    },
+    {
+        path: 'movements',
+        component: MovementsComponent,
+        canActivate: [AuthGuard],
+        data: { role: ['ADMIN', 'MANAGER', 'INV_CLERK'] }
     },
 
     // Fallback Route

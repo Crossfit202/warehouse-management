@@ -9,4 +9,5 @@ import com.jonathans.models.WarehouseInventory;
 
 public interface WarehouseInventoryRepository extends JpaRepository<WarehouseInventory, UUID> {
     List<WarehouseInventory> findByWarehouseId(UUID warehouseId);
+
 }

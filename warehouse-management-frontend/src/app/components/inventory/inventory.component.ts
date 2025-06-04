@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { InventoryService } from '../../services/inventory.service';
 import { InventoryItem } from '../../models/InventoryItem';
 import { CommonModule } from '@angular/common';
+import { WarehouseService } from '../../services/warehouse.service';
 
 @Component({
   selector: 'app-inventory',
@@ -11,19 +12,30 @@ import { CommonModule } from '@angular/common';
   styleUrl: './inventory.component.css'
 })
 export class InventoryComponent implements OnInit {
-
   inventory: InventoryItem[] = [];
+  warehouses: any[] = [];
+  selectedWarehouse: string = '';
 
-  constructor(private inventoryService: InventoryService) { }
+  constructor(private inventoryService: InventoryService, private warehouseService: WarehouseService) { }
 
   ngOnInit(): void {
-    this.loadInventory();
+    this.warehouseService.getAllWarehouses().subscribe(data => {
+      this.warehouses = data;
+      console.log('Warehouses:', this.warehouses);
+      this.selectedWarehouse = this.warehouses[0].name;
+
+    });
   }
 
-  loadInventory(): void {
-    this.inventoryService.getAllInventory().subscribe(data => {
+  onSelect(event: any) {
+    console.log('Selected warehouse:', event.target.value);
+    this.selectedWarehouse = event.target.value;
+    this.loadInventoryForWarehouse(this.selectedWarehouse);
+  }
+
+  loadInventoryForWarehouse(warehouseName: string) {
+    this.inventoryService.getInventoryForWarehouse(warehouseName).subscribe(data => {
       this.inventory = data;
-    })
+    });
   }
-
 }

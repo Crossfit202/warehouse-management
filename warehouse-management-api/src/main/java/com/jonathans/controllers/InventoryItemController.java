@@ -28,6 +28,11 @@ public class InventoryItemController {
         return inventoryItemService.getItemById(id);
     }
 
+    @GetMapping("/by-warehouse-id")
+    public List<InventoryItemDTO> getItemsByWarehouseId(@RequestParam UUID warehouseId) {
+        return inventoryItemService.getItemsByWarehouseId(warehouseId);
+    }
+
     @PostMapping
     public ResponseEntity<InventoryItemDTO> createItem(@RequestBody InventoryItemDTO itemDTO) {
         return inventoryItemService.createItem(itemDTO);

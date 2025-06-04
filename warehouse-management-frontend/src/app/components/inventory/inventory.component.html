@@ -1,6 +1,11 @@
 <div class="content">
     <h1>INVENTORY</h1>
 
+    <select (change)="onSelect($event)">
+        <option *ngFor="let warehouse of warehouses" [value]="warehouse.id">
+            {{ warehouse.name }}
+        </option>
+    </select>
     <ul>
         <li *ngFor="let item of inventory">
             <strong>{{ item.name }}</strong>
