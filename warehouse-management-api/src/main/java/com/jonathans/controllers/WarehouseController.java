@@ -1,5 +1,6 @@
 package com.jonathans.controllers;
 
+import com.jonathans.DTOS.StorageLocationCapacityDTO;
 import com.jonathans.DTOS.StorageLocationDTO;
 import com.jonathans.DTOS.WarehouseDTO;
 import com.jonathans.services.WarehouseService;
@@ -40,6 +41,11 @@ public class WarehouseController {
     @GetMapping("/{id}/storage-locations")
     public List<StorageLocationDTO> getStorageLocationsForWarehouse(@PathVariable UUID id) {
         return warehouseStorageLocationService.getStorageLocationsByWarehouseId(id);
+    }
+
+    @GetMapping("/{id}/storage-location-capacities")
+    public List<StorageLocationCapacityDTO> getStorageLocationCapacities(@PathVariable UUID id) {
+        return warehouseStorageLocationService.getStorageLocationCapacities(id);
     }
 
     // ✅ CREATE A NEW WAREHOUSE

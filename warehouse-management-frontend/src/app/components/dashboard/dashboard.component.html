@@ -51,10 +51,10 @@
     <h4>Quick Actions</h4>
     <div class="row mb-4" id="quickActions">
       <div class="col-md-2">
-        <button class="btn btn-primary w-100">➕ Add Inventory</button>
+        <button class="btn btn-primary w-100"> 📦 Manage Inventory</button>
       </div>
       <div class="col-md-2">
-        <button class="btn btn-secondary w-100">🔄 Log Movement</button>
+        <button class="btn btn-secondary w-100"> 📋 Log Movement</button>
       </div>
       <div class="col-md-2">
         <button class="btn btn-danger w-100">⚠️ Create Alert</button>
@@ -69,7 +69,6 @@
     <div class="dashboard-card mb-4">
       <ul class="list-group">
         <ng-container *ngFor="let alert of alerts">
-          <!-- Run through the list of alerts and make sure they match the warehouse selected -->
           <li *ngIf="alert.warehouse.name === selectedWarehouse" class="list-group-item d-flex justify-content-between">
             <ul>
               <li></li>
@@ -151,7 +150,7 @@
         <tbody>
           <tr *ngFor="let location of storageLocations">
             <td>{{ location.name }}</td>
-            <td>{{ location.max_capacity }}</td>
+            <td>{{ location.currentCapacity }}/{{ location.maxCapacity }}</td>
           </tr>
         </tbody>
       </table>

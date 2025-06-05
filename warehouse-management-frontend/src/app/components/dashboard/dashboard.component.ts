@@ -10,6 +10,8 @@ import { InventoryMovement } from '../../models/InventoryMovement';
 import { MovementService } from '../../services/movement.service';
 import { StorageLocation } from '../../models/StorageLocation';
 import { StorageLocationsService } from '../../services/storage-locations.service';
+import { StorageLocationCapacity } from '../../models/StorageLocationCapacity';
+
 
 @Component({
   selector: 'app-dashboard',
@@ -25,7 +27,7 @@ export class DashboardComponent implements OnInit {
   selectedWarehouseId: string = '';
   inventoryItems: InventoryItem[] = [];
   recentMovements: InventoryMovement[] = [];
-  storageLocations: StorageLocation[] = [];
+  storageLocations: StorageLocationCapacity[] = [];
   totalQuantity: number = 0;
   openAlertCount: number = 0;
   recentMovementCount: number = 0;
@@ -109,8 +111,8 @@ export class DashboardComponent implements OnInit {
   }
 
   loadStorageLocations(warehouseId: string): void {
-    this.storageLocationService.getStorageLocationsByWarehouse(warehouseId).subscribe(data => {
-      this.storageLocations = data;
+    this.storageLocationService.getStorageLocationCapacities(warehouseId).subscribe(data => {
+      this.storageLocations = data; // Update type to `StorageLocationCapacity[]`
     });
   }
 }

@@ -1,9 +1,9 @@
 
 -- -- -- Insert Users with a Single Role
--- INSERT INTO users (id, username, email, password, role) VALUES 
---     (uuid_generate_v4(), 'admin_user', 'admin@example.com', 'securepassword', 'ROLE_ADMIN'),
---     (uuid_generate_v4(), 'manager_user', 'manager@example.com', 'securepassword', 'ROLE_MANAGER'),
---     (uuid_generate_v4(), 'clerk_user', 'clerk@example.com', 'securepassword', 'ROLE_INV_CLERK');
+INSERT INTO users (id, username, email, password, role) VALUES 
+    (uuid_generate_v4(), 'admin_user', 'admin@example.com', 'securepassword', 'ROLE_ADMIN'),
+    (uuid_generate_v4(), 'manager_user', 'manager@example.com', 'securepassword', 'ROLE_MANAGER'),
+    (uuid_generate_v4(), 'clerk_user', 'clerk@example.com', 'securepassword', 'ROLE_INV_CLERK');
 
 -- Insert Warehouses
 INSERT INTO warehouse (id, name, location, max_capacity) VALUES 
@@ -24,8 +24,8 @@ WHERE (w.name = 'Main Warehouse' AND s.name = 'Aisle 1 - Shelf 1')
 
 -- Insert Inventory Items
 INSERT INTO inventory_items (id, sku, name, storage_location, description) VALUES 
-    (uuid_generate_v4(), 'ITEM1001', 'Laptop', NULL, 'Dell XPS 15 Laptop'),
-    (uuid_generate_v4(), 'ITEM2002', 'Smartphone', NULL, 'iPhone 13 Pro');
+    (uuid_generate_v4(), 'ITEM1001', 'Laptop', 'a5e107d0-0e2d-4c30-a334-4e603aeddf6f', 'Dell XPS 15 Laptop'),
+    (uuid_generate_v4(), 'ITEM2002', 'Smartphone', 'cd91a315-2a00-4fc0-a068-94e312507048', 'iPhone 13 Pro');
 
 -- Add Inventory Items to Warehouses (Many-to-Many)
 INSERT INTO warehouse_inventory (warehouse_inventory_id, warehouse_id, item_id, quantity) 
@@ -55,46 +55,43 @@ SELECT uuid_generate_v4(), w.id, 'Warehouse nearing capacity!', 'NEW'
 FROM warehouse w WHERE w.name = 'Main Warehouse';
 
 -- Insert Movements 
--- Movement 1: Jonathan Cross moves 10 Laptops from Main to Backup Warehouse
-INSERT INTO inventory_movement (
-  id, item_id, from_warehouse, to_warehouse, quantity, movement_type, time, user_id
-) VALUES (
+-- Movement 1: Add 20 Smartphones to Main Warehouse by admin
+INSERT INTO inventory_movement (id, item_id, from_warehouse, to_warehouse, quantity, movement_type, time, user_id)
+VALUES (
   gen_random_uuid(),
-  '0eabe854-59e3-41ae-8e2f-6a5bcb1612e6',
-  'c2360ffb-9ca0-44bb-aff9-30bca4c46eed',  -- Main Warehouse
-  'd023b344-7def-415f-b242-23bba0b68920',  -- Backup Warehouse
-  10,
-  'Transfer',
-  '2025-06-01 10:00:00',
-  'a9386df3-a03d-4cbd-8492-ecafb0b63ff9'   -- Jonathan Cross
-);
-
--- Movement 2: Sean moves 5 Smartphones from Backup to Main Warehouse
-INSERT INTO inventory_movement (
-  id, item_id, from_warehouse, to_warehouse, quantity, movement_type, time, user_id
-) VALUES (
-  gen_random_uuid(),
-  '9d8a657f-d612-49f2-b04d-7b4a09b01f2f',
-  'd023b344-7def-415f-b242-23bba0b68920',  -- Backup Warehouse
-  'c2360ffb-9ca0-44bb-aff9-30bca4c46eed',  -- Main Warehouse
-  5,
-  'Return',
-  '2025-06-02 09:15:00',
-  '773cb1a1-658f-481b-921d-18a8ef448c3a'   -- Sean
-);
-
--- Movement 3: clerk_user ships 3 Laptops out from Backup Warehouse
-INSERT INTO inventory_movement (
-  id, item_id, from_warehouse, to_warehouse, quantity, movement_type, time, user_id
-) VALUES (
-  gen_random_uuid(),
-  '0eabe854-59e3-41ae-8e2f-6a5bcb1612e6',
-  'd023b344-7def-415f-b242-23bba0b68920',  -- Backup Warehouse
+  'df409ac8-6b9d-4de9-b364-d5cefe2c95e5', -- Smartphone
   NULL,
-  3,
+  '023ebb8b-f286-43bb-8416-1a14af8c3f48', -- Main Warehouse
+  20,
+  'ADD',
+  '2025-06-06 08:00:00',
+  '88288def-9e3e-4bc2-9988-9540e588bebc'  -- admin
+);
+
+-- Movement 2: Transfer 15 Laptops from Main to Backup Warehouse
+INSERT INTO inventory_movement (id, item_id, from_warehouse, to_warehouse, quantity, movement_type, time, user_id)
+VALUES (
+  gen_random_uuid(),
+  '631b537e-f6bb-4cc9-9aeb-811b4a41c052', -- Laptop
+  '023ebb8b-f286-43bb-8416-1a14af8c3f48', -- Main Warehouse
+  'c4373ce3-b95f-435c-b736-8b3e6805ae0a', -- Backup Warehouse
+  15,
+  'Transfer',
+  '2025-06-06 09:30:00',
+  '88288def-9e3e-4bc2-9988-9540e588bebc'  -- admin
+);
+
+-- Movement 3: Remove 10 Smartphones (Outbound) from Backup Warehouse
+INSERT INTO inventory_movement (id, item_id, from_warehouse, to_warehouse, quantity, movement_type, time, user_id)
+VALUES (
+  gen_random_uuid(),
+  'df409ac8-6b9d-4de9-b364-d5cefe2c95e5', -- Smartphone
+  'c4373ce3-b95f-435c-b736-8b3e6805ae0a', -- Backup Warehouse
+  NULL,
+  10,
   'Outbound',
-  '2025-06-03 14:30:00',
-  '8724ef31-c8d6-45e6-9b6b-394194ad6859'   -- clerk_user
+  '2025-06-06 14:45:00',
+  '88288def-9e3e-4bc2-9988-9540e588bebc'  -- admin
 );
 
 
