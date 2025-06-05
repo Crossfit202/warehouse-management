@@ -1,7 +1,6 @@
 <div class="content">
     <h2>Inventory Movements</h2>
 
-    <label for="warehouse">Select Warehouse:</label>
     <select id="warehouse" (change)="onWarehouseSelect($event)">
         <option *ngFor="let w of warehouses" [value]="w.id">{{ w.name }}</option>
     </select>

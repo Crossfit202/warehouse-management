@@ -6,6 +6,8 @@ import { WarehouseService } from '../../services/warehouse.service';
 import { Warehouse } from '../../models/Warehouse';
 import { InventoryService } from '../../services/inventory.service';
 import { InventoryItem } from '../../models/InventoryItem';
+import { InventoryMovement } from '../../models/InventoryMovement';
+import { MovementService } from '../../services/movement.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -20,15 +22,18 @@ export class DashboardComponent implements OnInit {
   selectedWarehouse: string = '';
   selectedWarehouseId: string = '';
   inventoryItems: InventoryItem[] = [];
+  recentMovements: InventoryMovement[] = [];
   totalQuantity: number = 0;
   openAlertCount: number = 0;
   activeWarehouseCount: number = 0;
+  recentMovementCount: number = 0;
 
 
   constructor(
     private alertService: AlertService,
     private warehouseService: WarehouseService,
-    private inventoryService: InventoryService
+    private inventoryService: InventoryService,
+    private movementService: MovementService
   ) { }
 
   ngOnInit(): void {
@@ -45,13 +50,14 @@ export class DashboardComponent implements OnInit {
   loadWarehouses(): void {
     this.warehouseService.getAllWarehouses().subscribe(data => {
       this.warehouses = data;
-      this.activeWarehouseCount = data.length; // set active warehouse count
+      this.activeWarehouseCount = data.length;
 
       if (this.warehouses.length > 0) {
         this.selectedWarehouse = this.warehouses[0].name;
         this.selectedWarehouseId = this.warehouses[0].id;
-        this.loadInventory(this.selectedWarehouseId); // ✅ Initial load
+        this.loadInventory(this.selectedWarehouseId);
         this.calculateOpenAlerts();
+        this.loadRecentMovements(this.selectedWarehouseId);
       }
     });
   }
@@ -63,15 +69,16 @@ export class DashboardComponent implements OnInit {
     const selected = this.warehouses.find(w => w.name === selectedName);
     if (selected) {
       this.selectedWarehouseId = selected.id;
-      this.loadInventory(this.selectedWarehouseId); // get inventory for warehouse
-      this.calculateOpenAlerts(); // Get alert status for warehouse
+      this.loadInventory(this.selectedWarehouseId);
+      this.calculateOpenAlerts();
+      this.loadRecentMovements(this.selectedWarehouseId);
     }
   }
 
   loadInventory(warehouseId: string): void {
     this.inventoryService.getInventoryForWarehouse(warehouseId).subscribe(data => {
       this.inventoryItems = data;
-      this.totalQuantity = data.reduce((sum, item) => sum + (item.quantity || 0), 0); // ✅ Calculate total
+      this.totalQuantity = data.reduce((sum, item) => sum + (item.quantity || 0), 0);
     });
   }
 
@@ -80,4 +87,13 @@ export class DashboardComponent implements OnInit {
       alert => alert.warehouse?.name === this.selectedWarehouse
     ).length;
   }
+
+
+  loadRecentMovements(warehouseId: string): void {
+    this.movementService.getMovementsForWarehouse(warehouseId).subscribe(data => {
+      this.recentMovements = data.slice(0, 5);
+      this.recentMovementCount = data.length;
+    });
+  }
+
 }

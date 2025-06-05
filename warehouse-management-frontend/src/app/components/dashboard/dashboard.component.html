@@ -42,7 +42,7 @@
       <div class="col-md-3">
         <div class="dashboard-card">
           <h5>Recent Movements</h5>
-          <p class="fw-bold">12 today</p>
+          <p class="fw-bold">{{ recentMovementCount }}</p>
         </div>
       </div>
     </div>
@@ -128,25 +128,15 @@
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>1</td>
-            <td>SK123</td>
-            <td>Warehouse A</td>
-            <td>Warehouse B</td>
-            <td>100</td>
-            <td>Transfer</td>
-            <td>jsmith</td>
-            <td>Apr 2, 2025 10:32 AM</td>
-          </tr>
-          <tr>
-            <td>2</td>
-            <td>SK224</td>
-            <td>Vendor</td>
-            <td>Warehouse A</td>
-            <td>300</td>
-            <td>Inbound</td>
-            <td>jlee</td>
-            <td>Apr 2, 2025 9:20 AM</td>
+          <tr *ngFor="let movement of recentMovements; let i = index">
+            <td>{{ i + 1 }}</td>
+            <td>{{ movement.itemName || 'N/A' }}</td>
+            <td>{{ movement.fromWarehouseName || 'N/A' }}</td>
+            <td>{{ movement.toWarehouseName || 'N/A' }}</td>
+            <td>{{ movement.quantity }}</td>
+            <td>{{ movement.movementType }}</td>
+            <td>{{ movement.userName || 'N/A' }}</td>
+            <td>{{ movement.time | date:'short' }}</td>
           </tr>
         </tbody>
       </table>
