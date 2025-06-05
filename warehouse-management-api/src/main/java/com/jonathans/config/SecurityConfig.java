@@ -42,8 +42,9 @@ public class SecurityConfig {
                                 "/auth/verify", "/oauth2/**", "/login/**")
                         .permitAll()
                         .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
-                        .requestMatchers("/users", "/users/**", "/inventory", "/inventory/**", "/inventory-items", "/inventory-items/**", "/storage-locations/**",
-                                "/storage-locations", "/alerts", "/alerts/**")
+                        .requestMatchers("/users", "/users/**", "/inventory", "/inventory/**", "/inventory-items",
+                                "/inventory-items/**", "/storage-locations/**",
+                                "/storage-locations", "/alerts", "/alerts/**", "/movements", "/movements/**")
                         .hasAnyAuthority("ROLE_USER", "ROLE_ADMIN", "ROLE_MANAGER", "ROLE_INV_CLERK")
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session

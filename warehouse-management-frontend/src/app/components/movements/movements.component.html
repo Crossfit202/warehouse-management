@@ -1,1 +1,33 @@
-<p>movements works!</p>
+<div class="content">
+    <h2>Inventory Movements</h2>
+
+    <label for="warehouse">Select Warehouse:</label>
+    <select id="warehouse" (change)="onWarehouseSelect($event)">
+        <option *ngFor="let w of warehouses" [value]="w.id">{{ w.name }}</option>
+    </select>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Item</th>
+                <th>From</th>
+                <th>To</th>
+                <th>Quantity</th>
+                <th>Type</th>
+                <th>Moved By</th>
+                <th>Time</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let m of movements">
+                <td>{{ m.itemName }}</td>
+                <td>{{ m.fromWarehouseName || 'N/A' }}</td>
+                <td>{{ m.toWarehouseName || 'N/A' }}</td>
+                <td>{{ m.quantity }}</td>
+                <td>{{ m.movementType }}</td>
+                <td>{{ m.userName }}</td>
+                <td>{{ m.time | date:'short' }}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>

@@ -1,158 +1,157 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Warehouse Dashboard</title>
-  </head>
 
-  <body>
-    <!-- Main Dashboard Content -->
-    <div class="content">
-      <h2>Warehouse Dashboard</h2>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Warehouse Dashboard</title>
+</head>
 
-      <!-- Dropdown list -->
-      <select (change)="onSelect($event)">
-        <option *ngFor="let warehouse of warehouses" [value]="warehouse.name">
-          {{ warehouse.name }}
-        </option>
-      </select>
+<body>
+  <!-- Main Dashboard Content -->
+  <div class="content">
+    <h2>Warehouse Dashboard</h2>
 
-      <!-- KPI Cards -->
-      <div class="row mb-4">
-        <div class="col-md-3">
-          <div class="dashboard-card">
-            <h5>Total Items</h5>
-            <p class="fw-bold">8,500</p>
-          </div>
-        </div>
-        <div class="col-md-3">
-          <div class="dashboard-card">
-            <h5>Active Warehouses</h5>
-            <p class="fw-bold">4</p>
-          </div>
-        </div>
-        <div class="col-md-3">
-          <div class="dashboard-card">
-            <h5>Open Alerts</h5>
-            <p class="fw-bold text-danger">3</p>
-          </div>
-        </div>
-        <div class="col-md-3">
-          <div class="dashboard-card">
-            <h5>Recent Movements</h5>
-            <p class="fw-bold">12 today</p>
-          </div>
+    <!-- Dropdown list -->
+    <select (change)="onSelect($event)">
+      <option *ngFor="let warehouse of warehouses" [value]="warehouse.name">
+        {{ warehouse.name }}
+      </option>
+    </select>
+
+    <!-- KPI Cards -->
+    <div class="row mb-4">
+      <div class="col-md-3">
+        <div class="dashboard-card">
+          <h5>Total Items</h5>
+          <p class="fw-bold">{{ totalQuantity }}</p>
         </div>
       </div>
-
-      <!-- Quick Actions -->
-      <h4>Quick Actions</h4>
-      <div class="row mb-4" id="quickActions">
-        <div class="col-md-2">
-          <button class="btn btn-primary w-100">➕ Add Inventory</button>
-        </div>
-        <div class="col-md-2">
-          <button class="btn btn-secondary w-100">🔄 Log Movement</button>
-        </div>
-        <div class="col-md-2">
-          <button class="btn btn-danger w-100">⚠️ Create Alert</button>
-        </div>
-        <div class="col-md-2">
-          <button class="btn btn-warning w-100">📦 Manage Warehouses</button>
-        </div>
-        <div class="col-md-2">
-          <button class="btn btn-info w-100">👤 Assign Users</button>
+      <div class="col-md-3">
+        <div class="dashboard-card">
+          <h5>Active Warehouses</h5>
+          <p class="fw-bold">{{ activeWarehouseCount }}</p>
         </div>
       </div>
-
-      <!-- Alerts Section -->
-      <h4>Alerts</h4>
-      <div class="dashboard-card mb-4">
-        <ul class="list-group">
-          <ng-container *ngFor="let alert of alerts">
-            <!-- Run through the list of alerts and make sure they match the warehouse selected -->
-            <li
-              *ngIf="alert.warehouse.name === selectedWarehouse"
-              class="list-group-item d-flex justify-content-between"
-            >
-              <ul>
-                <li></li>
-                <li>
-                  {{ alert.message }}
-                  <span class="badge-{{ alert.status }}">{{
-                    alert.status
-                  }}</span>
-                </li>
-              </ul>
-            </li>
-          </ng-container>
-        </ul>
+      <div class="col-md-3">
+        <div class="dashboard-card">
+          <h5>Open Alerts</h5>
+          <p class="fw-bold text-danger">{{ openAlertCount }}</p>
+        </div>
       </div>
-
-      <!-- Inventory List -->
-      <h4>Inventory in {{ selectedWarehouse }}</h4>
-      <div class="dashboard-card">
-        <table class="table table-sm table-bordered">
-          <thead>
-            <tr>
-              <th>SKU</th>
-              <th>Name</th>
-              <th>Description</th>
-              <th>Quantity</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let item of inventoryItems">
-              <td>{{ item.sku }}</td>
-              <td>{{ item.name }}</td>
-              <td>{{ item.description }}</td>
-              <td>{{ item.quantity }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <!-- Inventory Movements -->
-      <h4>Recent Inventory Movements</h4>
-      <div class="dashboard-card">
-        <table class="table table-sm table-striped">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Item</th>
-              <th>From</th>
-              <th>To</th>
-              <th>Quantity</th>
-              <th>Type</th>
-              <th>By</th>
-              <th>Time</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>1</td>
-              <td>SK123</td>
-              <td>Warehouse A</td>
-              <td>Warehouse B</td>
-              <td>100</td>
-              <td>Transfer</td>
-              <td>jsmith</td>
-              <td>Apr 2, 2025 10:32 AM</td>
-            </tr>
-            <tr>
-              <td>2</td>
-              <td>SK224</td>
-              <td>Vendor</td>
-              <td>Warehouse A</td>
-              <td>300</td>
-              <td>Inbound</td>
-              <td>jlee</td>
-              <td>Apr 2, 2025 9:20 AM</td>
-            </tr>
-          </tbody>
-        </table>
+      <div class="col-md-3">
+        <div class="dashboard-card">
+          <h5>Recent Movements</h5>
+          <p class="fw-bold">12 today</p>
+        </div>
       </div>
     </div>
-  </body>
+
+    <!-- Quick Actions -->
+    <h4>Quick Actions</h4>
+    <div class="row mb-4" id="quickActions">
+      <div class="col-md-2">
+        <button class="btn btn-primary w-100">➕ Add Inventory</button>
+      </div>
+      <div class="col-md-2">
+        <button class="btn btn-secondary w-100">🔄 Log Movement</button>
+      </div>
+      <div class="col-md-2">
+        <button class="btn btn-danger w-100">⚠️ Create Alert</button>
+      </div>
+      <div class="col-md-2">
+        <button class="btn btn-warning w-100">📦 Manage Warehouses</button>
+      </div>
+      <div class="col-md-2">
+        <button class="btn btn-info w-100">👤 Assign Users</button>
+      </div>
+    </div>
+
+    <!-- Alerts Section -->
+    <h4>Alerts</h4>
+    <div class="dashboard-card mb-4">
+      <ul class="list-group">
+        <ng-container *ngFor="let alert of alerts">
+          <!-- Run through the list of alerts and make sure they match the warehouse selected -->
+          <li *ngIf="alert.warehouse.name === selectedWarehouse" class="list-group-item d-flex justify-content-between">
+            <ul>
+              <li></li>
+              <li>
+                {{ alert.message }}
+                <span class="badge-{{ alert.status }}">{{
+                  alert.status
+                  }}</span>
+              </li>
+            </ul>
+          </li>
+        </ng-container>
+      </ul>
+    </div>
+
+    <!-- Inventory List -->
+    <h4>Inventory in {{ selectedWarehouse }}</h4>
+    <div class="dashboard-card">
+      <table class="table table-sm table-bordered">
+        <thead>
+          <tr>
+            <th>SKU</th>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Quantity</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of inventoryItems">
+            <td>{{ item.sku }}</td>
+            <td>{{ item.name }}</td>
+            <td>{{ item.description }}</td>
+            <td>{{ item.quantity }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Inventory Movements -->
+    <h4>Recent Inventory Movements</h4>
+    <div class="dashboard-card">
+      <table class="table table-sm table-striped">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Item</th>
+            <th>From</th>
+            <th>To</th>
+            <th>Quantity</th>
+            <th>Type</th>
+            <th>By</th>
+            <th>Time</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>SK123</td>
+            <td>Warehouse A</td>
+            <td>Warehouse B</td>
+            <td>100</td>
+            <td>Transfer</td>
+            <td>jsmith</td>
+            <td>Apr 2, 2025 10:32 AM</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>SK224</td>
+            <td>Vendor</td>
+            <td>Warehouse A</td>
+            <td>300</td>
+            <td>Inbound</td>
+            <td>jlee</td>
+            <td>Apr 2, 2025 9:20 AM</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</body>
+
 </html>

@@ -19,7 +19,7 @@ export class InventoryComponent implements OnInit {
   constructor(
     private inventoryService: InventoryService,
     private warehouseService: WarehouseService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.warehouseService.getAllWarehouses().subscribe(data => {
@@ -27,7 +27,7 @@ export class InventoryComponent implements OnInit {
       console.log('Warehouses:', this.warehouses);
 
       if (this.warehouses.length > 0) {
-        this.selectedWarehouse = this.warehouses[0].name;
+        this.selectedWarehouse = this.warehouses[0].id;
         this.loadInventoryForWarehouse(this.selectedWarehouse); // ✅ Load initial inventory
       }
     });

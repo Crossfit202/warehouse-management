@@ -32,6 +32,7 @@ public class InventoryMovement {
     private Warehouse toWarehouse;
 
     private int quantity;
+
     private String movementType;
 
     private LocalDateTime time;
