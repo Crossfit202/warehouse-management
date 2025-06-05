@@ -8,21 +8,20 @@ public class InventoryItemDTO {
     private String sku;
     private String name;
     private String description;
-    private UUID storageLocationId;
+    private String storageLocationName;
     private Integer quantity;
 
     public InventoryItemDTO() {
     }
 
-    public InventoryItemDTO(UUID id, String sku, String name, String description, UUID storageLocationId,
+    public InventoryItemDTO(UUID id, String sku, String name, String description, String storageLocationName,
             Integer quantity) {
         this.id = id;
         this.sku = sku;
         this.name = name;
         this.description = description;
-        this.storageLocationId = storageLocationId;
+        this.storageLocationName = storageLocationName;
         this.quantity = quantity;
-
     }
 
     public UUID getId() {
@@ -57,12 +56,12 @@ public class InventoryItemDTO {
         this.description = description;
     }
 
-    public UUID getStorageLocationId() {
-        return storageLocationId;
+    public String getStorageLocationName() {
+        return storageLocationName;
     }
 
-    public void setStorageLocationId(UUID storageLocationId) {
-        this.storageLocationId = storageLocationId;
+    public void setStorageLocationName(String storageLocationName) {
+        this.storageLocationName = storageLocationName;
     }
 
     public Integer getQuantity() {
@@ -76,7 +75,7 @@ public class InventoryItemDTO {
     @Override
     public String toString() {
         return "InventoryItemDTO [id=" + id + ", sku=" + sku + ", name=" + name + ", description=" + description
-                + ", storageLocationId=" + storageLocationId + ", quantity=" + quantity + "]";
+                + ", storageLocationName=" + storageLocationName + ", quantity=" + quantity + "]";
     }
 
 }

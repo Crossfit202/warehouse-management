@@ -2,23 +2,17 @@ package com.jonathans.services;
 
 import com.jonathans.DTOS.InventoryItemDTO;
 import com.jonathans.models.InventoryItem;
-import com.jonathans.models.Warehouse;
 import com.jonathans.models.WarehouseInventory;
-import com.jonathans.models.WarehouseStorageLocations;
 import com.jonathans.repositories.InventoryItemRepository;
 import com.jonathans.repositories.StorageLocationRepository;
 import com.jonathans.repositories.WarehouseInventoryRepository;
-import com.jonathans.repositories.WarehouseStorageLocationsRepository;
-import com.jonathans.repositories.WarehouseRepository;
 
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -27,19 +21,13 @@ public class InventoryItemService {
 
     private final InventoryItemRepository inventoryItemRepository;
     private final WarehouseInventoryRepository warehouseInventoryRepository;
-    private final WarehouseStorageLocationsRepository warehouseStorageLocationsRepository;
-    private final WarehouseRepository warehouseRepository;
 
     public InventoryItemService(
             InventoryItemRepository inventoryItemRepository,
             StorageLocationRepository storageLocationRepository,
-            WarehouseInventoryRepository warehouseInventoryRepository,
-            WarehouseStorageLocationsRepository warehouseStorageLocationsRepository,
-            WarehouseRepository warehouseRepository) {
+            WarehouseInventoryRepository warehouseInventoryRepository) {
         this.inventoryItemRepository = inventoryItemRepository;
         this.warehouseInventoryRepository = warehouseInventoryRepository;
-        this.warehouseStorageLocationsRepository = warehouseStorageLocationsRepository;
-        this.warehouseRepository = warehouseRepository;
     }
 
     public List<InventoryItemDTO> getAllItems() {
@@ -58,21 +46,12 @@ public class InventoryItemService {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
         }
 
-        WarehouseStorageLocations warehouseStorageLocation = null;
-        if (itemDTO.getStorageLocationId() != null) {
-            Optional<WarehouseStorageLocations> locationOpt = warehouseStorageLocationsRepository
-                    .findById(itemDTO.getStorageLocationId());
-            if (locationOpt.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-            }
-            warehouseStorageLocation = locationOpt.get();
-        }
+        InventoryItem item = new InventoryItem();
+        item.setSku(itemDTO.getSku());
+        item.setName(itemDTO.getName());
+        item.setDescription(itemDTO.getDescription());
 
-        InventoryItem item = new InventoryItem(
-                itemDTO.getSku(),
-                itemDTO.getName(),
-                itemDTO.getDescription(),
-                warehouseStorageLocation);
+        inventoryItemRepository.save(item);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(convertToDTO(item));
     }
@@ -83,13 +62,6 @@ public class InventoryItemService {
             existingItem.setSku(itemDTO.getSku());
             existingItem.setName(itemDTO.getName());
             existingItem.setDescription(itemDTO.getDescription());
-
-            if (itemDTO.getStorageLocationId() != null) {
-                Optional<WarehouseStorageLocations> locationOpt = warehouseStorageLocationsRepository
-                        .findById(itemDTO.getStorageLocationId());
-                locationOpt.ifPresent(existingItem::setWarehouseStorageLocation);
-
-            }
 
             inventoryItemRepository.save(existingItem);
             return ResponseEntity.ok(convertToDTO(existingItem));
@@ -110,28 +82,27 @@ public class InventoryItemService {
                 item.getSku(),
                 item.getName(),
                 item.getDescription(),
-                item.getWarehouseStorageLocation() != null ? item.getWarehouseStorageLocation().getId() : null,
-                null // quantity is unknown in this context
+                null, // no shelf
+                null // no quantity
         );
     }
 
-    public List<InventoryItemDTO> getItemsByWarehouseId(UUID warehouseId) {
-        Warehouse warehouse = warehouseRepository.findById(warehouseId)
-                .orElseThrow(() -> new EntityNotFoundException("Warehouse not found with ID: " + warehouseId));
+    public List<InventoryItemDTO> getItemsByWarehouse(UUID warehouseId) {
+        List<WarehouseInventory> inventoryList = warehouseInventoryRepository
+                .findByWarehouseStorageLocation_Warehouse_Id(warehouseId); // ✅ Use new method
 
-        List<WarehouseInventory> entries = warehouseInventoryRepository
-                .findByWarehouseStorageLocation_Warehouse(warehouse);
+        return inventoryList.stream().map(wi -> {
+            InventoryItem item = wi.getItem();
+            String shelfName = wi.getWarehouseStorageLocation().getName(); // ✅ Show shelf
 
-        return entries.stream()
-                .map(entry -> new InventoryItemDTO(
-                        entry.getItem().getId(),
-                        entry.getItem().getSku(),
-                        entry.getItem().getName(),
-                        entry.getItem().getDescription(),
-                        entry.getItem().getWarehouseStorageLocation() != null
-                                ? entry.getItem().getWarehouseStorageLocation().getId()
-                                : null,
-                        entry.getQuantity()))
-                .collect(Collectors.toList());
+            return new InventoryItemDTO(
+                    item.getId(),
+                    item.getSku(),
+                    item.getName(),
+                    item.getDescription(),
+                    shelfName,
+                    wi.getQuantity());
+        }).collect(Collectors.toList());
     }
+
 }

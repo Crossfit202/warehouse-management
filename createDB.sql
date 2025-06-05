@@ -82,10 +82,10 @@ CREATE TABLE inventory_items (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     sku VARCHAR(50) UNIQUE NOT NULL,
     name VARCHAR(255) NOT NULL,
-    warehouse_storage_location_id UUID REFERENCES warehouse_storage_locations(id) ON DELETE SET NULL,  -- ✅ CHANGED to point to shelf instance
     description TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
 
 -- Add index for fast SKU lookups
 CREATE INDEX idx_inventory_items_sku ON inventory_items(sku);

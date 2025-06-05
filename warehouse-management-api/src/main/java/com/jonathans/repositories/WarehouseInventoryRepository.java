@@ -13,8 +13,9 @@ public interface WarehouseInventoryRepository extends JpaRepository<WarehouseInv
 
     List<WarehouseInventory> findByWarehouseStorageLocation_Warehouse(Warehouse warehouse);
 
+    List<WarehouseInventory> findByWarehouseStorageLocation_Warehouse_Id(UUID warehouseId); // ✅ added
+
     List<WarehouseInventory> findAllByItem(InventoryItem item);
 
     List<WarehouseInventory> findByWarehouseStorageLocationId(UUID warehouseStorageLocationId);
-
 }

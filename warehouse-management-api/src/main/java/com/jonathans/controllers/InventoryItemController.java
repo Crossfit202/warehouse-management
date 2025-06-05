@@ -23,14 +23,15 @@ public class InventoryItemController {
         return inventoryItemService.getAllItems();
     }
 
+    @GetMapping("/warehouse/{warehouseId}")
+    public ResponseEntity<List<InventoryItemDTO>> getItemsByWarehouse(@PathVariable UUID warehouseId) {
+        List<InventoryItemDTO> items = inventoryItemService.getItemsByWarehouse(warehouseId);
+        return ResponseEntity.ok(items);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<InventoryItemDTO> getItemById(@PathVariable UUID id) {
         return inventoryItemService.getItemById(id);
-    }
-
-    @GetMapping("/by-warehouse-id")
-    public List<InventoryItemDTO> getItemsByWarehouseId(@RequestParam UUID warehouseId) {
-        return inventoryItemService.getItemsByWarehouseId(warehouseId);
     }
 
     @PostMapping

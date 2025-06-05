@@ -26,22 +26,18 @@ SELECT uuid_generate_v4(), w.id, s.id,
     s.max_capacity
 FROM warehouse w, storage_locations s;
 
--- ✅ Insert Inventory Items assigned to shelf instances (uses warehouse_storage_location_id instead of generic location)
-INSERT INTO inventory_items (id, sku, name, warehouse_storage_location_id, description)
-SELECT uuid_generate_v4(), 'ITEM1001', 'Laptop', wsl.id, 'Dell XPS 15 Laptop'
-FROM warehouse_storage_locations wsl
-WHERE wsl.name = 'Main-LS1'
-UNION ALL
-SELECT uuid_generate_v4(), 'ITEM2002', 'Smartphone', wsl.id, 'iPhone 13 Pro'
-FROM warehouse_storage_locations wsl
-WHERE wsl.name = 'Backup-MS1';
+-- ✅ Insert Inventory Items (NO shelf reference anymore)
+INSERT INTO inventory_items (id, sku, name, description)
+VALUES
+    (uuid_generate_v4(), 'ITEM1001', 'Laptop', 'Dell XPS 15 Laptop'),
+    (uuid_generate_v4(), 'ITEM2002', 'Smartphone', 'iPhone 13 Pro');
 
 -- ✅ Add Inventory Quantities to Warehouse Inventory table WITH STORAGE LOCATION
 INSERT INTO warehouse_inventory (warehouse_inventory_id, warehouse_id, warehouse_storage_location_id, item_id, quantity)
 SELECT 
     uuid_generate_v4(), 
     w.id, 
-    wsl.id,       -- ✅ Link to shelf
+    wsl.id,
     i.id, 
     CASE WHEN i.name = 'Laptop' THEN 100 ELSE 150 END
 FROM warehouse w

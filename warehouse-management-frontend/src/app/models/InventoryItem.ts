@@ -2,45 +2,37 @@ import { StorageLocationsComponent } from "../components/storage-locations/stora
 import { StorageLocation } from "./StorageLocation";
 
 export class InventoryItem {
-    id: string; // is UUID in DB 
+    id: string;
     sku: string;
     name: string;
     description: string;
-    storageLocation: StorageLocation;
-    created_at: string; // LocalDateTime in DB 
-    quantity?: number; // ✅ newly added field
+    storageLocationName: string; // ✅ was: storageLocation: StorageLocation
+    created_at: string;
+    quantity?: number;
 
     constructor(
         id: string,
         sku: string,
         name: string,
         description: string,
-        storageLocation: StorageLocation,
+        storageLocationName: string, // ✅ was: StorageLocation
         created_at: string,
-        quantity?: number // ✅ include in constructor
+        quantity?: number
     ) {
         this.id = id;
         this.sku = sku;
         this.name = name;
         this.description = description;
-        this.storageLocation = storageLocation;
+        this.storageLocationName = storageLocationName;
         this.created_at = created_at;
         this.quantity = quantity;
     }
 
-    // Formatting the date
     public formatCreatedAt(): string {
         if (!this.created_at) return 'N/A';
-
         let cleaned = this.created_at.replace(' ', 'T');
-        cleaned = cleaned.split('.')[0]; // remove microseconds
-
+        cleaned = cleaned.split('.')[0];
         const date = new Date(cleaned);
-        if (isNaN(date.getTime())) {
-            console.warn('Invalid date:', this.created_at);
-            return 'Invalid Date';
-        }
-
-        return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+        return isNaN(date.getTime()) ? 'Invalid Date' : `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
     }
 }

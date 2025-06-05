@@ -21,25 +21,18 @@ public class InventoryItem {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    // 🔄 Changed to match new schema: point to WarehouseStorageLocation, not
-    // StorageLocation
-    @ManyToOne
-    @JoinColumn(name = "warehouse_storage_location_id", referencedColumnName = "id", nullable = true)
-    private WarehouseStorageLocations warehouseStorageLocation;
-
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
     public InventoryItem() {
     }
 
-    public InventoryItem(String sku, String name, String description,
-            WarehouseStorageLocations warehouseStorageLocation) {
+    public InventoryItem(UUID id, String sku, String name, String description, LocalDateTime createdAt) {
+        this.id = id;
         this.sku = sku;
         this.name = name;
         this.description = description;
-        this.warehouseStorageLocation = warehouseStorageLocation;
-        this.createdAt = LocalDateTime.now();
+        this.createdAt = createdAt;
     }
 
     public UUID getId() {
@@ -74,24 +67,18 @@ public class InventoryItem {
         this.description = description;
     }
 
-    public WarehouseStorageLocations getWarehouseStorageLocation() {
-        return warehouseStorageLocation;
-    }
-
-    public void setWarehouseStorageLocation(WarehouseStorageLocations warehouseStorageLocation) {
-        this.warehouseStorageLocation = warehouseStorageLocation;
-    }
-
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
     @Override
     public String toString() {
-        return "InventoryItem [id=" + id + ", sku=" + sku + ", name=" + name +
-                ", description=" + description +
-                ", warehouseStorageLocation="
-                + (warehouseStorageLocation != null ? warehouseStorageLocation.getId() : null) +
-                ", createdAt=" + createdAt + "]";
+        return "InventoryItem [id=" + id + ", sku=" + sku + ", name=" + name + ", description=" + description
+                + ", createdAt=" + createdAt + "]";
     }
+
 }

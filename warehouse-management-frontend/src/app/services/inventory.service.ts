@@ -19,9 +19,10 @@ export class InventoryService {
     }
 
     getInventoryForWarehouse(warehouseId: string): Observable<InventoryItem[]> {
-        const apiUrl = `${this.apiUrl}/by-warehouse-id?warehouseId=${warehouseId}`;
+        const apiUrl = `${this.apiUrl}/warehouse/${warehouseId}`;
         return this.http.get<InventoryItem[]>(apiUrl, { withCredentials: true });
     }
+
 
 
 }
