@@ -27,6 +27,7 @@ export class DashboardComponent implements OnInit {
   openAlertCount: number = 0;
   activeWarehouseCount: number = 0;
   recentMovementCount: number = 0;
+  warehouseCapacity: number = 0;
 
 
   constructor(
@@ -53,8 +54,10 @@ export class DashboardComponent implements OnInit {
       this.activeWarehouseCount = data.length;
 
       if (this.warehouses.length > 0) {
-        this.selectedWarehouse = this.warehouses[0].name;
-        this.selectedWarehouseId = this.warehouses[0].id;
+        const first = this.warehouses[0];
+        this.selectedWarehouse = first.name;
+        this.selectedWarehouseId = first.id;
+        this.warehouseCapacity = first.max_capacity || 0;
         this.loadInventory(this.selectedWarehouseId);
         this.calculateOpenAlerts();
         this.loadRecentMovements(this.selectedWarehouseId);
@@ -69,6 +72,7 @@ export class DashboardComponent implements OnInit {
     const selected = this.warehouses.find(w => w.name === selectedName);
     if (selected) {
       this.selectedWarehouseId = selected.id;
+      this.warehouseCapacity = selected.max_capacity || 0;
       this.loadInventory(this.selectedWarehouseId);
       this.calculateOpenAlerts();
       this.loadRecentMovements(this.selectedWarehouseId);
