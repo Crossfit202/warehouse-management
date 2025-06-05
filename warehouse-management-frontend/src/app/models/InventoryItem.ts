@@ -6,8 +6,9 @@ export class InventoryItem {
     sku: string;
     name: string;
     description: string;
-    storageLocation: StorageLocation
-    created_at: string; //LocalDateTime in DB 
+    storageLocation: StorageLocation;
+    created_at: string; // LocalDateTime in DB 
+    quantity?: number; // ✅ newly added field
 
     constructor(
         id: string,
@@ -16,6 +17,7 @@ export class InventoryItem {
         description: string,
         storageLocation: StorageLocation,
         created_at: string,
+        quantity?: number // ✅ include in constructor
     ) {
         this.id = id;
         this.sku = sku;
@@ -23,9 +25,10 @@ export class InventoryItem {
         this.description = description;
         this.storageLocation = storageLocation;
         this.created_at = created_at;
+        this.quantity = quantity;
     }
 
-    //Formatting the date
+    // Formatting the date
     public formatCreatedAt(): string {
         if (!this.created_at) return 'N/A';
 
@@ -40,7 +43,4 @@ export class InventoryItem {
 
         return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
     }
-
-
-
 }
