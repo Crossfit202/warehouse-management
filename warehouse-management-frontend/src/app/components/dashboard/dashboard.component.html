@@ -60,9 +60,6 @@
         <button class="btn btn-danger w-100">⚠️ Create Alert</button>
       </div>
       <div class="col-md-2">
-        <button class="btn btn-warning w-100">📦 Manage Warehouses</button>
-      </div>
-      <div class="col-md-2">
         <button class="btn btn-info w-100">👤 Assign Users</button>
       </div>
     </div>
@@ -137,6 +134,24 @@
             <td>{{ movement.movementType }}</td>
             <td>{{ movement.userName || 'N/A' }}</td>
             <td>{{ movement.time | date:'short' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <!-- Storage Locations -->
+    <h4>Storage Locations in {{ selectedWarehouse }}</h4>
+    <div class="dashboard-card">
+      <table class="table table-sm table-bordered">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Max Capacity</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let location of storageLocations">
+            <td>{{ location.name }}</td>
+            <td>{{ location.max_capacity }}</td>
           </tr>
         </tbody>
       </table>

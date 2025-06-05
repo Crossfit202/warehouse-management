@@ -8,6 +8,8 @@ import { InventoryService } from '../../services/inventory.service';
 import { InventoryItem } from '../../models/InventoryItem';
 import { InventoryMovement } from '../../models/InventoryMovement';
 import { MovementService } from '../../services/movement.service';
+import { StorageLocation } from '../../models/StorageLocation';
+import { StorageLocationsService } from '../../services/storage-locations.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -23,6 +25,7 @@ export class DashboardComponent implements OnInit {
   selectedWarehouseId: string = '';
   inventoryItems: InventoryItem[] = [];
   recentMovements: InventoryMovement[] = [];
+  storageLocations: StorageLocation[] = [];
   totalQuantity: number = 0;
   openAlertCount: number = 0;
   recentMovementCount: number = 0;
@@ -30,11 +33,13 @@ export class DashboardComponent implements OnInit {
   warehouseLocation: string = '';
 
 
+
   constructor(
     private alertService: AlertService,
     private warehouseService: WarehouseService,
     private inventoryService: InventoryService,
-    private movementService: MovementService
+    private movementService: MovementService,
+    private storageLocationService: StorageLocationsService
   ) { }
 
   ngOnInit(): void {
@@ -58,6 +63,7 @@ export class DashboardComponent implements OnInit {
         this.selectedWarehouseId = first.id;
         this.warehouseCapacity = first.max_capacity || 0;
         this.warehouseLocation = first.location || 'N/A';
+        this.loadStorageLocations(this.selectedWarehouseId);
         this.loadInventory(this.selectedWarehouseId);
         this.calculateOpenAlerts();
         this.loadRecentMovements(this.selectedWarehouseId);
@@ -77,6 +83,7 @@ export class DashboardComponent implements OnInit {
       this.loadInventory(this.selectedWarehouseId);
       this.calculateOpenAlerts();
       this.loadRecentMovements(this.selectedWarehouseId);
+      this.loadStorageLocations(this.selectedWarehouseId);
     }
   }
 
@@ -101,4 +108,9 @@ export class DashboardComponent implements OnInit {
     });
   }
 
+  loadStorageLocations(warehouseId: string): void {
+    this.storageLocationService.getStorageLocationsByWarehouse(warehouseId).subscribe(data => {
+      this.storageLocations = data;
+    });
+  }
 }

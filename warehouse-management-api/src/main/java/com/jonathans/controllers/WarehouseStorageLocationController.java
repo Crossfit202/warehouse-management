@@ -29,7 +29,8 @@ public class WarehouseStorageLocationController {
     }
 
     @PostMapping
-    public ResponseEntity<WarehouseStorageLocationsDTO> createWarehouseStorageLocation(@RequestBody WarehouseStorageLocationsDTO dto) {
+    public ResponseEntity<WarehouseStorageLocationsDTO> createWarehouseStorageLocation(
+            @RequestBody WarehouseStorageLocationsDTO dto) {
         return warehouseStorageLocationService.createWarehouseStorageLocation(dto);
     }
 }

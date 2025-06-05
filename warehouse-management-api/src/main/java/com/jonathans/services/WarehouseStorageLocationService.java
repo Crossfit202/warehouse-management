@@ -1,5 +1,6 @@
 package com.jonathans.services;
 
+import com.jonathans.DTOS.StorageLocationDTO;
 import com.jonathans.DTOS.WarehouseStorageLocationsDTO;
 import com.jonathans.models.StorageLocation;
 import com.jonathans.models.Warehouse;
@@ -23,7 +24,8 @@ public class WarehouseStorageLocationService {
     private final StorageLocationRepository storageLocationRepository;
     private final WarehouseRepository warehouseRepository;
 
-    public WarehouseStorageLocationService(WarehouseStorageLocationsRepository warehouseStorageLocationsRepository, StorageLocationRepository storageLocationRepository, WarehouseRepository warehouseRepository) {
+    public WarehouseStorageLocationService(WarehouseStorageLocationsRepository warehouseStorageLocationsRepository,
+            StorageLocationRepository storageLocationRepository, WarehouseRepository warehouseRepository) {
         this.warehouseStorageLocationsRepository = warehouseStorageLocationsRepository;
         this.storageLocationRepository = storageLocationRepository;
         this.warehouseRepository = warehouseRepository;
@@ -40,7 +42,8 @@ public class WarehouseStorageLocationService {
     }
 
     @Transactional
-    public ResponseEntity<WarehouseStorageLocationsDTO> createWarehouseStorageLocation(WarehouseStorageLocationsDTO dto) {
+    public ResponseEntity<WarehouseStorageLocationsDTO> createWarehouseStorageLocation(
+            WarehouseStorageLocationsDTO dto) {
         Optional<StorageLocation> storageLocationOpt = storageLocationRepository.findById(dto.getStorageLocationId());
         Optional<Warehouse> warehouseOpt = warehouseRepository.findById(dto.getWarehouseId());
 
@@ -48,7 +51,8 @@ public class WarehouseStorageLocationService {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
 
-        WarehouseStorageLocations locations = new WarehouseStorageLocations(warehouseOpt.get(), storageLocationOpt.get());
+        WarehouseStorageLocations locations = new WarehouseStorageLocations(warehouseOpt.get(),
+                storageLocationOpt.get());
         locations = warehouseStorageLocationsRepository.save(locations);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(convertToDTO(locations));
@@ -63,4 +67,15 @@ public class WarehouseStorageLocationService {
                 locations.getWarehouse().getName() // Include warehouse name
         );
     }
+
+    public List<StorageLocationDTO> getStorageLocationsByWarehouseId(UUID warehouseId) {
+        return warehouseStorageLocationsRepository.findByWarehouseId(warehouseId)
+                .stream()
+                .map(link -> {
+                    StorageLocation s = link.getStorageLocation();
+                    return new StorageLocationDTO(s.getId(), s.getName(), s.getMax_capacity());
+                })
+                .toList();
+    }
+
 }

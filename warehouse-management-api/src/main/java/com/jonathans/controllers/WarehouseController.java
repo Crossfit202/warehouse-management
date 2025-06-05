@@ -1,7 +1,10 @@
 package com.jonathans.controllers;
 
+import com.jonathans.DTOS.StorageLocationDTO;
 import com.jonathans.DTOS.WarehouseDTO;
 import com.jonathans.services.WarehouseService;
+import com.jonathans.services.WarehouseStorageLocationService;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,8 +16,11 @@ import java.util.UUID;
 public class WarehouseController {
 
     private final WarehouseService warehouseService;
+    private final WarehouseStorageLocationService warehouseStorageLocationService;
 
-    public WarehouseController(WarehouseService warehouseService) {
+    public WarehouseController(WarehouseService warehouseService,
+            WarehouseStorageLocationService warehouseStorageLocationService) {
+        this.warehouseStorageLocationService = warehouseStorageLocationService;
         this.warehouseService = warehouseService;
     }
 
@@ -28,6 +34,12 @@ public class WarehouseController {
     @GetMapping("/{warehouseId}")
     public ResponseEntity<WarehouseDTO> getWarehouseById(@PathVariable UUID warehouseId) {
         return warehouseService.getWarehouseById(warehouseId);
+    }
+
+    // WarehouseController.java
+    @GetMapping("/{id}/storage-locations")
+    public List<StorageLocationDTO> getStorageLocationsForWarehouse(@PathVariable UUID id) {
+        return warehouseStorageLocationService.getStorageLocationsByWarehouseId(id);
     }
 
     // ✅ CREATE A NEW WAREHOUSE

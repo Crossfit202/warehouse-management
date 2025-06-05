@@ -44,7 +44,8 @@ public class SecurityConfig {
                         .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
                         .requestMatchers("/users", "/users/**", "/inventory", "/inventory/**", "/inventory-items",
                                 "/inventory-items/**", "/storage-locations/**",
-                                "/storage-locations", "/alerts", "/alerts/**", "/movements", "/movements/**")
+                                "/storage-locations", "/alerts", "/alerts/**", "/movements", "/movements/**",
+                                "/warehouses", "/warehouses/**")
                         .hasAnyAuthority("ROLE_USER", "ROLE_ADMIN", "ROLE_MANAGER", "ROLE_INV_CLERK")
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session

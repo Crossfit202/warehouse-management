@@ -48,8 +48,7 @@ public class StorageLocationService {
 
         StorageLocation storageLocation = new StorageLocation(
                 storageLocationDTO.getName(),
-                storageLocationDTO.getMax_capacity()
-        );
+                storageLocationDTO.getMax_capacity());
 
         storageLocation = storageLocationRepository.save(storageLocation);
         return ResponseEntity.status(HttpStatus.CREATED).body(convertToDTO(storageLocation));
@@ -83,6 +82,7 @@ public class StorageLocationService {
 
     // ✅ Convert Entity to DTO
     private StorageLocationDTO convertToDTO(StorageLocation storageLocation) {
-        return new StorageLocationDTO(storageLocation.getId(), storageLocation.getName(), storageLocation.getMax_capacity());
+        return new StorageLocationDTO(storageLocation.getId(), storageLocation.getName(),
+                storageLocation.getMax_capacity());
     }
 }
