@@ -1,8 +1,5 @@
 package com.jonathans.config;
 
-import com.jonathans.filters.JwtFilter;
-import com.jonathans.security.OAuth2LoginSuccessHandler;
-import com.jonathans.services.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -17,6 +14,10 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import com.jonathans.filters.JwtFilter;
+import com.jonathans.security.OAuth2LoginSuccessHandler;
+import com.jonathans.services.CustomUserDetailsService;
 
 @Configuration
 public class SecurityConfig {
@@ -41,7 +42,7 @@ public class SecurityConfig {
                                 "/auth/verify", "/oauth2/**", "/login/**")
                         .permitAll()
                         .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
-                        .requestMatchers("/users", "/users/**", "/inventory", "/inventory/**", "/storage-locations/**",
+                        .requestMatchers("/users", "/users/**", "/inventory", "/inventory/**", "/inventory-items", "/inventory-items/**", "/storage-locations/**",
                                 "/storage-locations", "/alerts", "/alerts/**")
                         .hasAnyAuthority("ROLE_USER", "ROLE_ADMIN", "ROLE_MANAGER", "ROLE_INV_CLERK")
                         .anyRequest().authenticated())

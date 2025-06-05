@@ -27,15 +27,14 @@ public class WarehouseInventory {
     private InventoryItem item;
 
     private int quantity;
-    private int minQuantity;
+    
 
-    public WarehouseInventory(UUID warehouseInventoryId, Warehouse warehouse, InventoryItem item, int quantity,
-            int minQuantity) {
+    public WarehouseInventory(UUID warehouseInventoryId, Warehouse warehouse, InventoryItem item, int quantity
+        ) {
         this.warehouseInventoryId = warehouseInventoryId;
         this.warehouse = warehouse;
         this.item = item;
         this.quantity = quantity;
-        this.minQuantity = minQuantity;
     }
 
     public WarehouseInventory() {
@@ -73,22 +72,18 @@ public class WarehouseInventory {
         this.quantity = quantity;
     }
 
-    public int getMinQuantity() {
-        return minQuantity;
-    }
-
-    public void setMinQuantity(int minQuantity) {
-        this.minQuantity = minQuantity;
-    }
-
     @Override
     public String toString() {
-        return "WarehouseInventory [warehouseInventoryId=" + warehouseInventoryId + ", warehouse=" + warehouse
-                + ", item=" + item + ", quantity=" + quantity + ", minQuantity=" + minQuantity
-                + ", getWarehouseInventoryId()=" + getWarehouseInventoryId() + ", getWarehouse()=" + getWarehouse()
-                + ", getClass()=" + getClass() + ", getItem()=" + getItem() + ", getQuantity()=" + getQuantity()
-                + ", getMinQuantity()=" + getMinQuantity() + ", hashCode()=" + hashCode() + ", toString()="
-                + super.toString() + "]";
+        StringBuilder sb = new StringBuilder();
+        sb.append("WarehouseInventory{");
+        sb.append("warehouseInventoryId=").append(warehouseInventoryId);
+        sb.append(", warehouse=").append(warehouse);
+        sb.append(", item=").append(item);
+        sb.append(", quantity=").append(quantity);
+        sb.append('}');
+        return sb.toString();
     }
+
+
 
 }
