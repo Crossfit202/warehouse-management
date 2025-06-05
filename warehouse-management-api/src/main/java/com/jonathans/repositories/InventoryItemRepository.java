@@ -1,7 +1,8 @@
 package com.jonathans.repositories;
 
 import com.jonathans.models.InventoryItem;
-import com.jonathans.models.StorageLocation;
+import com.jonathans.models.WarehouseStorageLocations;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -12,6 +13,7 @@ import java.util.UUID;
 public interface InventoryItemRepository extends JpaRepository<InventoryItem, UUID> {
     boolean existsBySku(String sku);
 
-    List<InventoryItem> findByStorageLocation(StorageLocation location);
+    // ✅ CORRECT — based on your new model
+    List<InventoryItem> findByWarehouseStorageLocation(WarehouseStorageLocations warehouseLocation);
 
 }

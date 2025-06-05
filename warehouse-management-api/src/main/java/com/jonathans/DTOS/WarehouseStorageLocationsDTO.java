@@ -7,18 +7,28 @@ public class WarehouseStorageLocationsDTO {
     private UUID id;
     private UUID warehouseId;
     private String warehouseName;
-    private UUID storageLocationId;
-    private String storageName;
 
+    private UUID storageLocationTemplateId; // renamed
+    private String templateName; // renamed
 
-    public WarehouseStorageLocationsDTO() {}
+    private String name; // new: instance label (e.g., "Shelf A1")
+    private int maxCapacity; // new
+    private int currentCapacity; // new
 
-    public WarehouseStorageLocationsDTO(UUID id, UUID warehouseId, String warehouseName, UUID storageLocationId, String storageName) {
+    public WarehouseStorageLocationsDTO() {
+    }
+
+    public WarehouseStorageLocationsDTO(UUID id, UUID warehouseId, String warehouseName,
+            UUID storageLocationTemplateId, String templateName,
+            String name, int maxCapacity, int currentCapacity) {
         this.id = id;
         this.warehouseId = warehouseId;
         this.warehouseName = warehouseName;
-        this.storageLocationId = storageLocationId;
-        this.storageName = storageName;
+        this.storageLocationTemplateId = storageLocationTemplateId;
+        this.templateName = templateName;
+        this.name = name;
+        this.maxCapacity = maxCapacity;
+        this.currentCapacity = currentCapacity;
     }
 
     public UUID getId() {
@@ -45,20 +55,43 @@ public class WarehouseStorageLocationsDTO {
         this.warehouseName = warehouseName;
     }
 
-    public UUID getStorageLocationId() {
-        return storageLocationId;
+    public UUID getStorageLocationTemplateId() {
+        return storageLocationTemplateId;
     }
 
-    public void setStorageLocationId(UUID storageLocationId) {
-        this.storageLocationId = storageLocationId;
+    public void setStorageLocationTemplateId(UUID storageLocationTemplateId) {
+        this.storageLocationTemplateId = storageLocationTemplateId;
     }
 
-    public String getStorageName() {
-        return storageName;
+    public String getTemplateName() {
+        return templateName;
     }
 
-    public void setStorageName(String storageName) {
-        this.storageName = storageName;
+    public void setTemplateName(String templateName) {
+        this.templateName = templateName;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getMaxCapacity() {
+        return maxCapacity;
+    }
+
+    public void setMaxCapacity(int maxCapacity) {
+        this.maxCapacity = maxCapacity;
+    }
+
+    public int getCurrentCapacity() {
+        return currentCapacity;
+    }
+
+    public void setCurrentCapacity(int currentCapacity) {
+        this.currentCapacity = currentCapacity;
+    }
 }

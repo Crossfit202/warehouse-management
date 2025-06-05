@@ -23,9 +23,9 @@ CREATE TABLE users (
     username VARCHAR(255) UNIQUE NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
-    role VARCHAR(255) NOT NULL DEFAULT 'USER',  -- Changed ENUM to VARCHAR with default
+    role VARCHAR(255) NOT NULL DEFAULT 'USER',  -- ✅ ENUM removed; now VARCHAR
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-	updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Add index for quick user lookup
@@ -59,18 +59,22 @@ BEFORE UPDATE ON warehouse
 FOR EACH ROW
 EXECUTE FUNCTION update_updated_at_column();
 
--- Storage Locations Table
+-- Storage Locations Table (generic templates like "Large Shelf")
 CREATE TABLE storage_locations (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name VARCHAR(255) UNIQUE NOT NULL,
     max_capacity INT CHECK (max_capacity > 0)
 );
 
--- Warehouse Storage Locations (Many-to-Many)
+-- Warehouse Storage Locations (INSTANCE of a template per warehouse)
+-- ✅ CHANGED: this is now a true entity, not just a join table
 CREATE TABLE warehouse_storage_locations (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     warehouse_id UUID REFERENCES warehouse(id) ON DELETE CASCADE,
-    storage_location_id UUID REFERENCES storage_locations(id) ON DELETE CASCADE
+    storage_location_template_id UUID REFERENCES storage_locations(id) ON DELETE CASCADE,  -- ✅ Renamed column
+    name VARCHAR(255) NOT NULL,  -- ✅ e.g., "Large Shelf A1"
+    max_capacity INT CHECK (max_capacity >= 0),  -- ✅ Optional: override capacity
+    current_capacity INT DEFAULT 0               -- ✅ Optional: track live usage
 );
 
 -- Inventory Items Table
@@ -78,7 +82,7 @@ CREATE TABLE inventory_items (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     sku VARCHAR(50) UNIQUE NOT NULL,
     name VARCHAR(255) NOT NULL,
-    storage_location UUID REFERENCES storage_locations(id) ON DELETE SET NULL,
+    warehouse_storage_location_id UUID REFERENCES warehouse_storage_locations(id) ON DELETE SET NULL,  -- ✅ CHANGED to point to shelf instance
     description TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -90,9 +94,10 @@ CREATE INDEX idx_inventory_items_sku ON inventory_items(sku);
 CREATE TABLE warehouse_inventory (
     warehouse_inventory_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     warehouse_id UUID REFERENCES warehouse(id) ON DELETE CASCADE,
+    warehouse_storage_location_id UUID REFERENCES warehouse_storage_locations(id) ON DELETE CASCADE,
     item_id UUID REFERENCES inventory_items(id) ON DELETE CASCADE,
     quantity INT NOT NULL CHECK (quantity >= 0),
-    UNIQUE (warehouse_id, item_id) -- Prevents duplicate warehouse-item entries
+    UNIQUE (warehouse_id, item_id)
 );
 
 -- Inventory Movement Log (movement_type as VARCHAR)
@@ -102,7 +107,7 @@ CREATE TABLE inventory_movement (
     from_warehouse UUID REFERENCES warehouse(id) ON DELETE SET NULL,
     to_warehouse UUID REFERENCES warehouse(id) ON DELETE SET NULL,
     quantity INT NOT NULL CHECK (quantity > 0),
-    movement_type VARCHAR(255) NOT NULL, -- Changed ENUM to VARCHAR
+    movement_type VARCHAR(255) NOT NULL, -- ✅ ENUM removed; now VARCHAR
     time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     user_id UUID REFERENCES users(id) ON DELETE SET NULL
 );
@@ -112,7 +117,7 @@ CREATE TABLE warehouse_personnel (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     user_id UUID REFERENCES users(id) ON DELETE CASCADE,
     warehouse_id UUID REFERENCES warehouse(id) ON DELETE CASCADE,
-    status VARCHAR(255) DEFAULT 'ACTIVE' -- Changed ENUM to VARCHAR
+    status VARCHAR(255) DEFAULT 'ACTIVE' -- ✅ ENUM removed; now VARCHAR
 );
 
 -- Add indexes for warehouse personnel relationships
@@ -124,6 +129,6 @@ CREATE TABLE alerts (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     warehouse_id UUID REFERENCES warehouse(id) ON DELETE CASCADE,
     message TEXT NOT NULL,
-    status VARCHAR(255) DEFAULT 'NEW', -- Changed ENUM to VARCHAR
+    status VARCHAR(255) DEFAULT 'NEW', -- ✅ ENUM removed; now VARCHAR
     time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

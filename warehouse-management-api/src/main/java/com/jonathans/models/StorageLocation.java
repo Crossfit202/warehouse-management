@@ -1,7 +1,6 @@
 package com.jonathans.models;
 
 import jakarta.persistence.*;
-import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -17,9 +16,6 @@ public class StorageLocation {
 
     @Column(nullable = false)
     private int max_capacity;
-
-    @OneToMany(mappedBy = "storageLocation", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<InventoryItem> inventoryItems;
 
     public StorageLocation() {
     }
@@ -51,14 +47,6 @@ public class StorageLocation {
 
     public void setMax_capacity(int max_capacity) {
         this.max_capacity = max_capacity;
-    }
-
-    public List<InventoryItem> getInventoryItems() {
-        return inventoryItems;
-    }
-
-    public void setInventoryItems(List<InventoryItem> inventoryItems) {
-        this.inventoryItems = inventoryItems;
     }
 
     @Override

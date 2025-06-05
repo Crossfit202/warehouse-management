@@ -2,12 +2,16 @@ package com.jonathans.services;
 
 import com.jonathans.DTOS.InventoryItemDTO;
 import com.jonathans.models.InventoryItem;
-import com.jonathans.models.StorageLocation;
+import com.jonathans.models.Warehouse;
 import com.jonathans.models.WarehouseInventory;
+import com.jonathans.models.WarehouseStorageLocations;
 import com.jonathans.repositories.InventoryItemRepository;
 import com.jonathans.repositories.StorageLocationRepository;
 import com.jonathans.repositories.WarehouseInventoryRepository;
+import com.jonathans.repositories.WarehouseStorageLocationsRepository;
+import com.jonathans.repositories.WarehouseRepository;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,16 +26,20 @@ import java.util.stream.Collectors;
 public class InventoryItemService {
 
     private final InventoryItemRepository inventoryItemRepository;
-    private final StorageLocationRepository storageLocationRepository;
     private final WarehouseInventoryRepository warehouseInventoryRepository;
+    private final WarehouseStorageLocationsRepository warehouseStorageLocationsRepository;
+    private final WarehouseRepository warehouseRepository;
 
     public InventoryItemService(
             InventoryItemRepository inventoryItemRepository,
             StorageLocationRepository storageLocationRepository,
-            WarehouseInventoryRepository warehouseInventoryRepository) {
+            WarehouseInventoryRepository warehouseInventoryRepository,
+            WarehouseStorageLocationsRepository warehouseStorageLocationsRepository,
+            WarehouseRepository warehouseRepository) {
         this.inventoryItemRepository = inventoryItemRepository;
-        this.storageLocationRepository = storageLocationRepository;
         this.warehouseInventoryRepository = warehouseInventoryRepository;
+        this.warehouseStorageLocationsRepository = warehouseStorageLocationsRepository;
+        this.warehouseRepository = warehouseRepository;
     }
 
     public List<InventoryItemDTO> getAllItems() {
@@ -50,18 +58,21 @@ public class InventoryItemService {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
         }
 
-        StorageLocation storageLocation = null;
+        WarehouseStorageLocations warehouseStorageLocation = null;
         if (itemDTO.getStorageLocationId() != null) {
-            Optional<StorageLocation> locationOpt = storageLocationRepository.findById(itemDTO.getStorageLocationId());
+            Optional<WarehouseStorageLocations> locationOpt = warehouseStorageLocationsRepository
+                    .findById(itemDTO.getStorageLocationId());
             if (locationOpt.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
             }
-            storageLocation = locationOpt.get();
+            warehouseStorageLocation = locationOpt.get();
         }
 
-        InventoryItem item = new InventoryItem(itemDTO.getSku(), itemDTO.getName(), itemDTO.getDescription(),
-                storageLocation);
-        item = inventoryItemRepository.save(item);
+        InventoryItem item = new InventoryItem(
+                itemDTO.getSku(),
+                itemDTO.getName(),
+                itemDTO.getDescription(),
+                warehouseStorageLocation);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(convertToDTO(item));
     }
@@ -74,9 +85,10 @@ public class InventoryItemService {
             existingItem.setDescription(itemDTO.getDescription());
 
             if (itemDTO.getStorageLocationId() != null) {
-                Optional<StorageLocation> locationOpt = storageLocationRepository
+                Optional<WarehouseStorageLocations> locationOpt = warehouseStorageLocationsRepository
                         .findById(itemDTO.getStorageLocationId());
-                locationOpt.ifPresent(existingItem::setStorageLocation);
+                locationOpt.ifPresent(existingItem::setWarehouseStorageLocation);
+
             }
 
             inventoryItemRepository.save(existingItem);
@@ -98,13 +110,17 @@ public class InventoryItemService {
                 item.getSku(),
                 item.getName(),
                 item.getDescription(),
-                item.getStorageLocation() != null ? item.getStorageLocation().getId() : null,
+                item.getWarehouseStorageLocation() != null ? item.getWarehouseStorageLocation().getId() : null,
                 null // quantity is unknown in this context
         );
     }
 
     public List<InventoryItemDTO> getItemsByWarehouseId(UUID warehouseId) {
-        List<WarehouseInventory> entries = warehouseInventoryRepository.findByWarehouseId(warehouseId);
+        Warehouse warehouse = warehouseRepository.findById(warehouseId)
+                .orElseThrow(() -> new EntityNotFoundException("Warehouse not found with ID: " + warehouseId));
+
+        List<WarehouseInventory> entries = warehouseInventoryRepository
+                .findByWarehouseStorageLocation_Warehouse(warehouse);
 
         return entries.stream()
                 .map(entry -> new InventoryItemDTO(
@@ -112,7 +128,8 @@ public class InventoryItemService {
                         entry.getItem().getSku(),
                         entry.getItem().getName(),
                         entry.getItem().getDescription(),
-                        entry.getItem().getStorageLocation() != null ? entry.getItem().getStorageLocation().getId()
+                        entry.getItem().getWarehouseStorageLocation() != null
+                                ? entry.getItem().getWarehouseStorageLocation().getId()
                                 : null,
                         entry.getQuantity()))
                 .collect(Collectors.toList());

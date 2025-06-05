@@ -16,14 +16,37 @@ public class WarehouseStorageLocations {
     private Warehouse warehouse;
 
     @ManyToOne
-    @JoinColumn(name = "storage_location_id", nullable = false)
-    private StorageLocation storageLocation;
+    @JoinColumn(name = "storage_location_template_id", nullable = false)
+    private StorageLocation storageLocationTemplate;
 
-    public WarehouseStorageLocations() {}
+    @Column(name = "name", nullable = false)
+    private String name; // Renamed from 'label' to match DB
 
-    public WarehouseStorageLocations(Warehouse warehouse, StorageLocation storageLocation) {
+    @Column(name = "max_capacity")
+    private int maxCapacity;
+
+    @Column(name = "current_capacity")
+    private int currentCapacity = 0;
+
+    public WarehouseStorageLocations() {
+    }
+
+    public WarehouseStorageLocations(Warehouse warehouse, StorageLocation storageLocationTemplate, String name,
+            int maxCapacity) {
         this.warehouse = warehouse;
-        this.storageLocation = storageLocation;
+        this.storageLocationTemplate = storageLocationTemplate;
+        this.name = name;
+        this.maxCapacity = maxCapacity;
+        this.currentCapacity = 0;
+    }
+
+    public WarehouseStorageLocations(Warehouse warehouse, StorageLocation storageLocation, String name, int maxCapacity,
+            int currentCapacity) {
+        this.warehouse = warehouse;
+        this.storageLocationTemplate = storageLocation;
+        this.name = name;
+        this.maxCapacity = maxCapacity;
+        this.currentCapacity = currentCapacity;
     }
 
     public UUID getId() {
@@ -42,12 +65,35 @@ public class WarehouseStorageLocations {
         this.warehouse = warehouse;
     }
 
-    public StorageLocation getStorageLocation() {
-        return storageLocation;
+    public StorageLocation getStorageLocationTemplate() {
+        return storageLocationTemplate;
     }
 
-    public void setStorageLocation(StorageLocation storageLocation) {
-        this.storageLocation = storageLocation;
+    public void setStorageLocationTemplate(StorageLocation storageLocationTemplate) {
+        this.storageLocationTemplate = storageLocationTemplate;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getMaxCapacity() {
+        return maxCapacity;
+    }
+
+    public void setMaxCapacity(int maxCapacity) {
+        this.maxCapacity = maxCapacity;
+    }
+
+    public int getCurrentCapacity() {
+        return currentCapacity;
+    }
+
+    public void setCurrentCapacity(int currentCapacity) {
+        this.currentCapacity = currentCapacity;
+    }
 }

@@ -21,44 +21,77 @@ public class InventoryItem {
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    // 🔄 Changed to match new schema: point to WarehouseStorageLocation, not
+    // StorageLocation
     @ManyToOne
-    @JoinColumn(name = "storage_location", referencedColumnName = "id", nullable = true)
-    private StorageLocation storageLocation;
+    @JoinColumn(name = "warehouse_storage_location_id", referencedColumnName = "id", nullable = true)
+    private WarehouseStorageLocations warehouseStorageLocation;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    public InventoryItem() {}
+    public InventoryItem() {
+    }
 
-    public InventoryItem(String sku, String name, String description, StorageLocation storageLocation) {
+    public InventoryItem(String sku, String name, String description,
+            WarehouseStorageLocations warehouseStorageLocation) {
         this.sku = sku;
         this.name = name;
         this.description = description;
-        this.storageLocation = storageLocation;
+        this.warehouseStorageLocation = warehouseStorageLocation;
         this.createdAt = LocalDateTime.now();
     }
 
-    public UUID getId() { return id; }
-    public void setId(UUID id) { this.id = id; }
+    public UUID getId() {
+        return id;
+    }
 
-    public String getSku() { return sku; }
-    public void setSku(String sku) { this.sku = sku; }
+    public void setId(UUID id) {
+        this.id = id;
+    }
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public String getSku() {
+        return sku;
+    }
 
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
+    public void setSku(String sku) {
+        this.sku = sku;
+    }
 
-    public StorageLocation getStorageLocation() { return storageLocation; }
-    public void setStorageLocation(StorageLocation storageLocation) { this.storageLocation = storageLocation; }
+    public String getName() {
+        return name;
+    }
 
-    public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public WarehouseStorageLocations getWarehouseStorageLocation() {
+        return warehouseStorageLocation;
+    }
+
+    public void setWarehouseStorageLocation(WarehouseStorageLocations warehouseStorageLocation) {
+        this.warehouseStorageLocation = warehouseStorageLocation;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
 
     @Override
     public String toString() {
-        return "InventoryItem [id=" + id + ", sku=" + sku + ", name=" + name + 
-               ", description=" + description + ", storageLocation=" + (storageLocation != null ? storageLocation.getId() : null) +
-               ", createdAt=" + createdAt + "]";
+        return "InventoryItem [id=" + id + ", sku=" + sku + ", name=" + name +
+                ", description=" + description +
+                ", warehouseStorageLocation="
+                + (warehouseStorageLocation != null ? warehouseStorageLocation.getId() : null) +
+                ", createdAt=" + createdAt + "]";
     }
 }

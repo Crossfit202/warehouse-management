@@ -1,14 +1,7 @@
 package com.jonathans.models;
 
+import jakarta.persistence.*;
 import java.util.UUID;
-
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "warehouse_inventory")
@@ -18,26 +11,26 @@ public class WarehouseInventory {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID warehouseInventoryId;
 
+    // 🔄 NEW: Each inventory record is linked to a warehouse storage location
     @ManyToOne
-    @JoinColumn(name = "warehouse_id")
-    private Warehouse warehouse;
+    @JoinColumn(name = "warehouse_storage_location_id", nullable = false)
+    private WarehouseStorageLocations warehouseStorageLocation;
 
     @ManyToOne
-    @JoinColumn(name = "item_id")
+    @JoinColumn(name = "item_id", nullable = false)
     private InventoryItem item;
 
     private int quantity;
-    
-
-    public WarehouseInventory(UUID warehouseInventoryId, Warehouse warehouse, InventoryItem item, int quantity
-        ) {
-        this.warehouseInventoryId = warehouseInventoryId;
-        this.warehouse = warehouse;
-        this.item = item;
-        this.quantity = quantity;
-    }
 
     public WarehouseInventory() {
+    }
+
+    public WarehouseInventory(UUID warehouseInventoryId, WarehouseStorageLocations warehouseStorageLocation,
+            InventoryItem item, int quantity) {
+        this.warehouseInventoryId = warehouseInventoryId;
+        this.warehouseStorageLocation = warehouseStorageLocation;
+        this.item = item;
+        this.quantity = quantity;
     }
 
     public UUID getWarehouseInventoryId() {
@@ -48,12 +41,12 @@ public class WarehouseInventory {
         this.warehouseInventoryId = warehouseInventoryId;
     }
 
-    public Warehouse getWarehouse() {
-        return warehouse;
+    public WarehouseStorageLocations getWarehouseStorageLocation() {
+        return warehouseStorageLocation;
     }
 
-    public void setWarehouse(Warehouse warehouse) {
-        this.warehouse = warehouse;
+    public void setWarehouseStorageLocation(WarehouseStorageLocations warehouseStorageLocation) {
+        this.warehouseStorageLocation = warehouseStorageLocation;
     }
 
     public InventoryItem getItem() {
@@ -74,16 +67,12 @@ public class WarehouseInventory {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("WarehouseInventory{");
-        sb.append("warehouseInventoryId=").append(warehouseInventoryId);
-        sb.append(", warehouse=").append(warehouse);
-        sb.append(", item=").append(item);
-        sb.append(", quantity=").append(quantity);
-        sb.append('}');
-        return sb.toString();
+        return "WarehouseInventory{" +
+                "warehouseInventoryId=" + warehouseInventoryId +
+                ", warehouseStorageLocation="
+                + (warehouseStorageLocation != null ? warehouseStorageLocation.getId() : null) +
+                ", item=" + (item != null ? item.getId() : null) +
+                ", quantity=" + quantity +
+                '}';
     }
-
-
-
 }

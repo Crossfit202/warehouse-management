@@ -11,4 +11,10 @@ public interface WarehouseStorageLocationsRepository extends JpaRepository<Wareh
 
     @Query("SELECT wsl FROM WarehouseStorageLocations wsl WHERE wsl.warehouse.id = :warehouseId")
     List<WarehouseStorageLocations> findByWarehouseId(@Param("warehouseId") UUID warehouseId);
+
+    @Query("SELECT wsl FROM WarehouseStorageLocations wsl WHERE wsl.name = :name")
+    List<WarehouseStorageLocations> findByName(@Param("name") String name);
+
+    @Query("SELECT wsl FROM WarehouseStorageLocations wsl WHERE wsl.maxCapacity = :maxCapacity")
+    List<WarehouseStorageLocations> findByMaxCapacity(@Param("maxCapacity") int maxCapacity);
 }
