@@ -16,4 +16,9 @@ export class WarehouseService {
   getAllWarehouses(): Observable<Warehouse[]> {
     return this.http.get<Warehouse[]>(this.apiUrl, { withCredentials: true });
   }
+
+  getStorageLocationsForWarehouse(warehouseId: string): Observable<any[]> {
+    return this.http.get<any[]>(`http://localhost:8083/warehouses/${warehouseId}/storage-locations`, { withCredentials: true });
+  }
+
 }

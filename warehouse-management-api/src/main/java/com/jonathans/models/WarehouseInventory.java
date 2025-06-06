@@ -11,7 +11,6 @@ public class WarehouseInventory {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID warehouseInventoryId;
 
-    // 🔄 NEW: Each inventory record is linked to a warehouse storage location
     @ManyToOne
     @JoinColumn(name = "warehouse_storage_location_id", nullable = false)
     private WarehouseStorageLocations warehouseStorageLocation;
@@ -22,15 +21,19 @@ public class WarehouseInventory {
 
     private int quantity;
 
+    @Column(name = "min_quantity", nullable = false)
+    private int minQuantity;
+
     public WarehouseInventory() {
     }
 
     public WarehouseInventory(UUID warehouseInventoryId, WarehouseStorageLocations warehouseStorageLocation,
-            InventoryItem item, int quantity) {
+            InventoryItem item, int quantity, int minQuantity) {
         this.warehouseInventoryId = warehouseInventoryId;
         this.warehouseStorageLocation = warehouseStorageLocation;
         this.item = item;
         this.quantity = quantity;
+        this.minQuantity = minQuantity;
     }
 
     public UUID getWarehouseInventoryId() {
@@ -65,6 +68,14 @@ public class WarehouseInventory {
         this.quantity = quantity;
     }
 
+    public int getMinQuantity() {
+        return minQuantity;
+    }
+
+    public void setMinQuantity(int minQuantity) {
+        this.minQuantity = minQuantity;
+    }
+
     @Override
     public String toString() {
         return "WarehouseInventory{" +
@@ -73,6 +84,7 @@ public class WarehouseInventory {
                 + (warehouseStorageLocation != null ? warehouseStorageLocation.getId() : null) +
                 ", item=" + (item != null ? item.getId() : null) +
                 ", quantity=" + quantity +
+                ", minQuantity=" + minQuantity +
                 '}';
     }
 }

@@ -1,6 +1,7 @@
 package com.jonathans.repositories;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import com.jonathans.models.InventoryItem;
 import com.jonathans.models.Warehouse;
@@ -18,4 +19,8 @@ public interface WarehouseInventoryRepository extends JpaRepository<WarehouseInv
     List<WarehouseInventory> findAllByItem(InventoryItem item);
 
     List<WarehouseInventory> findByWarehouseStorageLocationId(UUID warehouseStorageLocationId);
+
+    Optional<WarehouseInventory> findByWarehouseStorageLocation_Warehouse_IdAndItem_IdAndWarehouseStorageLocation_Id(
+            UUID warehouseId, UUID itemId, UUID warehouseStorageLocationId);
+
 }

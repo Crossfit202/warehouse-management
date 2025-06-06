@@ -5,12 +5,11 @@ import { Alert } from '../../models/Alert';
 import { WarehouseService } from '../../services/warehouse.service';
 import { Warehouse } from '../../models/Warehouse';
 import { InventoryService } from '../../services/inventory.service';
-import { InventoryItem } from '../../models/InventoryItem';
 import { InventoryMovement } from '../../models/InventoryMovement';
 import { MovementService } from '../../services/movement.service';
-import { StorageLocation } from '../../models/StorageLocation';
 import { StorageLocationsService } from '../../services/storage-locations.service';
 import { StorageLocationCapacity } from '../../models/StorageLocationCapacity';
+import { WarehouseInventory } from '../../models/WarehouseInventory';
 
 
 @Component({
@@ -25,7 +24,7 @@ export class DashboardComponent implements OnInit {
   warehouses: Warehouse[] = [];
   selectedWarehouse: string = '';
   selectedWarehouseId: string = '';
-  inventoryItems: InventoryItem[] = [];
+  inventoryItems: WarehouseInventory[] = [];
   recentMovements: InventoryMovement[] = [];
   storageLocations: StorageLocationCapacity[] = [];
   totalQuantity: number = 0;
@@ -45,13 +44,13 @@ export class DashboardComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.loadAlerts();
     this.loadWarehouses();
   }
 
   loadAlerts(): void {
     this.alertService.getAllAlerts().subscribe(data => {
       this.alerts = data;
+      this.calculateOpenAlerts();
     });
   }
 
@@ -66,8 +65,8 @@ export class DashboardComponent implements OnInit {
         this.warehouseCapacity = first.max_capacity || 0;
         this.warehouseLocation = first.location || 'N/A';
         this.loadStorageLocations(this.selectedWarehouseId);
+        this.loadAlerts();
         this.loadInventory(this.selectedWarehouseId);
-        this.calculateOpenAlerts();
         this.loadRecentMovements(this.selectedWarehouseId);
       }
     });
@@ -83,7 +82,7 @@ export class DashboardComponent implements OnInit {
       this.warehouseCapacity = selected.max_capacity || 0;
       this.warehouseLocation = selected.location || 'N/A';
       this.loadInventory(this.selectedWarehouseId);
-      this.calculateOpenAlerts();
+      this.loadAlerts();
       this.loadRecentMovements(this.selectedWarehouseId);
       this.loadStorageLocations(this.selectedWarehouseId);
     }
@@ -91,10 +90,11 @@ export class DashboardComponent implements OnInit {
 
   loadInventory(warehouseId: string): void {
     this.inventoryService.getInventoryForWarehouse(warehouseId).subscribe(data => {
-      this.inventoryItems = data;
+      this.inventoryItems = data; // ✅ WarehouseInventory[] is directly assigned
       this.totalQuantity = data.reduce((sum, item) => sum + (item.quantity || 0), 0);
     });
   }
+
 
   calculateOpenAlerts(): void {
     this.openAlertCount = this.alerts.filter(

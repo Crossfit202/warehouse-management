@@ -47,7 +47,11 @@ public class AuthController {
                         .build();
 
                 response.addHeader("Set-Cookie", cookie.toString());
-                return ResponseEntity.ok(Map.of("message", "Login successful!", "username", username));
+                return ResponseEntity.ok(Map.of(
+                    "message", "Login successful!",
+                    "username", username,
+                    "userId", user.getId() // <-- Add this line
+                ));
             }
             return result;
         } catch (Exception e) {

@@ -73,10 +73,14 @@
             <ul>
               <li></li>
               <li>
+                <span [ngClass]="{
+                  'text-danger': alert.status === 'NEW',
+                  'text-success': alert.status === 'CLOSED',
+                  'text-primary': alert.status === 'ACTIVE'
+                }">
+                  {{ alert.status }}
+                </span>
                 {{ alert.message }}
-                <span class="badge-{{ alert.status }}">{{
-                  alert.status
-                  }}</span>
               </li>
             </ul>
           </li>
@@ -92,15 +96,13 @@
           <tr>
             <th>SKU</th>
             <th>Name</th>
-            <th>Description</th>
             <th>Quantity</th>
           </tr>
         </thead>
         <tbody>
           <tr *ngFor="let item of inventoryItems">
-            <td>{{ item.sku }}</td>
-            <td>{{ item.name }}</td>
-            <td>{{ item.description }}</td>
+            <td>{{ item.itemSku }}</td>
+            <td>{{ item.itemName }}</td>
             <td>{{ item.quantity }}</td>
           </tr>
         </tbody>

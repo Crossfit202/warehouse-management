@@ -1,12 +1,13 @@
-import { StorageLocationsComponent } from "../components/storage-locations/storage-locations.component";
-import { StorageLocation } from "./StorageLocation";
-
 export class InventoryItem {
     id: string;
+    itemId: string; // ✅ NEW: For move operation
+    warehouseId: string; // ✅ NEW
+    storageLocationId: string; // ✅ NEW
+
     sku: string;
     name: string;
     description: string;
-    storageLocationName: string; // ✅ was: storageLocation: StorageLocation
+    storageLocationName: string;
     created_at: string;
     quantity?: number;
 
@@ -15,11 +16,18 @@ export class InventoryItem {
         sku: string,
         name: string,
         description: string,
-        storageLocationName: string, // ✅ was: StorageLocation
+        storageLocationName: string,
         created_at: string,
-        quantity?: number
+        quantity?: number,
+        itemId?: string,
+        warehouseId?: string,
+        storageLocationId?: string
     ) {
         this.id = id;
+        this.itemId = itemId ?? id; // fallback if needed
+        this.warehouseId = warehouseId ?? '';
+        this.storageLocationId = storageLocationId ?? '';
+
         this.sku = sku;
         this.name = name;
         this.description = description;

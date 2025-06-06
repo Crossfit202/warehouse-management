@@ -1,20 +1,88 @@
 <div class="content">
-    <h1>INVENTORY</h1>
+    <h1>Inventory Management</h1>
 
-    <select (change)="onSelect($event)">
+    <!-- Warehouse Selector -->
+    <label for="warehouseSelect"><strong>Select Warehouse:</strong></label>
+    <select id="warehouseSelect" (change)="onSelect($event)">
         <option *ngFor="let warehouse of warehouses" [value]="warehouse.id">
-            {{ warehouse.name }}
+            {{ warehouse.name || warehouse.id }}
         </option>
     </select>
-    <ul>
-        <li *ngFor="let item of inventory">
-            <strong>{{ item.name }}</strong>
-            <ul>
-                <li>SKU: {{ item.sku }}</li>
-                <li>Description: {{ item.description }}</li>
-                <li>Storage Location: {{ item.storageLocationName }}</li>
-                <li>Quantity: {{ item.quantity }}</li>
-            </ul>
-        </li>
-    </ul>
+
+    <!-- Inventory Table -->
+    <table>
+        <thead>
+            <tr>
+                <th>Item</th>
+                <th>Storage Location</th>
+                <th>Quantity</th>
+                <th>Min Quantity</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let item of inventory">
+                <td>{{ item.itemName || item.itemId }}</td>
+                <td>{{ item.storageLocationName || item.storageLocationId }}</td>
+                <td [ngStyle]="{ color: item.quantity < item.minQuantity ? 'red' : 'black' }">
+                    {{ item.quantity }}
+                </td>
+                <td>{{ item.minQuantity }}</td>
+                <td>
+                    <span *ngIf="item.quantity < item.minQuantity" style="color: red;" title="Reorder needed">
+                        🔴 Below Minimum
+                    </span>
+                    <span *ngIf="item.quantity >= item.minQuantity" style="color: green;" title="Stock sufficient">
+                        ✅ OK
+                    </span>
+                </td>
+                <td>
+                    <button (click)="openMoveModal(item)">Move</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Move Modal -->
+    <div *ngIf="showMoveModal" class="modal">
+        <div class="modal-content">
+            <h3>Move Inventory</h3>
+
+            <p><strong>Item:</strong> {{ selectedItem?.itemName || selectedItem?.itemId }}</p>
+            <p><strong>From Warehouse:</strong> {{ getWarehouseNameById(selectedItem?.warehouseId) }}</p>
+
+            <p><strong>From Location:</strong> {{ selectedItem?.storageLocationName || selectedItem?.storageLocationId
+                }}</p>
+            <p><strong>Available Quantity:</strong> {{ selectedItem?.quantity }}</p>
+
+            <!-- To Warehouse -->
+            <label for="toWarehouse"><strong>To Warehouse:</strong></label>
+            <select id="toWarehouse" [(ngModel)]="moveToWarehouseId" (change)="onToWarehouseChange()">
+                <option value="" disabled>Select warehouse</option>
+                <option *ngFor="let warehouse of warehouses" [value]="warehouse.id">
+                    {{ warehouse.name || warehouse.id }}
+                </option>
+            </select>
+
+            <!-- To Location -->
+            <label for="toLocation"><strong>To Location:</strong></label>
+            <select id="toLocation" [(ngModel)]="moveToLocationId">
+                <option value="" disabled>Select location</option>
+                <option *ngFor="let location of availableToLocations" [value]="location.id">
+                    {{ location.name || location.id }}
+                </option>
+            </select>
+
+            <!-- Quantity Input -->
+            <label for="moveQty"><strong>Quantity to Move:</strong></label>
+            <input type="number" id="moveQty" [(ngModel)]="moveQuantity" min="1" [max]="selectedItem?.quantity ?? 1" />
+
+            <!-- Action Buttons -->
+            <div class="modal-actions">
+                <button (click)="confirmMove()">Confirm</button>
+                <button (click)="closeMoveModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
 </div>

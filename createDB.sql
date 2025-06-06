@@ -97,7 +97,8 @@ CREATE TABLE warehouse_inventory (
     warehouse_storage_location_id UUID REFERENCES warehouse_storage_locations(id) ON DELETE CASCADE,
     item_id UUID REFERENCES inventory_items(id) ON DELETE CASCADE,
     quantity INT NOT NULL CHECK (quantity >= 0),
-    UNIQUE (warehouse_id, item_id)
+    min_quantity INT DEFAULT 0,  -- ✅ NEW: Minimum threshold for alerting/monitoring
+    UNIQUE (warehouse_id, item_id, warehouse_storage_location_id)
 );
 
 -- Inventory Movement Log (movement_type as VARCHAR)
@@ -106,8 +107,10 @@ CREATE TABLE inventory_movement (
     item_id UUID REFERENCES inventory_items(id) ON DELETE CASCADE,
     from_warehouse UUID REFERENCES warehouse(id) ON DELETE SET NULL,
     to_warehouse UUID REFERENCES warehouse(id) ON DELETE SET NULL,
+    from_location_id UUID REFERENCES warehouse_storage_locations(id) ON DELETE SET NULL, -- NEW
+    to_location_id UUID REFERENCES warehouse_storage_locations(id) ON DELETE SET NULL,   -- NEW
     quantity INT NOT NULL CHECK (quantity > 0),
-    movement_type VARCHAR(255) NOT NULL, -- ✅ ENUM removed; now VARCHAR
+    movement_type VARCHAR(255) NOT NULL,
     time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     user_id UUID REFERENCES users(id) ON DELETE SET NULL
 );

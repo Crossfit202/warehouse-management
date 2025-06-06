@@ -1,28 +1,23 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { InventoryItem } from '../models/InventoryItem';
-
+import { WarehouseInventory } from '../models/WarehouseInventory';
+import { MoveInventoryDTO } from '../models/MoveInventoryDTO'; // ✅ Use imported version only
 
 @Injectable({
     providedIn: 'root'
 })
 export class InventoryService {
-
-    private apiUrl = 'http://localhost:8083/inventory-items'
+    private apiUrl = 'http://localhost:8083/warehouse-inventory';
 
     constructor(private http: HttpClient) { }
 
-    //GET ALL WAREHOUSES
-    getAllInventory(): Observable<InventoryItem[]> {
-        return this.http.get<InventoryItem[]>(this.apiUrl, { withCredentials: true });
+    getInventoryForWarehouse(warehouseId: string): Observable<WarehouseInventory[]> {
+        return this.http.get<WarehouseInventory[]>(`${this.apiUrl}/by-warehouse/${warehouseId}`, { withCredentials: true });
     }
 
-    getInventoryForWarehouse(warehouseId: string): Observable<InventoryItem[]> {
-        const apiUrl = `${this.apiUrl}/warehouse/${warehouseId}`;
-        return this.http.get<InventoryItem[]>(apiUrl, { withCredentials: true });
+    moveInventory(dto: MoveInventoryDTO): Observable<any> {
+        return this.http.post(`${this.apiUrl}/move`, dto, { withCredentials: true });
     }
-
-
 
 }

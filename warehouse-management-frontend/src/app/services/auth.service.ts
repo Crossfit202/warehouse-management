@@ -25,8 +25,13 @@ export class AuthService {
       .pipe(
         tap(response => {
           console.log('Login successful:', response);
-          this.authStatus.next(true); // ✅ Signal login
+          this.authStatus.next(true);
           localStorage.setItem('username', username);
+          if (response?.userId) {
+            localStorage.setItem('userId', response.userId); // ✅ Save userId from backend response
+          } else if (response?.id) {
+            localStorage.setItem('userId', response.id); // ✅ Save userId from backend response
+          }
         }),
         catchError(error => {
           console.error('Login failed:', error);
@@ -35,6 +40,7 @@ export class AuthService {
         })
       );
   }
+
 
 
   // ✅ Logout
@@ -46,6 +52,9 @@ export class AuthService {
       next: () => {
         console.log('Logout successful');
         this.isAuthenticated = false;
+        localStorage.removeItem('userId');
+        localStorage.removeItem('username');
+
         this.router.navigate(['/login']);
       },
       error: (error) => {
@@ -111,6 +120,12 @@ export class AuthService {
         return of(false);
       })
     );
+  }
+
+  getCurrentUser(): any {
+    const id = localStorage.getItem('userId');
+    const username = localStorage.getItem('username');
+    return id ? { id, username } : null;
   }
 
 }

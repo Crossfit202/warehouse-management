@@ -1,47 +1,139 @@
 import { Component, OnInit } from '@angular/core';
 import { InventoryService } from '../../services/inventory.service';
-import { InventoryItem } from '../../models/InventoryItem';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { WarehouseService } from '../../services/warehouse.service';
+import { StorageLocation } from '../../models/StorageLocation';
+import { WarehouseInventory } from '../../models/WarehouseInventory';
+import { MoveInventoryDTO } from '../../models/MoveInventoryDTO';
+import { AuthService } from '../../services/auth.service'; // ✅ To get logged-in user
 
 @Component({
   selector: 'app-inventory',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './inventory.component.html',
   styleUrl: './inventory.component.css'
 })
 export class InventoryComponent implements OnInit {
-  inventory: InventoryItem[] = [];
+  inventory: WarehouseInventory[] = [];
   warehouses: any[] = [];
   selectedWarehouse: string = '';
 
+  // Modal State
+  showMoveModal: boolean = false;
+  selectedItem: WarehouseInventory | null = null;
+  moveToWarehouseId: string = '';
+  moveToLocationId: string = '';
+  moveQuantity: number = 1;
+  availableLocations: StorageLocation[] = [];
+  availableToLocations: StorageLocation[] = [];
+
+  userId: string = ''; // ✅ For logging movement
+
   constructor(
     private inventoryService: InventoryService,
-    private warehouseService: WarehouseService
+    private warehouseService: WarehouseService,
+    private authService: AuthService // ✅ Inject auth service
   ) { }
 
   ngOnInit(): void {
+    const user = this.authService.getCurrentUser();
+    if (user) {
+      this.userId = user.id;
+    }
     this.warehouseService.getAllWarehouses().subscribe(data => {
       this.warehouses = data;
-      console.log('Warehouses:', this.warehouses);
-
       if (this.warehouses.length > 0) {
         this.selectedWarehouse = this.warehouses[0].id;
-        this.loadInventoryForWarehouse(this.selectedWarehouse); // ✅ Load initial inventory
+        this.loadInventoryForWarehouse(this.selectedWarehouse);
       }
     });
   }
 
   onSelect(event: any): void {
-    console.log('Selected warehouse:', event.target.value);
     this.selectedWarehouse = event.target.value;
     this.loadInventoryForWarehouse(this.selectedWarehouse);
   }
 
-  loadInventoryForWarehouse(warehouseName: string): void {
-    this.inventoryService.getInventoryForWarehouse(warehouseName).subscribe(data => {
+  loadInventoryForWarehouse(warehouseId: string): void {
+    this.inventoryService.getInventoryForWarehouse(warehouseId).subscribe(data => {
       this.inventory = data;
     });
+
+    this.warehouseService.getStorageLocationsForWarehouse(warehouseId).subscribe((locations: StorageLocation[]) => {
+      this.availableLocations = locations;
+    });
   }
+
+  onToWarehouseChange(): void {
+    if (this.moveToWarehouseId) {
+      this.warehouseService.getStorageLocationsForWarehouse(this.moveToWarehouseId).subscribe((locations: StorageLocation[]) => {
+        this.availableToLocations = locations;
+      });
+    } else {
+      this.availableToLocations = [];
+    }
+  }
+
+  openMoveModal(item: WarehouseInventory): void {
+    console.log('Move modal opened for:', item);
+    this.selectedItem = item;
+    this.moveToWarehouseId = '';
+    this.moveToLocationId = '';
+    this.moveQuantity = 1;
+    this.availableToLocations = [];
+    this.showMoveModal = true;
+  }
+
+  closeMoveModal(): void {
+    this.showMoveModal = false;
+    this.selectedItem = null;
+  }
+
+  confirmMove(): void {
+    console.log('Confirm button clicked');
+    console.log('selectedItem:', this.selectedItem);
+    console.log('moveToWarehouseId:', this.moveToWarehouseId);
+    console.log('moveToLocationId:', this.moveToLocationId);
+    console.log('moveQuantity:', this.moveQuantity);
+    console.log('userId:', this.userId);
+
+    if (!this.selectedItem || !this.moveToWarehouseId || !this.moveToLocationId || this.moveQuantity < 1 || !this.userId) {
+      console.warn('Missing required fields for transfer');
+      return;
+    }
+
+    const dto: MoveInventoryDTO = {
+      fromWarehouseId: this.selectedItem.warehouseId,
+      toWarehouseId: this.moveToWarehouseId,
+      itemId: this.selectedItem.itemId,
+      fromLocationId: this.selectedItem.storageLocationId,
+      toLocationId: this.moveToLocationId,
+      quantity: this.moveQuantity,
+      userId: this.userId
+    };
+
+    console.log('DTO being sent:', dto);
+
+    this.inventoryService.moveInventory(dto).subscribe({
+      next: () => {
+        console.log('Inventory moved successfully');
+        this.closeMoveModal();
+        this.loadInventoryForWarehouse(this.selectedWarehouse);
+      },
+      error: (err) => {
+        console.error('Move failed:', err);
+      }
+    });
+  }
+
+
+  getWarehouseNameById(id: string | undefined): string {
+    if (!id) return '';
+    const match = this.warehouses.find(w => w.id === id);
+    return match?.name || id;
+  }
+
+
 }

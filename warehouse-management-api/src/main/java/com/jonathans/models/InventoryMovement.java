@@ -31,6 +31,14 @@ public class InventoryMovement {
     @JoinColumn(name = "to_warehouse")
     private Warehouse toWarehouse;
 
+    @ManyToOne
+    @JoinColumn(name = "from_location_id")
+    private WarehouseStorageLocations fromLocation;
+
+    @ManyToOne
+    @JoinColumn(name = "to_location_id")
+    private WarehouseStorageLocations toLocation;
+
     private int quantity;
 
     private String movementType;
@@ -88,6 +96,22 @@ public class InventoryMovement {
         this.toWarehouse = toWarehouse;
     }
 
+    public WarehouseStorageLocations getFromLocation() {
+        return fromLocation;
+    }
+
+    public void setFromLocation(WarehouseStorageLocations fromLocation) {
+        this.fromLocation = fromLocation;
+    }
+
+    public WarehouseStorageLocations getToLocation() {
+        return toLocation;
+    }
+
+    public void setToLocation(WarehouseStorageLocations toLocation) {
+        this.toLocation = toLocation;
+    }
+
     public int getQuantity() {
         return quantity;
     }
@@ -123,11 +147,12 @@ public class InventoryMovement {
     @Override
     public String toString() {
         return "InventoryMovement [id=" + id + ", item=" + item + ", fromWarehouse=" + fromWarehouse + ", toWarehouse="
-                + toWarehouse + ", quantity=" + quantity + ", movementType=" + movementType + ", time=" + time
-                + ", user=" + user + ", getId()=" + getId() + ", getClass()=" + getClass() + ", getItem()=" + getItem()
-                + ", getFromWarehouse()=" + getFromWarehouse() + ", getToWarehouse()=" + getToWarehouse()
-                + ", getQuantity()=" + getQuantity() + ", getMovementType()=" + getMovementType() + ", getTime()="
-                + getTime() + ", getUser()=" + getUser() + ", hashCode()=" + hashCode() + ", toString()="
+                + toWarehouse + ", fromLocation=" + fromLocation + ", toLocation=" + toLocation + ", quantity=" + quantity
+                + ", movementType=" + movementType + ", time=" + time + ", user=" + user + ", getId()=" + getId()
+                + ", getClass()=" + getClass() + ", getItem()=" + getItem() + ", getFromWarehouse()=" + getFromWarehouse()
+                + ", getToWarehouse()=" + getToWarehouse() + ", getFromLocation()=" + getFromLocation() + ", getToLocation()="
+                + getToLocation() + ", getQuantity()=" + getQuantity() + ", getMovementType()=" + getMovementType()
+                + ", getTime()=" + getTime() + ", getUser()=" + getUser() + ", hashCode()=" + hashCode() + ", toString()="
                 + super.toString() + "]";
     }
 
