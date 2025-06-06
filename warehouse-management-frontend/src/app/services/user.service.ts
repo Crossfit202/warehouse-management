@@ -18,10 +18,12 @@ export class UserService {
     });
   }
 
-  updateUser(userId: string, userData: Partial<User>): Observable<User> {
-    return this.http.put<User>(`${this.apiUrl}/${userId}`, userData, {
-      withCredentials: true
-    });
+  updateUser(user: User): Observable<User> {
+    return this.http.put<User>(
+      `${this.apiUrl}/${user.id}`,
+      user,
+      { withCredentials: true } // <-- This ensures cookies (JWT) are sent!
+    );
   }
 
   deleteUser(userId: string): Observable<void> {

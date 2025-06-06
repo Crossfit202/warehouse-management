@@ -36,7 +36,7 @@ export class AuthGuard implements CanActivate {
         return this.authService.getUserRole().pipe(
           take(1),
           map(userRole => {
-            const role = userRole?.trim().toUpperCase(); // Normalize role
+            const role = userRole?.replace(/^ROLE_/, '').trim().toUpperCase(); // Normalize role
             const isAuthorized = expectedRoles?.some(r => r.toUpperCase() === role) ?? true;
 
             if (!isAuthorized) {

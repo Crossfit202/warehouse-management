@@ -23,6 +23,12 @@ export class AlertsComponent implements OnInit {
   users: User[] = []; // an array for the users
   selectedWarehouse: string = ''; // property to hold the warehouse a user selects
 
+  newAlert = {
+    message: '',
+    status: 'NEW',
+    warehouseId: ''
+  };
+
   constructor(
     private alertService: AlertService,
     private warehouseService: WarehouseService,
@@ -109,6 +115,42 @@ export class AlertsComponent implements OnInit {
       },
       error: err => {
         this.toastr.error('Failed to update alert.'); // <-- Show error message
+      }
+    });
+  }
+
+  deleteAlert(alertId: string): void {
+    if (confirm('Are you sure you want to delete this alert?')) {
+      this.alertService.deleteAlert(alertId).subscribe({
+        next: () => {
+          this.toastr.success('Alert deleted successfully!', 'Success');
+          this.loadAlerts(); // Refresh the list
+        },
+        error: () => {
+          this.toastr.error('Failed to delete alert.', 'Error');
+        }
+      });
+    }
+  }
+
+  addAlert(): void {
+    if (!this.newAlert.message || !this.newAlert.status || !this.newAlert.warehouseId) {
+      this.toastr.error('Please fill out all fields.');
+      return;
+    }
+    const alertToSend: any = {
+      message: this.newAlert.message,
+      status: this.newAlert.status,
+      warehouse: this.warehouses.find(w => w.id === this.newAlert.warehouseId)
+    };
+    this.alertService.createAlert(alertToSend).subscribe({
+      next: () => {
+        this.toastr.success('Alert created successfully!');
+        this.newAlert = { message: '', status: 'NEW', warehouseId: '' };
+        this.loadAlerts();
+      },
+      error: () => {
+        this.toastr.error('Failed to create alert.');
       }
     });
   }

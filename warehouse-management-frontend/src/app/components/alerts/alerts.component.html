@@ -1,6 +1,29 @@
 <div class="content">
     <h1>ALERTS</h1>
 
+    <!-- Add Alert Form -->
+    <form (ngSubmit)="addAlert()" #alertForm="ngForm" style="margin-bottom:2rem;">
+        <label>
+            Message:
+            <input type="text" [(ngModel)]="newAlert.message" name="message" required />
+        </label>
+        <label>
+            Status:
+            <select [(ngModel)]="newAlert.status" name="status" required>
+                <option value="NEW">New</option>
+                <option value="ACTIVE">Active</option>
+                <option value="CLOSED">Closed</option>
+            </select>
+        </label>
+        <label>
+            Warehouse:
+            <select [(ngModel)]="newAlert.warehouseId" name="warehouseId" required>
+                <option *ngFor="let warehouse of warehouses" [value]="warehouse.id">{{ warehouse.name }}</option>
+            </select>
+        </label>
+        <button type="submit" [disabled]="!alertForm.form.valid">Add Alert</button>
+    </form>
+
     <!-- Dropdown list -->
     <select (change)="onSelect($event)">
         <option *ngFor="let warehouse of warehouses" [value]="warehouse.name">{{warehouse.name}}</option>
@@ -31,6 +54,7 @@
                     <li>Time: {{ alert.formatTime() }}</li>
                 </ul>
                 <button (click)="saveAlert(alert)">Save</button>
+                <button (click)="deleteAlert(alert.id)">Delete</button>
             </div>
         </li>
     </ul>

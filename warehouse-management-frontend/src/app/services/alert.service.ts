@@ -21,4 +21,12 @@ export class AlertService {
   updateAlert(alert: Alert): Observable<Alert> {
     return this.http.post<Alert>(`${this.apiUrl}/${alert.id}`, alert, { withCredentials: true });
   }
+
+  deleteAlert(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`, { withCredentials: true });
+  }
+
+  createAlert(alert: Alert): Observable<Alert> {
+    return this.http.post<Alert>(this.apiUrl, alert, { withCredentials: true });
+  }
 }

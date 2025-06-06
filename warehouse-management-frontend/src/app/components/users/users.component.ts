@@ -59,11 +59,12 @@ export class UsersComponent implements OnInit {
   saveUserChanges(): void {
     if (!this.selectedUser) return;
 
-    const { id, ...updatedData } = this.selectedUser;
+    // Create a shallow copy and remove the password field
+    const { password, ...userWithoutPassword } = this.selectedUser;
 
-    this.userService.updateUser(id, updatedData).subscribe({
+    this.userService.updateUser(userWithoutPassword as User).subscribe({
       next: (updated) => {
-        const index = this.users.findIndex(u => u.id === id);
+        const index = this.users.findIndex(u => u.id === this.selectedUser!.id);
         if (index !== -1) {
           this.users[index] = updated;
         }

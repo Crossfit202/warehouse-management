@@ -31,8 +31,9 @@ public class JWTService {
     @SuppressWarnings("deprecation")
     public String generateToken(String username, String role) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("role", role);
-        claims.put("authorities", List.of("ROLE_" + role));
+        String authority = role.startsWith("ROLE_") ? role : "ROLE_" + role;
+        claims.put("role", authority);
+        claims.put("authorities", List.of(authority));
 
         return Jwts.builder()
                 .setClaims(claims)

@@ -1,7 +1,16 @@
 SELECT * FROM users;
 
+DELETE FROM users
+WHERE username = 'clerk_user';
+
+DELETE FROM users
+WHERE username = 'manager_user';
+
+DELETE FROM users
+WHERE username = 'admin_user';
+
 UPDATE users
-SET role = 'ADMIN'
+SET role = 'ROLE_ADMIN'
 WHERE username = 'Jonathan';
 
 INSERT INTO warehouse_personnel (user_id, warehouse_id)

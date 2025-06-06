@@ -65,7 +65,7 @@ public class UserService {
         newUser.setUsername(userRequestDTO.getUsername());
         newUser.setEmail(userRequestDTO.getEmail());
         newUser.setPassword(encoder.encode(userRequestDTO.getPassword()));
-        newUser.setRole("USER");
+        newUser.setRole("ROLE_USER"); // Default role for new users
 
         userRepository.save(newUser);
     }
@@ -84,9 +84,9 @@ public class UserService {
                 existingUser.setPassword(encoder.encode(userRequestDTO.getPassword()));
             }
             if (userRequestDTO.getRole() != null) {
-                List<String> validRoles = List.of("USER", "ADMIN", "MANAGER", "INV_CLERK");
+                List<String> validRoles = List.of("ROLE_USER", "ROLE_ADMIN", "ROLE_MANAGER", "ROLE_INV_CLERK");
                 if (!validRoles.contains(userRequestDTO.getRole())) {
-                    throw new RuntimeException("Invalid role. Valid roles are: ROLE_USER, ROLE_ADMIN, ROLE_MANAGER");
+                    throw new RuntimeException("Invalid role. Valid roles are: ROLE_USER, ROLE_ADMIN, ROLE_MANAGER, ROLE_INV_CLERK");
                 }
                 existingUser.setRole(userRequestDTO.getRole());
             }
