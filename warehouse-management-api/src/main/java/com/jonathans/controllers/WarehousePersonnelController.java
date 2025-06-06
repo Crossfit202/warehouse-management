@@ -32,4 +32,9 @@ public class WarehousePersonnelController {
     public ResponseEntity<WarehousePersonnelDTO> createWarehousePersonnel(@RequestBody WarehousePersonnelDTO dto) {
         return warehousePersonnelService.createWarehousePersonnel(dto);
     }
+
+    @GetMapping("/warehouse/{warehouseId}/users")
+    public List<WarehousePersonnelDTO> getUsersForWarehouse(@PathVariable UUID warehouseId) {
+        return warehousePersonnelService.getUsersForWarehouse(warehouseId);
+    }
 }

@@ -11,16 +11,19 @@ public class AlertDTO {
     private String message;
     private String status;
     private LocalDateTime time;
+    private UUID assignedUserId;
 
     public AlertDTO() {
     }
 
-    public AlertDTO(UUID id, Warehouse warehouse, String message, String status, LocalDateTime time) {
+    public AlertDTO(UUID id, Warehouse warehouse, String message, String status, LocalDateTime time,
+            UUID assignedUserId) {
         this.id = id;
         this.warehouse = warehouse;
         this.message = message;
         this.status = status;
         this.time = time;
+        this.assignedUserId = assignedUserId;
     }
 
     public UUID getId() {
@@ -63,10 +66,18 @@ public class AlertDTO {
         this.time = time;
     }
 
+    public UUID getAssignedUserId() {
+        return assignedUserId;
+    }
+
+    public void setAssignedUserId(UUID assignedUserId) {
+        this.assignedUserId = assignedUserId;
+    }
+
     @Override
     public String toString() {
         return "AlertDTO [id=" + id + ", warehouse=" + warehouse + ", message=" + message + ", status=" + status
-                + ", time=" + time + "]";
+                + ", time=" + time + ", assignedUserId=" + assignedUserId + "]";
     }
 
 }

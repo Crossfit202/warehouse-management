@@ -44,7 +44,7 @@ public class AlertController {
         return alertService.createAlert(alertDTO);
     }
 
-    // UDPATE ALERT
+    // UPDATE ALERT
     @PostMapping("/{id}")
     public ResponseEntity<AlertDTO> updateAlert(@PathVariable UUID id, @RequestBody AlertDTO alertDTO) {
         return alertService.updateAlert(id, alertDTO);

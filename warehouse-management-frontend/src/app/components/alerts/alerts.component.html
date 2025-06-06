@@ -12,10 +12,25 @@
             <div *ngIf="alert.warehouse.name === selectedWarehouse">
                 <strong>{{ alert.message }}</strong>
                 <ul>
-                    <li>Status: {{ alert.status }} </li>
+                    <li>
+                      Status:
+                      <select [(ngModel)]="alert.status">
+                        <option value="NEW">New</option>
+                        <option value="ACTIVE">Active</option>
+                        <option value="CLOSED">Closed</option>
+                      </select>
+                    </li>
+                    <li>
+                      Assigned User:
+                      <select [(ngModel)]="alert.assignedUserId">
+                        <option value="">Unassigned</option>
+                        <option *ngFor="let user of users" [value]="user.id">{{ user.username }}</option>
+                      </select>
+                    </li>
                     <li>Warehouse: {{ alert.warehouse.name }}</li>
-                    <li>Time: {{ alert.time }}</li>
+                    <li>Time: {{ alert.formatTime() }}</li>
                 </ul>
+                <button (click)="saveAlert(alert)">Save</button>
             </div>
         </li>
     </ul>

@@ -17,4 +17,8 @@ export class AlertService {
   getAllAlerts(): Observable<Alert[]> {
     return this.http.get<Alert[]>(this.apiUrl, { withCredentials: true });
   }
+
+  updateAlert(alert: Alert): Observable<Alert> {
+    return this.http.post<Alert>(`${this.apiUrl}/${alert.id}`, alert, { withCredentials: true });
+  }
 }

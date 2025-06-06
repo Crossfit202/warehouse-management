@@ -1,8 +1,7 @@
 -- ✅ Insert Users with a Single Role
 -- INSERT INTO users (id, username, email, password, role) VALUES 
---     (uuid_generate_v4(), 'admin_user', 'admin@example.com', 'securepassword', 'ROLE_ADMIN'),
---     (uuid_generate_v4(), 'manager_user', 'manager@example.com', 'securepassword', 'ROLE_MANAGER'),
---     (uuid_generate_v4(), 'clerk_user', 'clerk@example.com', 'securepassword', 'ROLE_INV_CLERK');
+--     (uuid_generate_v4(), 'Jonathan', 'admin@example.com', 'securepassword', 'ROLE_ADMIN'),
+--     (uuid_generate_v4(), 'Maxwell', 'manager@example.com', 'securepassword', 'ROLE_MANAGER'),
 
 -- ✅ Insert Warehouses
 INSERT INTO warehouse (id, name, location, max_capacity) VALUES 

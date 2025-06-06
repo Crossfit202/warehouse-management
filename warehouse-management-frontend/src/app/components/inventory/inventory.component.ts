@@ -7,6 +7,7 @@ import { StorageLocation } from '../../models/StorageLocation';
 import { WarehouseInventory } from '../../models/WarehouseInventory';
 import { MoveInventoryDTO } from '../../models/MoveInventoryDTO';
 import { AuthService } from '../../services/auth.service'; // ✅ To get logged-in user
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-inventory',
@@ -34,7 +35,8 @@ export class InventoryComponent implements OnInit {
   constructor(
     private inventoryService: InventoryService,
     private warehouseService: WarehouseService,
-    private authService: AuthService // ✅ Inject auth service
+    private authService: AuthService, // ✅ Inject auth service
+    private toastr: ToastrService
   ) { }
 
   ngOnInit(): void {
@@ -112,11 +114,12 @@ export class InventoryComponent implements OnInit {
 
     this.inventoryService.moveInventory(dto).subscribe({
       next: () => {
-        console.log('Inventory moved successfully');
+        this.toastr.success('Inventory moved successfully!', 'Success');
         this.closeMoveModal();
         this.loadInventoryForWarehouse(this.selectedWarehouse);
       },
       error: (err) => {
+        this.toastr.error('Failed to move inventory.', 'Error');
         console.error('Move failed:', err);
       }
     });

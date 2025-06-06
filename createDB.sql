@@ -132,6 +132,7 @@ CREATE TABLE alerts (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     warehouse_id UUID REFERENCES warehouse(id) ON DELETE CASCADE,
     message TEXT NOT NULL,
-    status VARCHAR(255) DEFAULT 'NEW', -- ✅ ENUM removed; now VARCHAR
-    time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    status VARCHAR(255) DEFAULT 'NEW',
+    time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    assigned_user_id UUID REFERENCES users(id) ON DELETE SET NULL
 );

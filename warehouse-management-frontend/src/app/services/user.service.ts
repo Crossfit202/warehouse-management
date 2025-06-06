@@ -30,4 +30,7 @@ export class UserService {
     });
   }
 
+  getUsersForWarehouse(warehouseId: string): Observable<User[]> {
+    return this.http.get<User[]>(`http://localhost:8083/warehouse-personnel/warehouse/${warehouseId}/users`, { withCredentials: true });
+  }
 }

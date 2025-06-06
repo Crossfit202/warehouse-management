@@ -17,6 +17,10 @@ public class Alert {
     @JoinColumn(name = "warehouse_id", referencedColumnName = "id")
     private Warehouse warehouse;
 
+    @ManyToOne
+    @JoinColumn(name = "assigned_user_id")
+    private User assignedUser;
+
     @Column
     private String message;
 
@@ -29,11 +33,12 @@ public class Alert {
     public Alert() {
     }
 
-    public Alert(Warehouse warehouse, String message, String status) {
+    public Alert(Warehouse warehouse, String message, String status, User assignedUser) {
         this.warehouse = warehouse;
         this.message = message;
         this.status = status;
         this.time = LocalDateTime.now();
+        this.assignedUser = assignedUser;
     }
 
     public UUID getId() {
@@ -50,6 +55,14 @@ public class Alert {
 
     public void setWarehouse(Warehouse warehouse) {
         this.warehouse = warehouse;
+    }
+
+    public User getAssignedUser() {
+        return assignedUser;
+    }
+
+    public void setAssignedUser(User assignedUser) {
+        this.assignedUser = assignedUser;
     }
 
     public String getMessage() {
@@ -78,7 +91,8 @@ public class Alert {
 
     @Override
     public String toString() {
-        return "Alert [id=" + id + ", warehouse=" + warehouse + ", message=" + message + ", status=" + status
+        return "Alert [id=" + id + ", warehouse=" + warehouse + ", assignedUser=" + assignedUser + ", message="
+                + message + ", status=" + status
                 + ", time=" + time + "]";
     }
 

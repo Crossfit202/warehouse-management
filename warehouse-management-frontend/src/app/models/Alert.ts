@@ -6,19 +6,25 @@ export class Alert {
     message: string;
     status: string;
     time: string;
+    assignedUserId?: string; // <-- Add this
+    assignedUserName?: string;
 
     constructor(
         id: string,
         warehouse: Warehouse,
         message: string,
         status: string,
-        time: string
+        time: string,
+        assignedUserId?: string,
+        assignedUserName?: string
     ) {
         this.id = id;
         this.warehouse = warehouse;
         this.message = message;
         this.status = status;
         this.time = time;
+        this.assignedUserId = assignedUserId;
+        this.assignedUserName = assignedUserName;
     }
 
     public formatTime(): string {

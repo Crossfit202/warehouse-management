@@ -1,5 +1,15 @@
 SELECT * FROM users;
 
+UPDATE users
+SET role = 'ADMIN'
+WHERE username = 'Jonathan';
+
+INSERT INTO warehouse_personnel (user_id, warehouse_id)
+SELECT u.id, w.id
+FROM users u, warehouse w
+WHERE u.username = 'Jonathan'
+  AND w.name = 'Main Warehouse';
+
 SELECT * FROM warehouse;
 
 SELECT * FROM alerts;

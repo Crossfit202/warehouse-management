@@ -54,6 +54,13 @@ public class WarehousePersonnelService {
         return ResponseEntity.status(HttpStatus.CREATED).body(convertToDTO(personnel));
     }
 
+    public List<WarehousePersonnelDTO> getUsersForWarehouse(UUID warehouseId) {
+        return warehousePersonnelRepository.findByWarehouseId(warehouseId)
+                .stream()
+                .map(this::convertToDTO)
+                .toList();
+    }
+
     private WarehousePersonnelDTO convertToDTO(WarehousePersonnel personnel) {
         return new WarehousePersonnelDTO(
                 personnel.getId(),
