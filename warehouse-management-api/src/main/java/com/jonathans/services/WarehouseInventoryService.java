@@ -73,7 +73,12 @@ public class WarehouseInventoryService {
         }
 
         source.setQuantity(source.getQuantity() - dto.getQuantity());
-        inventoryRepository.save(source);
+        // DELETE source if quantity is now zero, otherwise save
+        if (source.getQuantity() <= 0) {
+            inventoryRepository.delete(source);
+        } else {
+            inventoryRepository.save(source);
+        }
 
         WarehouseInventory dest = inventoryRepository
                 .findByWarehouseStorageLocation_Warehouse_IdAndItem_IdAndWarehouseStorageLocation_Id(

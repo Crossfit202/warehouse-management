@@ -92,12 +92,6 @@ export class InventoryComponent implements OnInit {
   }
 
   confirmMove(): void {
-    console.log('Confirm button clicked');
-    console.log('selectedItem:', this.selectedItem);
-    console.log('moveToWarehouseId:', this.moveToWarehouseId);
-    console.log('moveToLocationId:', this.moveToLocationId);
-    console.log('moveQuantity:', this.moveQuantity);
-    console.log('userId:', this.userId);
 
     if (!this.selectedItem || !this.moveToWarehouseId || !this.moveToLocationId || this.moveQuantity < 1 || !this.userId) {
       console.warn('Missing required fields for transfer');
