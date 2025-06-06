@@ -2,6 +2,7 @@ package com.jonathans.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -50,6 +51,12 @@ public class SecurityConfig {
                                 "/inventory-items/**", "/storage-locations/**",
                                 "/storage-locations", "/alerts", "/alerts/**", "/movements", "/movements/**",
                                 "/warehouses", "/warehouses/**")
+                        .hasAnyAuthority("ROLE_USER", "ROLE_ADMIN", "ROLE_MANAGER", "ROLE_INV_CLERK")
+                        .requestMatchers(HttpMethod.POST, "/warehouse-personnel", "/warehouse-personnel/**")
+                        .hasAnyAuthority("ROLE_ADMIN", "ROLE_MANAGER")
+                        .requestMatchers(HttpMethod.PUT, "/warehouse-personnel", "/warehouse-personnel/**")
+                        .hasAnyAuthority("ROLE_ADMIN", "ROLE_MANAGER")
+                        .requestMatchers(HttpMethod.GET, "/warehouse-personnel", "/warehouse-personnel/**")
                         .hasAnyAuthority("ROLE_USER", "ROLE_ADMIN", "ROLE_MANAGER", "ROLE_INV_CLERK")
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session

@@ -157,6 +157,25 @@
         </tbody>
       </table>
     </div>
+
+    <!-- Personnel Assigned -->
+    <h4>Personnel Assigned to {{ selectedWarehouse }}</h4>
+    <div class="dashboard-card">
+      <table class="table table-sm table-bordered">
+        <thead>
+          <tr>
+            <th>Username</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let p of personnel">
+            <td>{{ p.username }}</td>
+            <td>{{ p.status }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </body>
 

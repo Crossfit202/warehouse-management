@@ -1,5 +1,5 @@
 package com.jonathans.models;
 
 public enum PersonnelStatusEnum {
-    ACTIVE, INACTIVE
+    ACTIVE, SUSPENDED, TERMINATED, UNASSIGNED;
 }

@@ -13,12 +13,6 @@ UPDATE users
 SET role = 'ROLE_ADMIN'
 WHERE username = 'Jonathan';
 
-INSERT INTO warehouse_personnel (user_id, warehouse_id)
-SELECT u.id, w.id
-FROM users u, warehouse w
-WHERE u.username = 'Jonathan'
-  AND w.name = 'Main Warehouse';
-
 SELECT * FROM warehouse;
 
 SELECT * FROM alerts;
@@ -32,6 +26,13 @@ SELECT * FROM storage_locations;
 SELECT * FROM warehouse_inventory;
 
 SELECT * FROM warehouse_personnel;
+
+INSERT INTO warehouse_personnel (user_id, warehouse_id)
+SELECT u.id, w.id
+FROM users u, warehouse w
+WHERE u.username = 'Jonathan'
+  AND w.name = 'Main Warehouse';
+
 
 SELECT * FROM warehouse_storage_locations;
 

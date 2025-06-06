@@ -1,6 +1,7 @@
 package com.jonathans.services;
 
 import com.jonathans.DTOS.WarehousePersonnelDTO;
+import com.jonathans.models.PersonnelStatusEnum;
 import com.jonathans.models.User;
 import com.jonathans.models.Warehouse;
 import com.jonathans.models.WarehousePersonnel;
@@ -23,7 +24,8 @@ public class WarehousePersonnelService {
     private final UserRepository userRepository;
     private final WarehouseRepository warehouseRepository;
 
-    public WarehousePersonnelService(WarehousePersonnelRepository warehousePersonnelRepository, UserRepository userRepository, WarehouseRepository warehouseRepository) {
+    public WarehousePersonnelService(WarehousePersonnelRepository warehousePersonnelRepository,
+            UserRepository userRepository, WarehouseRepository warehouseRepository) {
         this.warehousePersonnelRepository = warehousePersonnelRepository;
         this.userRepository = userRepository;
         this.warehouseRepository = warehouseRepository;
@@ -61,6 +63,40 @@ public class WarehousePersonnelService {
                 .toList();
     }
 
+    public List<WarehousePersonnelDTO> getWarehousesForUser(UUID userId) {
+        return warehousePersonnelRepository.findByUserId(userId)
+                .stream()
+                .map(this::convertToDTO)
+                .toList();
+    }
+
+    @Transactional
+    public ResponseEntity<WarehousePersonnelDTO> updateWarehousePersonnel(UUID id, WarehousePersonnelDTO dto) {
+        Optional<WarehousePersonnel> personnelOpt = warehousePersonnelRepository.findById(id);
+        if (personnelOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        WarehousePersonnel personnel = personnelOpt.get();
+
+        // If warehouseId is null or empty, mark as unassigned (do not change warehouse)
+        if (dto.getWarehouseId() == null || dto.getWarehouseId().toString().isEmpty()) {
+            personnel.setStatus(PersonnelStatusEnum.UNASSIGNED);
+        } else {
+            Optional<Warehouse> warehouseOpt = warehouseRepository.findById(dto.getWarehouseId());
+            if (warehouseOpt.isEmpty()) {
+                return ResponseEntity.notFound().build();
+            }
+            personnel.setWarehouse(warehouseOpt.get());
+            personnel.setStatus(dto.getStatus());
+        }
+        warehousePersonnelRepository.save(personnel);
+        return ResponseEntity.ok(convertToDTO(personnel));
+    }
+
+    public void deleteWarehousePersonnel(UUID id) {
+        warehousePersonnelRepository.deleteById(id);
+    }
+
     private WarehousePersonnelDTO convertToDTO(WarehousePersonnel personnel) {
         return new WarehousePersonnelDTO(
                 personnel.getId(),
@@ -68,7 +104,6 @@ public class WarehousePersonnelService {
                 personnel.getUser().getUsername(), // Include username
                 personnel.getWarehouse().getId(),
                 personnel.getWarehouse().getName(), // Include warehouse name
-                personnel.getStatus()
-        );
+                personnel.getStatus());
     }
 }

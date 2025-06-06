@@ -7,4 +7,5 @@ import java.util.UUID;
 
 public interface WarehousePersonnelRepository extends JpaRepository<WarehousePersonnel, UUID> {
     List<WarehousePersonnel> findByWarehouseId(UUID warehouseId);
+    List<WarehousePersonnel> findByUserId(UUID userId);
 }

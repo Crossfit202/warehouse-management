@@ -10,6 +10,8 @@ import { MovementService } from '../../services/movement.service';
 import { StorageLocationsService } from '../../services/storage-locations.service';
 import { StorageLocationCapacity } from '../../models/StorageLocationCapacity';
 import { WarehouseInventory } from '../../models/WarehouseInventory';
+import { WarehousePersonnelService } from '../../services/personnel.service';
+import { WarehousePersonnelDTO } from '../../services/personnel.service';
 
 
 @Component({
@@ -32,7 +34,7 @@ export class DashboardComponent implements OnInit {
   recentMovementCount: number = 0;
   warehouseCapacity: number = 0;
   warehouseLocation: string = '';
-
+  personnel: WarehousePersonnelDTO[] = [];
 
 
   constructor(
@@ -40,7 +42,8 @@ export class DashboardComponent implements OnInit {
     private warehouseService: WarehouseService,
     private inventoryService: InventoryService,
     private movementService: MovementService,
-    private storageLocationService: StorageLocationsService
+    private storageLocationService: StorageLocationsService,
+    private warehousePersonnelService: WarehousePersonnelService
   ) { }
 
   ngOnInit(): void {
@@ -68,6 +71,7 @@ export class DashboardComponent implements OnInit {
         this.loadAlerts();
         this.loadInventory(this.selectedWarehouseId);
         this.loadRecentMovements(this.selectedWarehouseId);
+        this.loadPersonnel(this.selectedWarehouseId);
       }
     });
   }
@@ -85,6 +89,7 @@ export class DashboardComponent implements OnInit {
       this.loadAlerts();
       this.loadRecentMovements(this.selectedWarehouseId);
       this.loadStorageLocations(this.selectedWarehouseId);
+      this.loadPersonnel(this.selectedWarehouseId);
     }
   }
 
@@ -113,6 +118,12 @@ export class DashboardComponent implements OnInit {
   loadStorageLocations(warehouseId: string): void {
     this.storageLocationService.getStorageLocationCapacities(warehouseId).subscribe(data => {
       this.storageLocations = data; // Update type to `StorageLocationCapacity[]`
+    });
+  }
+
+  loadPersonnel(warehouseId: string): void {
+    this.warehousePersonnelService.getPersonnelForWarehouse(warehouseId).subscribe(data => {
+      this.personnel = data;
     });
   }
 }

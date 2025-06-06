@@ -37,4 +37,22 @@ public class WarehousePersonnelController {
     public List<WarehousePersonnelDTO> getUsersForWarehouse(@PathVariable UUID warehouseId) {
         return warehousePersonnelService.getUsersForWarehouse(warehouseId);
     }
+
+    @GetMapping("/user/{userId}/warehouses")
+    public List<WarehousePersonnelDTO> getWarehousesForUser(@PathVariable UUID userId) {
+        return warehousePersonnelService.getWarehousesForUser(userId);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<WarehousePersonnelDTO> updateWarehousePersonnel(
+            @PathVariable UUID id,
+            @RequestBody WarehousePersonnelDTO dto) {
+        return warehousePersonnelService.updateWarehousePersonnel(id, dto);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteWarehousePersonnel(@PathVariable UUID id) {
+        warehousePersonnelService.deleteWarehousePersonnel(id);
+        return ResponseEntity.noContent().build();
+    }
 }

@@ -1,0 +1,6 @@
+export enum PersonnelStatusEnum {
+  ACTIVE = 'ACTIVE',
+  SUSPENDED = 'SUSPENDED',
+  TERMINATED = 'TERMINATED',
+  UNASSIGNED = 'UNASSIGNED'
+}

@@ -1,7 +1,6 @@
 package com.jonathans.DTOS;
 
 import java.util.UUID;
-
 import com.jonathans.models.PersonnelStatusEnum;
 
 public class WarehousePersonnelDTO {

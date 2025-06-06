@@ -7,7 +7,21 @@
                 <h3 class="card-title mb-2 text-capitalize">{{ user.username }}</h3>
                 <p class="card-text mb-1"><strong>Email:</strong> {{ user.email }}</p>
                 <p class="card-text mb-1"><strong>Role:</strong> {{ user.role }}</p>
-                <p class="card-text mb-3"><strong>Created:</strong> {{ user.formatCreatedAt() }}</p>
+                <p class="card-text mb-1">
+                    <strong>Assigned Warehouse:</strong>
+                    {{
+                    userAssignments[user.id]?.warehouseName
+                    || 'Unassigned'
+                    }}
+                </p>
+                <p class="card-text mb-1">
+                    <strong>Status:</strong>
+                    {{
+                    userAssignments[user.id]?.status
+                    || 'UNASSIGNED'
+                    }}
+                </p>
+                <p class="card-text mb-3"><strong>Created:</strong> {{ user.created_at | date:'medium' }}</p>
                 <button class="btn btn-primary me-2 btn-sm" (click)="openEditModal(user)">Edit</button>
                 <button class="btn btn-danger btn-sm" (click)="deleteUser(user.id)">Delete</button>
             </div>
@@ -35,6 +49,30 @@
                         <option value="ROLE_MANAGER">Manager</option>
                         <option value="ROLE_INV_CLERK">Inventory Clerk</option>
                     </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Assigned Warehouse</label>
+                    <select class="form-select" [(ngModel)]="selectedAssignment.warehouseId" name="warehouse"
+                        *ngIf="selectedAssignment">
+                        <option value="">Unassigned</option>
+                        <option *ngFor="let w of warehouses" [value]="w.id">{{ w.name }}</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Assigned Warehouse</label>
+                    <input class="form-control" [value]="selectedAssignment?.warehouseName || 'Unassigned'" disabled />
+                </div>
+                <div *ngIf="selectedAssignment">
+                    <div class="mb-3">
+                        <label class="form-label">Status</label>
+                        <select class="form-select" [(ngModel)]="selectedAssignment.status" name="status"
+                            *ngIf="selectedAssignment">
+                            <option [ngValue]="PersonnelStatusEnum.ACTIVE">Active</option>
+                            <option [ngValue]="PersonnelStatusEnum.SUSPENDED">Suspended</option>
+                            <option [ngValue]="PersonnelStatusEnum.TERMINATED">Terminated</option>
+                            <option [ngValue]="PersonnelStatusEnum.UNASSIGNED">Unassigned</option>
+                        </select>
+                    </div>
                 </div>
                 <button type="submit" class="btn btn-success me-2">Save</button>
                 <button type="button" class="btn btn-secondary" (click)="closeEditModal()">Cancel</button>
