@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.time.LocalDateTime;
 
 @Service
 public class WarehouseInventoryService {
@@ -108,6 +109,7 @@ public class WarehouseInventoryService {
             user.setId(dto.getUserId());
             movement.setUser(user);
         }
+        movement.setTime(LocalDateTime.now());
         movementRepository.save(movement);
     }
 
