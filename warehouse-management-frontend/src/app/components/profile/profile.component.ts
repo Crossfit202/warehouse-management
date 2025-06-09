@@ -15,6 +15,7 @@ export class ProfileComponent implements OnInit {
   currentUser: any = {};
   editUser: any = {};
   isEditMode = false;
+  avatarColor: string = '#6c63ff'; // default
 
   constructor(private userService: UserService, private toastr: ToastrService) { }
 
@@ -25,6 +26,13 @@ export class ProfileComponent implements OnInit {
         this.currentUser = user;
       });
     }
+    this.avatarColor = this.getRandomColor();
+  }
+
+  getRandomColor(): string {
+    // Generates a random pastel color
+    const hue = Math.floor(Math.random() * 360);
+    return `hsl(${hue}, 70%, 70%)`;
   }
 
   startEdit() {

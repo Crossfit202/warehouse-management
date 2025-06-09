@@ -1,7 +1,7 @@
 <div class="content">
     <div class="profile-card">
         <div class="profile-header">
-            <div class="profile-avatar">
+            <div class="profile-avatar" [ngStyle]="{'background': avatarColor}">
                 <span>{{ (isEditMode ? editUser?.username : currentUser?.username)?.charAt(0) | uppercase }}</span>
             </div>
             <h2>{{ isEditMode ? editUser?.username : currentUser?.username }}</h2>
