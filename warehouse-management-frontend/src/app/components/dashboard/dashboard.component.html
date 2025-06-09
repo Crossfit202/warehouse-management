@@ -39,7 +39,7 @@
 
   <!-- Quick Actions -->
   <h4>Quick Actions</h4>
-  <div class="row mb-4" id="quickActions">
+  <div class="row mb-3 " id="quickActions">
     <div class="col-md-2">
       <button class="btn btn-primary w-100" [routerLink]="['/inventory']"> 📦 Manage Inventory</button>
     </div>
@@ -49,7 +49,7 @@
     <div class="col-md-2">
       <a class="btn btn-danger w-100" [routerLink]="['/alerts']">⚠️ Create Alert</a>
     </div>
-    <div class=" col-md-2">
+    <div class="col-md-2">
       <button class="btn btn-info w-100" [routerLink]="['/users']">👤 Assign Users</button>
     </div>
   </div>
@@ -80,8 +80,8 @@
 
   <!-- Inventory List -->
   <h4>Inventory in {{ selectedWarehouse }}</h4>
-  <div class="dashboard-card">
-    <table class="table table-sm table-bordered">
+  <div class="dashboard-card mb-4">
+    <table class="table table-sm table-bordered table-striped">
       <thead>
         <tr>
           <th>SKU</th>
@@ -101,8 +101,8 @@
 
   <!-- Inventory Movements -->
   <h4>Recent Inventory Movements</h4>
-  <div class="dashboard-card">
-    <table class="table table-sm table-striped">
+  <div class="dashboard-card mb-4">
+    <table class="table table-sm table-striped table-bordered">
       <thead>
         <tr>
           <th>#</th>
@@ -131,8 +131,8 @@
   </div>
   <!-- Storage Locations -->
   <h4>Storage Locations in {{ selectedWarehouse }}</h4>
-  <div class="dashboard-card">
-    <table class="table table-sm table-bordered">
+  <div class="dashboard-card mb-4">
+    <table class="table table-sm table-bordered table-striped">
       <thead>
         <tr>
           <th>Name</th>
@@ -151,7 +151,7 @@
   <!-- Personnel Assigned -->
   <h4>Personnel Assigned to {{ selectedWarehouse }}</h4>
   <div class="dashboard-card">
-    <table class="table table-sm table-bordered">
+    <table class="table table-sm table-bordered table-striped">
       <thead>
         <tr>
           <th>Username</th>

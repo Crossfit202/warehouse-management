@@ -16,3 +16,13 @@ ul {
     margin-left: 240px;
     padding: 2rem;
 }
+
+.table-striped>tbody>tr:nth-of-type(odd) {
+    --bs-table-accent-bg: #222;
+    /* or any color you want */
+    background-color: var(--bs-table-accent-bg) !important;
+}
+
+.table-striped>tbody>tr:nth-of-type(even)>td {
+    background-color: rgb(218, 218, 218) !important;
+}
