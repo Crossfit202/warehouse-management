@@ -122,6 +122,16 @@
   <!-- Inventory Movements -->
   <h4>Recent Inventory Movements</h4>
   <div class="dashboard-card mb-4">
+    <!-- Date Filter -->
+    <div class="mb-3 d-flex align-items-center gap-2">
+      <label for="startDate" class="me-2 mb-0">From:</label>
+      <input id="startDate" type="date" class="form-control w-auto" [(ngModel)]="movementStartDate">
+      <label for="endDate" class="ms-3 me-2 mb-0">To:</label>
+      <input id="endDate" type="date" class="form-control w-auto" [(ngModel)]="movementEndDate">
+      <button class="btn btn-outline-primary ms-3" (click)="filterMovements()">Filter</button>
+      <button class="btn btn-outline-secondary ms-2" (click)="clearMovementFilter()">Clear</button>
+    </div>
+
     <table class="table table-sm table-striped table-bordered">
       <thead>
         <tr>
@@ -136,7 +146,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let movement of recentMovements; let i = index">
+        <tr *ngFor="let movement of filteredMovements; let i = index">
           <td>{{ i + 1 }}</td>
           <td>{{ movement.itemName || 'N/A' }}</td>
           <td>{{ movement.fromWarehouseName || 'N/A' }}</td>

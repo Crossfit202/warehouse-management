@@ -38,6 +38,9 @@ export class DashboardComponent implements OnInit {
   warehouseLocation: string = '';
   personnel: WarehousePersonnelDTO[] = [];
   alertStatusFilter: string = '';
+  movementStartDate: string = '';
+  movementEndDate: string = '';
+  filteredMovements: InventoryMovement[] = [];
 
 
   constructor(
@@ -113,7 +116,8 @@ export class DashboardComponent implements OnInit {
 
   loadRecentMovements(warehouseId: string): void {
     this.movementService.getMovementsForWarehouse(warehouseId).subscribe(data => {
-      this.recentMovements = data.slice(0, 5);
+      this.recentMovements = data;
+      this.filteredMovements = data; // Show all by default
       this.recentMovementCount = data.length;
     });
   }
@@ -154,5 +158,31 @@ export class DashboardComponent implements OnInit {
         alert.warehouse?.name === this.selectedWarehouse &&
         alert.status === this.alertStatusFilter
     );
+  }
+
+  filterMovements(): void {
+    if (!this.movementStartDate && !this.movementEndDate) {
+      this.filteredMovements = this.recentMovements;
+      return;
+    }
+    const start = this.movementStartDate ? new Date(this.movementStartDate) : null;
+    const end = this.movementEndDate ? new Date(this.movementEndDate) : null;
+    this.filteredMovements = this.recentMovements.filter(movement => {
+      const movementDate = new Date(movement.time);
+      if (start && end) {
+        return movementDate >= start && movementDate <= end;
+      } else if (start) {
+        return movementDate >= start;
+      } else if (end) {
+        return movementDate <= end;
+      }
+      return true;
+    });
+  }
+
+  clearMovementFilter(): void {
+    this.movementStartDate = '';
+    this.movementEndDate = '';
+    this.filteredMovements = this.recentMovements;
   }
 }
