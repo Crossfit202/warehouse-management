@@ -3,14 +3,14 @@
   <h2>Warehouse Dashboard</h2>
 
   <!-- Dropdown list -->
-  <select (change)="onSelect($event)">
+  <select (change)="onSelect($event)" class="form-select mb-3" aria-label="Select Warehouse">
     <option *ngFor="let warehouse of warehouses" [value]="warehouse.name">
       {{ warehouse.name }}
     </option>
   </select>
 
   <!-- KPI Cards -->
-  <div class="row mb-4">
+  <div class="row mb-4 mt-3">
     <div class="col-md-3">
       <div class="dashboard-card">
         <h5>Location</h5>
