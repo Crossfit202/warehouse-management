@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { NavbarComponent } from './components/navbar/navbar.component';
 import { AuthService } from './services/auth.service';
@@ -12,10 +12,10 @@ import { AuthService } from './services/auth.service';
     <router-outlet></router-outlet>
   `
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   constructor(private authService: AuthService) { }
 
-  ngonInit() {
-    this.authService.verifyToken().subscribe()
+  ngOnInit() {
+    this.authService.verifyToken().subscribe();
   }
 }
