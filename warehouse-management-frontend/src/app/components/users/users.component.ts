@@ -8,6 +8,7 @@ import { WarehouseService } from '../../services/warehouse.service';
 import { Warehouse } from '../../models/Warehouse';
 import { PersonnelStatusEnum } from '../../models/PersonnelStatusEnum';
 import { ToastrService } from 'ngx-toastr'; // <-- Add this import
+import { HttpClient } from '@angular/common/http'; // Add if not already present
 
 @Component({
   selector: 'app-users',
@@ -25,6 +26,17 @@ export class UsersComponent implements OnInit {
   warehouses: Warehouse[] = [];
   userAssignments: { [userId: string]: WarehousePersonnelDTO | null } = {};
   selectedAssignment: WarehousePersonnelDTO | null = null;
+
+  isCreateModalOpen: boolean = false;
+  newUser = {
+    username: '',
+    email: '',
+    password: '',
+    role: 'ROLE_USER'
+  };
+
+  isDeleteModalOpen: boolean = false;
+  userToDelete: User | null = null;
 
   constructor(
     private userService: UserService,
@@ -103,19 +115,30 @@ export class UsersComponent implements OnInit {
     });
   }
 
-  deleteUser(userId: string): void {
-    if (confirm('Are you sure you want to delete this user?')) {
-      this.userService.deleteUser(userId).subscribe({
-        next: () => {
-          this.users = this.users.filter(u => u.id !== userId);
-          this.toastr.success('User deleted successfully!');
-        },
-        error: (err) => {
-          this.toastr.error('Failed to delete user.');
-          console.error('Failed to delete user:', err);
-        }
-      });
-    }
+  openDeleteModal(user: User): void {
+    this.userToDelete = user;
+    this.isDeleteModalOpen = true;
+  }
+
+  closeDeleteModal(): void {
+    this.userToDelete = null;
+    this.isDeleteModalOpen = false;
+  }
+
+  confirmDeleteUser(): void {
+    if (!this.userToDelete) return;
+    this.userService.deleteUser(this.userToDelete.id).subscribe({
+      next: () => {
+        this.users = this.users.filter(u => u.id !== this.userToDelete!.id);
+        this.toastr.success('User deleted successfully!');
+        this.closeDeleteModal();
+      },
+      error: (err) => {
+        this.toastr.error('Failed to delete user.');
+        console.error('Failed to delete user:', err);
+        this.closeDeleteModal();
+      }
+    });
   }
 
   saveWarehouseAssignment(afterSave?: () => void): void {
@@ -182,5 +205,40 @@ export class UsersComponent implements OnInit {
       if (afterSave) afterSave();
     }
   }
+
+  openCreateModal(): void {
+    this.isCreateModalOpen = true;
+    this.newUser = {
+      username: '',
+      email: '',
+      password: '',
+      role: 'ROLE_USER'
+    };
+  }
+
+  closeCreateModal(): void {
+    this.isCreateModalOpen = false;
+  }
+
+  createUser(): void {
+    if (!this.newUser.username || !this.newUser.email || !this.newUser.password || !this.newUser.role) {
+      this.toastr.error('Please fill out all fields.');
+      return;
+    }
+
+    // Use your UserService or HttpClient directly
+    this.userService.createUser(this.newUser).subscribe({
+      next: () => {
+        this.toastr.success('User created successfully!');
+        this.closeCreateModal();
+        this.loadUsers();
+      },
+      error: (err) => {
+        this.toastr.error('Failed to create user.');
+        console.error('Create user failed:', err);
+      }
+    });
+  }
+
   PersonnelStatusEnum = PersonnelStatusEnum; // for template access
 }

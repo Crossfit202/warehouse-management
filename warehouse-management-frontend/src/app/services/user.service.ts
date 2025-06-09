@@ -35,4 +35,8 @@ export class UserService {
   getUsersForWarehouse(warehouseId: string): Observable<User[]> {
     return this.http.get<User[]>(`http://localhost:8083/warehouse-personnel/warehouse/${warehouseId}/users`, { withCredentials: true });
   }
+
+  createUser(user: { username: string; email: string; password: string; role: string }) {
+    return this.http.post(`${this.apiUrl}/register`, user, { withCredentials: true });
+  }
 }

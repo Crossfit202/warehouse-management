@@ -41,16 +41,16 @@
   <h4>Quick Actions</h4>
   <div class="row mb-4" id="quickActions">
     <div class="col-md-2">
-      <button class="btn btn-primary w-100"> 📦 Manage Inventory</button>
+      <button class="btn btn-primary w-100" [routerLink]="['/inventory']"> 📦 Manage Inventory</button>
     </div>
     <div class="col-md-2">
       <button class="btn btn-secondary w-100"> 📋 View Logs</button>
     </div>
     <div class="col-md-2">
-      <button class="btn btn-danger w-100">⚠️ Create Alert</button>
+      <a class="btn btn-danger w-100" [routerLink]="['/alerts']">⚠️ Create Alert</a>
     </div>
-    <div class="col-md-2">
-      <button class="btn btn-info w-100">👤 Assign Users</button>
+    <div class=" col-md-2">
+      <button class="btn btn-info w-100" [routerLink]="['/users']">👤 Assign Users</button>
     </div>
   </div>
 

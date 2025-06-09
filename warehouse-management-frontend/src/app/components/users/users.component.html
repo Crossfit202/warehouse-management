@@ -1,6 +1,7 @@
 <div class="content">
     <h1 class="mb-4 text-light">Users</h1>
 
+    <button class="btn btn-success mb-3" (click)="openCreateModal()">+ Create User</button>
     <div class="container">
         <div class="card mb-3" *ngFor="let user of users">
             <div class="card-body">
@@ -23,7 +24,7 @@
                 </p>
                 <p class="card-text mb-3"><strong>Created:</strong> {{ user.created_at | date:'medium' }}</p>
                 <button class="btn btn-primary me-2 btn-sm" (click)="openEditModal(user)">Edit</button>
-                <button class="btn btn-danger btn-sm" (click)="deleteUser(user.id)">Delete</button>
+                <button class="btn btn-danger btn-sm" (click)="openDeleteModal(user)">Delete</button>
             </div>
         </div>
     </div>
@@ -79,4 +80,43 @@
             </form>
         </div>
     </div>
+
+    <!-- Create Modal -->
+    <div *ngIf="isCreateModalOpen" class="modal-overlay">
+        <div class="modal-content">
+            <h3 class="mb-3">Create User</h3>
+            <form (ngSubmit)="createUser()">
+                <div class="mb-3">
+                    <label class="form-label">Username</label>
+                    <input class="form-control" [(ngModel)]="newUser.username" name="newUsername" required />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Email</label>
+                    <input class="form-control" [(ngModel)]="newUser.email" name="newEmail" type="email" required />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Password</label>
+                    <input class="form-control" [(ngModel)]="newUser.password" name="newPassword" type="password"
+                        required />
+                </div>
+                <button type="submit" class="btn btn-success me-2">Create</button>
+                <button type="button" class="btn btn-secondary" (click)="closeCreateModal()">Cancel</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Delete Modal -->
+    <div *ngIf="isDeleteModalOpen" class="modal-overlay">
+        <div class="modal-content text-center">
+            <h3 class="mb-3 text-danger">Confirm Delete</h3>
+            <p>Are you sure you want to delete user <strong>{{ userToDelete?.username }}</strong>?</p>
+
+            <!-- Centered Button Group -->
+            <div class="d-flex justify-content-center gap-2 mt-4">
+                <button class="btn btn-danger" (click)="confirmDeleteUser()">Delete</button>
+                <button class="btn btn-secondary" (click)="closeDeleteModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
 </div>

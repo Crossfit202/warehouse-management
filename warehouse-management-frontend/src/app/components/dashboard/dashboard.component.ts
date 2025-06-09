@@ -12,12 +12,13 @@ import { StorageLocationCapacity } from '../../models/StorageLocationCapacity';
 import { WarehouseInventory } from '../../models/WarehouseInventory';
 import { WarehousePersonnelService } from '../../services/personnel.service';
 import { WarehousePersonnelDTO } from '../../services/personnel.service';
+import { RouterModule } from '@angular/router'; // <-- Add this import
 
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule], // <-- Add RouterModule here
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
