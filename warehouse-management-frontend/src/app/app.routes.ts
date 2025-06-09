@@ -13,6 +13,7 @@ import { InventoryComponent } from './components/inventory/inventory.component';
 import { StorageLocationsComponent } from './components/storage-locations/storage-locations.component';
 import { AlertsComponent } from './components/alerts/alerts.component';
 import { MovementsComponent } from './components/movements/movements.component';
+import { ProductsComponent } from './components/products/products.component';
 
 export const routes: Routes = [
     // Public Routes
@@ -93,6 +94,13 @@ export const routes: Routes = [
     {
         path: 'movements',
         component: MovementsComponent,
+        canActivate: [AuthGuard],
+        data: { role: ['ADMIN', 'MANAGER', 'INV_CLERK'] }
+    },
+
+    {
+        path: 'products',
+        component: ProductsComponent,
         canActivate: [AuthGuard],
         data: { role: ['ADMIN', 'MANAGER', 'INV_CLERK'] }
     },

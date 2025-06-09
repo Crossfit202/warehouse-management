@@ -25,6 +25,10 @@ SELECT * FROM storage_locations;
 
 SELECT * FROM warehouse_inventory;
 
+UPDATE warehouse_inventory
+SET min_quantity = '20'
+WHERE warehouse_inventory_id = '346bc232-966c-41ea-ae5b-17b0bf1253d6';
+
 SELECT * FROM warehouse_personnel;
 
 INSERT INTO warehouse_personnel (user_id, warehouse_id)

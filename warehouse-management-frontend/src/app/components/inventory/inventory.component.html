@@ -10,7 +10,7 @@
     </select>
 
     <!-- Inventory Table -->
-    <table>
+    <table class="table table-striped mt-3">
         <thead>
             <tr>
                 <th>Item</th>
@@ -25,16 +25,16 @@
             <tr *ngFor="let item of inventory">
                 <td>{{ item.itemName || item.itemId }}</td>
                 <td>{{ item.storageLocationName || item.storageLocationId }}</td>
-                <td [ngStyle]="{ color: item.quantity < item.minQuantity ? 'red' : 'black' }">
+                <td [ngStyle]="{ color: item.quantity < item.minQuantity ? 'red' : 'green' }">
                     {{ item.quantity }}
                 </td>
                 <td>{{ item.minQuantity }}</td>
                 <td>
                     <span *ngIf="item.quantity < item.minQuantity" style="color: red;" title="Reorder needed">
-                        🔴 Below Minimum
+                        🔴 Below Minimum | Order Soon
                     </span>
                     <span *ngIf="item.quantity >= item.minQuantity" style="color: green;" title="Stock sufficient">
-                        ✅ OK
+                        ✅ Sufficient Stock
                     </span>
                 </td>
                 <td>
