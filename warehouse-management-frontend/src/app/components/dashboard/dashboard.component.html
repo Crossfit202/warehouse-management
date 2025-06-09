@@ -1,182 +1,169 @@
-<!DOCTYPE html>
-<html lang="en">
+<!-- Main Dashboard Content -->
+<div class="content">
+  <h2>Warehouse Dashboard</h2>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Warehouse Dashboard</title>
-</head>
+  <!-- Dropdown list -->
+  <select (change)="onSelect($event)">
+    <option *ngFor="let warehouse of warehouses" [value]="warehouse.name">
+      {{ warehouse.name }}
+    </option>
+  </select>
 
-<body>
-  <!-- Main Dashboard Content -->
-  <div class="content">
-    <h2>Warehouse Dashboard</h2>
-
-    <!-- Dropdown list -->
-    <select (change)="onSelect($event)">
-      <option *ngFor="let warehouse of warehouses" [value]="warehouse.name">
-        {{ warehouse.name }}
-      </option>
-    </select>
-
-    <!-- KPI Cards -->
-    <div class="row mb-4">
-      <div class="col-md-3">
-        <div class="dashboard-card">
-          <h5>Location</h5>
-          <p class="fw-bold">{{ warehouseLocation }}</p>
-        </div>
-      </div>
-      <div class="col-md-3">
-        <div class="dashboard-card">
-          <h5>Capacity</h5>
-          <p class="fw-bold">{{ totalQuantity }} / {{ warehouseCapacity }}</p>
-        </div>
-      </div>
-      <div class="col-md-3">
-        <div class="dashboard-card">
-          <h5>Open Alerts</h5>
-          <p class="fw-bold text-danger">{{ openAlertCount }}</p>
-        </div>
-      </div>
-      <div class="col-md-3">
-        <div class="dashboard-card">
-          <h5>Recent Movements</h5>
-          <p class="fw-bold">{{ recentMovementCount }}</p>
-        </div>
+  <!-- KPI Cards -->
+  <div class="row mb-4">
+    <div class="col-md-3">
+      <div class="dashboard-card">
+        <h5>Location</h5>
+        <p class="fw-bold">{{ warehouseLocation }}</p>
       </div>
     </div>
-
-    <!-- Quick Actions -->
-    <h4>Quick Actions</h4>
-    <div class="row mb-4" id="quickActions">
-      <div class="col-md-2">
-        <button class="btn btn-primary w-100"> 📦 Manage Inventory</button>
-      </div>
-      <div class="col-md-2">
-        <button class="btn btn-secondary w-100"> 📋 View Logs</button>
-      </div>
-      <div class="col-md-2">
-        <button class="btn btn-danger w-100">⚠️ Create Alert</button>
-      </div>
-      <div class="col-md-2">
-        <button class="btn btn-info w-100">👤 Assign Users</button>
+    <div class="col-md-3">
+      <div class="dashboard-card">
+        <h5>Capacity</h5>
+        <p class="fw-bold">{{ totalQuantity }} / {{ warehouseCapacity }}</p>
       </div>
     </div>
+    <div class="col-md-3">
+      <div class="dashboard-card">
+        <h5>Open Alerts</h5>
+        <p class="fw-bold text-danger">{{ openAlertCount }}</p>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="dashboard-card">
+        <h5>Recent Movements</h5>
+        <p class="fw-bold">{{ recentMovementCount }}</p>
+      </div>
+    </div>
+  </div>
 
-    <!-- Alerts Section -->
-    <h4>Alerts</h4>
-    <div class="dashboard-card mb-4">
-      <ul class="list-group">
-        <ng-container *ngFor="let alert of alerts">
-          <li *ngIf="alert.warehouse.name === selectedWarehouse" class="list-group-item d-flex justify-content-between">
-            <ul>
-              <li></li>
-              <li>
-                <span [ngClass]="{
+  <!-- Quick Actions -->
+  <h4>Quick Actions</h4>
+  <div class="row mb-4" id="quickActions">
+    <div class="col-md-2">
+      <button class="btn btn-primary w-100"> 📦 Manage Inventory</button>
+    </div>
+    <div class="col-md-2">
+      <button class="btn btn-secondary w-100"> 📋 View Logs</button>
+    </div>
+    <div class="col-md-2">
+      <button class="btn btn-danger w-100">⚠️ Create Alert</button>
+    </div>
+    <div class="col-md-2">
+      <button class="btn btn-info w-100">👤 Assign Users</button>
+    </div>
+  </div>
+
+  <!-- Alerts Section -->
+  <h4>Alerts</h4>
+  <div class="dashboard-card mb-4">
+    <ul class="list-group">
+      <ng-container *ngFor="let alert of alerts">
+        <li *ngIf="alert.warehouse.name === selectedWarehouse" class="list-group-item d-flex justify-content-between">
+          <ul>
+            <li></li>
+            <li>
+              <span [ngClass]="{
                   'text-danger': alert.status === 'NEW',
                   'text-success': alert.status === 'CLOSED',
                   'text-primary': alert.status === 'ACTIVE'
                 }">
-                  {{ alert.status }}
-                </span>
-                {{ alert.message }}
-              </li>
-            </ul>
-          </li>
-        </ng-container>
-      </ul>
-    </div>
-
-    <!-- Inventory List -->
-    <h4>Inventory in {{ selectedWarehouse }}</h4>
-    <div class="dashboard-card">
-      <table class="table table-sm table-bordered">
-        <thead>
-          <tr>
-            <th>SKU</th>
-            <th>Name</th>
-            <th>Quantity</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let item of inventoryItems">
-            <td>{{ item.itemSku }}</td>
-            <td>{{ item.itemName }}</td>
-            <td>{{ item.quantity }}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <!-- Inventory Movements -->
-    <h4>Recent Inventory Movements</h4>
-    <div class="dashboard-card">
-      <table class="table table-sm table-striped">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Item</th>
-            <th>From</th>
-            <th>To</th>
-            <th>Quantity</th>
-            <th>Type</th>
-            <th>By</th>
-            <th>Time</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let movement of recentMovements; let i = index">
-            <td>{{ i + 1 }}</td>
-            <td>{{ movement.itemName || 'N/A' }}</td>
-            <td>{{ movement.fromWarehouseName || 'N/A' }}</td>
-            <td>{{ movement.toWarehouseName || 'N/A' }}</td>
-            <td>{{ movement.quantity }}</td>
-            <td>{{ movement.movementType }}</td>
-            <td>{{ movement.userName || 'N/A' }}</td>
-            <td>{{ movement.time | date:'short' }}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    <!-- Storage Locations -->
-    <h4>Storage Locations in {{ selectedWarehouse }}</h4>
-    <div class="dashboard-card">
-      <table class="table table-sm table-bordered">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Max Capacity</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let location of storageLocations">
-            <td>{{ location.name }}</td>
-            <td>{{ location.currentCapacity }}/{{ location.maxCapacity }}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <!-- Personnel Assigned -->
-    <h4>Personnel Assigned to {{ selectedWarehouse }}</h4>
-    <div class="dashboard-card">
-      <table class="table table-sm table-bordered">
-        <thead>
-          <tr>
-            <th>Username</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let p of personnel">
-            <td>{{ p.username }}</td>
-            <td>{{ p.status }}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+                {{ alert.status }}
+              </span>
+              {{ alert.message }}
+            </li>
+          </ul>
+        </li>
+      </ng-container>
+    </ul>
   </div>
-</body>
 
-</html>
+  <!-- Inventory List -->
+  <h4>Inventory in {{ selectedWarehouse }}</h4>
+  <div class="dashboard-card">
+    <table class="table table-sm table-bordered">
+      <thead>
+        <tr>
+          <th>SKU</th>
+          <th>Name</th>
+          <th>Quantity</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of inventoryItems">
+          <td>{{ item.itemSku }}</td>
+          <td>{{ item.itemName }}</td>
+          <td>{{ item.quantity }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Inventory Movements -->
+  <h4>Recent Inventory Movements</h4>
+  <div class="dashboard-card">
+    <table class="table table-sm table-striped">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Item</th>
+          <th>From</th>
+          <th>To</th>
+          <th>Quantity</th>
+          <th>Type</th>
+          <th>By</th>
+          <th>Time</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let movement of recentMovements; let i = index">
+          <td>{{ i + 1 }}</td>
+          <td>{{ movement.itemName || 'N/A' }}</td>
+          <td>{{ movement.fromWarehouseName || 'N/A' }}</td>
+          <td>{{ movement.toWarehouseName || 'N/A' }}</td>
+          <td>{{ movement.quantity }}</td>
+          <td>{{ movement.movementType }}</td>
+          <td>{{ movement.userName || 'N/A' }}</td>
+          <td>{{ movement.time | date:'short' }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <!-- Storage Locations -->
+  <h4>Storage Locations in {{ selectedWarehouse }}</h4>
+  <div class="dashboard-card">
+    <table class="table table-sm table-bordered">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Max Capacity</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let location of storageLocations">
+          <td>{{ location.name }}</td>
+          <td>{{ location.currentCapacity }}/{{ location.maxCapacity }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Personnel Assigned -->
+  <h4>Personnel Assigned to {{ selectedWarehouse }}</h4>
+  <div class="dashboard-card">
+    <table class="table table-sm table-bordered">
+      <thead>
+        <tr>
+          <th>Username</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let p of personnel">
+          <td>{{ p.username }}</td>
+          <td>{{ p.status }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

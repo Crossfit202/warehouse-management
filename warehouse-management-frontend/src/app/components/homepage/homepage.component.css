@@ -1,0 +1,60 @@
+.homepage-bg {
+    background-image: url('../../../assets/background_image_centered.png');
+    /* background-image: url('../../../assets/background.png'); */
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: fixed;
+    min-height: 100vh;
+}
+
+.hero {
+    text-align: center;
+    padding: 100px 20px;
+    /* background: rgba(241, 230, 248, 0.5); */
+    background: rgba(77, 73, 125, 0.5);
+    border-radius: 16px;
+    margin: 2rem auto;
+    max-width: 60%;
+}
+
+.hero h1 {
+    font-size: 3rem;
+    font-weight: bold;
+}
+
+.hero p {
+    font-size: 1.25rem;
+    margin-top: 1rem;
+}
+
+.feature-section {
+    margin: 3rem auto;
+    max-width: 60%;
+    color: black;
+    background: rgba(129, 118, 88, 0.5);
+}
+
+.feature-icon {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.footer {
+    text-align: center;
+    padding: 2rem;
+    font-size: 0.875rem;
+    color: #ccc;
+}
+
+a.btn-outline-light:hover {
+    background-color: white;
+    color: #000;
+}
+
+section {
+    box-shadow: 0 4px 24px 0 rgba(238, 234, 234, 0.18), 0 1.5px 6px 0 rgba(0, 0, 0, 0.15);
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.15);
+    margin-bottom: 2rem;
+}

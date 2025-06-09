@@ -7,6 +7,7 @@ import { WarehousePersonnelService, WarehousePersonnelDTO } from '../../services
 import { WarehouseService } from '../../services/warehouse.service';
 import { Warehouse } from '../../models/Warehouse';
 import { PersonnelStatusEnum } from '../../models/PersonnelStatusEnum';
+import { ToastrService } from 'ngx-toastr'; // <-- Add this import
 
 @Component({
   selector: 'app-users',
@@ -28,7 +29,8 @@ export class UsersComponent implements OnInit {
   constructor(
     private userService: UserService,
     private warehousePersonnelService: WarehousePersonnelService,
-    private warehouseService: WarehouseService
+    private warehouseService: WarehouseService,
+    private toastr: ToastrService // <-- Inject ToastrService
   ) { }
 
   ngOnInit(): void {
@@ -81,7 +83,6 @@ export class UsersComponent implements OnInit {
   saveUserChanges(): void {
     if (!this.selectedUser) return;
 
-    // Save user info
     const { password, ...userWithoutPassword } = this.selectedUser;
     this.userService.updateUser(userWithoutPassword as User).subscribe({
       next: (updated) => {
@@ -89,13 +90,16 @@ export class UsersComponent implements OnInit {
         if (index !== -1) {
           this.users[index] = updated;
         }
-        // Save assignment/status as well!
+        this.toastr.success('User updated successfully!');
         this.saveWarehouseAssignment(() => {
-          this.loadUsers(); // Always reload users and assignments after saving
+          this.loadUsers();
           this.closeEditModal();
         });
       },
-      error: (err) => console.error('Failed to update user:', err)
+      error: (err) => {
+        this.toastr.error('Failed to update user.');
+        console.error('Failed to update user:', err);
+      }
     });
   }
 
@@ -104,9 +108,12 @@ export class UsersComponent implements OnInit {
       this.userService.deleteUser(userId).subscribe({
         next: () => {
           this.users = this.users.filter(u => u.id !== userId);
-          console.log('User deleted');
+          this.toastr.success('User deleted successfully!');
         },
-        error: (err) => console.error('Failed to delete user:', err)
+        error: (err) => {
+          this.toastr.error('Failed to delete user.');
+          console.error('Failed to delete user:', err);
+        }
       });
     }
   }
@@ -121,16 +128,23 @@ export class UsersComponent implements OnInit {
       // If "Unassigned" is selected and there is an assignment, delete it
       if (this.selectedAssignment.id) {
         this.warehousePersonnelService.deleteWarehousePersonnel(this.selectedAssignment.id)
-          .subscribe(() => {
-            this.selectedAssignment = {
-              id: '',
-              userId: this.selectedUser!.id,
-              username: this.selectedUser!.username,
-              warehouseId: '',
-              warehouseName: '',
-              status: PersonnelStatusEnum.UNASSIGNED
-            };
-            if (afterSave) afterSave();
+          .subscribe({
+            next: () => {
+              this.selectedAssignment = {
+                id: '',
+                userId: this.selectedUser!.id,
+                username: this.selectedUser!.username,
+                warehouseId: '',
+                warehouseName: '',
+                status: PersonnelStatusEnum.UNASSIGNED
+              };
+              this.toastr.success('Warehouse assignment removed.');
+              if (afterSave) afterSave();
+            },
+            error: (err) => {
+              this.toastr.error('Failed to remove warehouse assignment.');
+              if (afterSave) afterSave();
+            }
           });
       } else {
         if (afterSave) afterSave();
@@ -138,8 +152,15 @@ export class UsersComponent implements OnInit {
     } else if (this.selectedAssignment.id) {
       // Update existing assignment
       this.warehousePersonnelService.updateWarehousePersonnel(this.selectedAssignment.id, this.selectedAssignment)
-        .subscribe(() => {
-          if (afterSave) afterSave();
+        .subscribe({
+          next: () => {
+            this.toastr.success('Warehouse assignment updated.');
+            if (afterSave) afterSave();
+          },
+          error: (err) => {
+            this.toastr.error('Failed to update warehouse assignment.');
+            if (afterSave) afterSave();
+          }
         });
     } else if (this.selectedAssignment.warehouseId) {
       // Create new assignment
@@ -147,8 +168,15 @@ export class UsersComponent implements OnInit {
         this.selectedAssignment.status = PersonnelStatusEnum.ACTIVE;
       }
       this.warehousePersonnelService.createWarehousePersonnel(this.selectedAssignment)
-        .subscribe(() => {
-          if (afterSave) afterSave();
+        .subscribe({
+          next: () => {
+            this.toastr.success('Warehouse assignment created.');
+            if (afterSave) afterSave();
+          },
+          error: (err) => {
+            this.toastr.error('Failed to create warehouse assignment.');
+            if (afterSave) afterSave();
+          }
         });
     } else {
       if (afterSave) afterSave();

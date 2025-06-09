@@ -2,7 +2,8 @@
 @import 'ngx-toastr/toastr';
 
 body {
-    background-color: rgba(10, 10, 57, 0.752);
+    /* background-color: rgba(10, 10, 57, 0.752); */
+    background-color: rgb(77, 73, 125);
     color: white;
 }
 
