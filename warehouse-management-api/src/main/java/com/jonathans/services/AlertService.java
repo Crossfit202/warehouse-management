@@ -99,6 +99,18 @@ public class AlertService {
         return ResponseEntity.ok(convertToDTO(existingAlert));
     }
 
+    // UPDATE ALERT STATUS
+    public ResponseEntity<AlertDTO> updateAlertStatus(UUID id, String status) {
+        Optional<Alert> alertOptional = alertRepository.findById(id);
+        if (alertOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+        Alert alert = alertOptional.get();
+        alert.setStatus(status);
+        alertRepository.save(alert);
+        return ResponseEntity.ok(convertToDTO(alert));
+    }
+
     // DELETE ALERT
     @Transactional
     public ResponseEntity<Void> deleteAlert(UUID id) {

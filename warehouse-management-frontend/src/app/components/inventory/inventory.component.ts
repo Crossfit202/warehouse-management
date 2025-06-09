@@ -8,6 +8,7 @@ import { WarehouseInventory } from '../../models/WarehouseInventory';
 import { MoveInventoryDTO } from '../../models/MoveInventoryDTO';
 import { AuthService } from '../../services/auth.service'; // ✅ To get logged-in user
 import { ToastrService } from 'ngx-toastr';
+import { AlertService } from '../../services/alert.service'; // Import your alert service
 
 @Component({
   selector: 'app-inventory',
@@ -36,7 +37,8 @@ export class InventoryComponent implements OnInit {
     private inventoryService: InventoryService,
     private warehouseService: WarehouseService,
     private authService: AuthService, // ✅ Inject auth service
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private alertService: AlertService // Inject AlertService
   ) { }
 
   ngOnInit(): void {
@@ -61,6 +63,13 @@ export class InventoryComponent implements OnInit {
   loadInventoryForWarehouse(warehouseId: string): void {
     this.inventoryService.getInventoryForWarehouse(warehouseId).subscribe(data => {
       this.inventory = data;
+      this.inventory.forEach(item => {
+        if (item.quantity < item.minQuantity) {
+          this.createLowStockAlert(item);
+        } else {
+          this.closeLowStockAlertIfExists(item);
+        }
+      });
     });
 
     this.warehouseService.getStorageLocationsForWarehouse(warehouseId).subscribe((locations: StorageLocation[]) => {
@@ -125,12 +134,48 @@ export class InventoryComponent implements OnInit {
     });
   }
 
-
   getWarehouseNameById(id: string | undefined): string {
     if (!id) return '';
     const match = this.warehouses.find(w => w.id === id);
     return match?.name || id;
   }
 
+  createLowStockAlert(item: WarehouseInventory) {
+    const message = `Low stock: ${item.itemName || item.itemId} at ${item.storageLocationName || item.storageLocationId}. Reorder.`;
+    const alert = {
+      message,
+      status: 'NEW',
+      warehouseId: item.warehouseId,
+      assignedUserId: null
+    };
+    this.alertService.createAlert(alert).subscribe({
+      next: () => {
+        this.toastr.info(`Alert created for ${item.itemName || item.itemId} at ${item.storageLocationName || item.storageLocationId}`);
+      },
+      error: () => {
+        this.toastr.error('Failed to create low stock alert.');
+      }
+    });
+  }
 
+  closeLowStockAlertIfExists(item: WarehouseInventory) {
+    this.alertService.getAllAlerts().subscribe(alerts => {
+      const alert = alerts.find(a =>
+        a.status === 'NEW' &&
+        a.message &&
+        a.message.includes(item.itemName || item.itemId) &&
+        a.message.includes(item.storageLocationName || item.storageLocationId)
+      );
+      if (alert) {
+        this.alertService.updateAlertStatus(alert.id, 'CLOSED').subscribe({
+          next: () => {
+            this.toastr.success(`Low stock alert closed for ${item.itemName || item.itemId} at ${item.storageLocationName || item.storageLocationId}`);
+          },
+          error: () => {
+            this.toastr.error('Failed to close low stock alert.');
+          }
+        });
+      }
+    });
+  }
 }

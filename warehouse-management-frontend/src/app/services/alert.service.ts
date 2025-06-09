@@ -29,4 +29,8 @@ export class AlertService {
   createAlert(alert: any): Observable<Alert> {
     return this.http.post<Alert>(this.apiUrl, alert, { withCredentials: true });
   }
+
+  updateAlertStatus(alertId: string, status: string) {
+    return this.http.patch(`${this.apiUrl}/${alertId}/status`, { status }, { withCredentials: true });
+  }
 }
