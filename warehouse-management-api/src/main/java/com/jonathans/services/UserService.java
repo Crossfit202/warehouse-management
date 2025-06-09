@@ -80,13 +80,20 @@ public class UserService {
             if (userRequestDTO.getEmail() != null) {
                 existingUser.setEmail(userRequestDTO.getEmail());
             }
-            if (userRequestDTO.getPassword() != null) {
-                existingUser.setPassword(encoder.encode(userRequestDTO.getPassword()));
+            // Password change logic
+            if (userRequestDTO.getNewPassword() != null && !userRequestDTO.getNewPassword().isEmpty()) {
+                // Require current password to match
+                if (userRequestDTO.getCurrentPassword() == null ||
+                        !encoder.matches(userRequestDTO.getCurrentPassword(), existingUser.getPassword())) {
+                    throw new RuntimeException("Current password is incorrect");
+                }
+                existingUser.setPassword(encoder.encode(userRequestDTO.getNewPassword()));
             }
             if (userRequestDTO.getRole() != null) {
                 List<String> validRoles = List.of("ROLE_USER", "ROLE_ADMIN", "ROLE_MANAGER", "ROLE_INV_CLERK");
                 if (!validRoles.contains(userRequestDTO.getRole())) {
-                    throw new RuntimeException("Invalid role. Valid roles are: ROLE_USER, ROLE_ADMIN, ROLE_MANAGER, ROLE_INV_CLERK");
+                    throw new RuntimeException(
+                            "Invalid role. Valid roles are: ROLE_USER, ROLE_ADMIN, ROLE_MANAGER, ROLE_INV_CLERK");
                 }
                 existingUser.setRole(userRequestDTO.getRole());
             }

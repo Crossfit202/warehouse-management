@@ -4,7 +4,9 @@ public class UserRequestDTO {
     private String username;
     private String email;
     private String password;
-    private String role; // Now a single role string like "ROLE_USER"
+    private String role;
+    private String currentPassword; // <-- Add this
+    private String newPassword; // <-- Add this
 
     public String getUsername() {
         return username;
@@ -54,4 +56,19 @@ public class UserRequestDTO {
                 + "]";
     }
 
+    public String getCurrentPassword() {
+        return currentPassword;
+    }
+
+    public void setCurrentPassword(String currentPassword) {
+        this.currentPassword = currentPassword;
+    }
+
+    public String getNewPassword() {
+        return newPassword;
+    }
+
+    public void setNewPassword(String newPassword) {
+        this.newPassword = newPassword;
+    }
 }

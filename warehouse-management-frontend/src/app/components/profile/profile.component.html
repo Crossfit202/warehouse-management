@@ -1,3 +1,51 @@
 <div class="content">
-    <p>profile works!</p>
+    <div class="profile-card">
+        <div class="profile-header">
+            <div class="profile-avatar">
+                <span>{{ (isEditMode ? editUser?.username : currentUser?.username)?.charAt(0) | uppercase }}</span>
+            </div>
+            <h2>{{ isEditMode ? editUser?.username : currentUser?.username }}</h2>
+            <p class="profile-role">{{ isEditMode ? editUser?.role : currentUser?.role }}</p>
+        </div>
+        <div class="profile-details" *ngIf="!isEditMode">
+            <p><strong>Email:</strong> {{ currentUser?.email }}</p>
+            <p><strong>Joined:</strong> {{ currentUser?.created_at | date:'mediumDate' }}</p>
+        </div>
+        <form *ngIf="isEditMode" (ngSubmit)="saveEdit()">
+            <div class="mb-3 text-start">
+                <label class="form-label">Username</label>
+                <input class="form-control" [(ngModel)]="editUser.username" name="username" required />
+            </div>
+            <div class="mb-3 text-start">
+                <label class="form-label">Email</label>
+                <input class="form-control" [(ngModel)]="editUser.email" name="email" type="email" required />
+            </div>
+            <!-- Optionally allow password change here -->
+            <div class="mb-3 text-start">
+                <label class="form-label">Role</label>
+                <input class="form-control" [(ngModel)]="editUser.role" name="role" disabled />
+            </div>
+            <div class="mb-3 text-start">
+                <label class="form-label">Current Password</label>
+                <input class="form-control" [(ngModel)]="editUser.currentPassword" name="currentPassword"
+                    type="password" autocomplete="current-password" />
+            </div>
+            <div class="mb-3 text-start">
+                <label class="form-label">New Password</label>
+                <input class="form-control" [(ngModel)]="editUser.newPassword" name="newPassword" type="password"
+                    autocomplete="new-password" />
+            </div>
+            <div class="mb-3 text-start">
+                <label class="form-label">Confirm New Password</label>
+                <input class="form-control" [(ngModel)]="editUser.confirmPassword" name="confirmPassword"
+                    type="password" autocomplete="new-password" />
+            </div>
+            <button type="submit" class="btn btn-success me-2">Save</button>
+            <button type="button" class="btn btn-secondary" (click)="cancelEdit()">Cancel</button>
+        </form>
+        <div class="profile-actions" *ngIf="!isEditMode">
+            <button class="btn btn-primary" (click)="startEdit()">Edit Profile</button>
+            <!-- <button class="btn btn-secondary">Change Password</button> -->
+        </div>
+    </div>
 </div>

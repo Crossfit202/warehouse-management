@@ -39,4 +39,8 @@ export class UserService {
   createUser(user: { username: string; email: string; password: string; role: string }) {
     return this.http.post(`${this.apiUrl}/register`, user, { withCredentials: true });
   }
+
+  getUserById(id: string) {
+    return this.http.get<User>(`${this.apiUrl}/${id}`, { withCredentials: true });
+  }
 }

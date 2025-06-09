@@ -46,6 +46,7 @@ public class SecurityConfig {
                         .requestMatchers("/users/register", "/unauthorized", "/auth/login", "/auth/logout",
                                 "/auth/verify", "/oauth2/**", "/login/**")
                         .permitAll()
+                        .requestMatchers(HttpMethod.PUT, "/users/*").authenticated()
                         .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
                         .requestMatchers("/users", "/users/**", "/inventory", "/inventory/**", "/inventory-items",
                                 "/inventory-items/**", "/storage-locations/**",
