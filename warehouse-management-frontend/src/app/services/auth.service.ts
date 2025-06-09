@@ -47,18 +47,20 @@ export class AuthService {
   logout(): void {
     this.http.post(`${this.baseUrl}/logout`, {}, {
       withCredentials: true,
-      responseType: 'text' as 'json' // 👈 tells Angular to expect plain text
+      responseType: 'text' as 'json'
     }).subscribe({
       next: () => {
         console.log('Logout successful');
         this.isAuthenticated = false;
-        localStorage.removeItem('userId');
-        localStorage.removeItem('username');
-
-        this.router.navigate(['/login']);
+        localStorage.clear(); // Clear all user info
+        this.authStatus.next(false);
+        window.location.href = '/'; // Reload app to root
       },
       error: (error) => {
         console.error('Logout failed:', error);
+        localStorage.clear();
+        this.authStatus.next(false);
+        window.location.href = '/';
       }
     });
   }
