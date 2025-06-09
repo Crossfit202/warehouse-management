@@ -2,7 +2,8 @@
 INSERT INTO users (id, username, email, password, role) VALUES 
     (uuid_generate_v4(), 'admin_user', 'admin@example.com', '$2a$12$CEPt88SwapkeyLmg4X374.Qst58etLyCCoDifJGQOGlN3Ft2LGsOq', 'ROLE_ADMIN'),
     (uuid_generate_v4(), 'manager_user', 'manager@example.com', '$2a$12$CEPt88SwapkeyLmg4X374.Qst58etLyCCoDifJGQOGlN3Ft2LGsOq', 'ROLE_MANAGER'),
-    (uuid_generate_v4(), 'clerk_user', 'clerk@example.com', '$2a$12$CEPt88SwapkeyLmg4X374.Qst58etLyCCoDifJGQOGlN3Ft2LGsOq', 'ROLE_INV_CLERK');
+    (uuid_generate_v4(), 'clerk_user', 'clerk@example.com', '$2a$12$CEPt88SwapkeyLmg4X374.Qst58etLyCCoDifJGQOGlN3Ft2LGsOq', 'ROLE_INV_CLERK'),
+	(uuid_generate_v4(), 'regular_user', 'regular@example.com', '$2a$12$CEPt88SwapkeyLmg4X374.Qst58etLyCCoDifJGQOGlN3Ft2LGsOq', 'ROLE_USER');;
 
 -- ✅ Insert Warehouses
 INSERT INTO warehouse (id, name, location, max_capacity) VALUES 
