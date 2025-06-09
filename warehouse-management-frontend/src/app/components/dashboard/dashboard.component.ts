@@ -127,4 +127,19 @@ export class DashboardComponent implements OnInit {
       this.personnel = data;
     });
   }
+
+  onAddInventory() {
+    // TODO: Open modal or add logic here
+    console.log('Add Inventory clicked');
+  }
+
+  addStorageLocation() {
+    // TODO: Open modal or add logic here
+    console.log('Add Storage Location clicked');
+  }
+
+  onAddUser() {
+    // TODO: Open modal or add logic here
+    console.log('Add User clicked');
+  }
 }
