@@ -17,8 +17,18 @@
         </label>
         <label>
             Warehouse:
-            <select [(ngModel)]="newAlert.warehouseId" name="warehouseId" required>
+            <select #warehouseSelect [(ngModel)]="newAlert.warehouseId" name="warehouseId" required
+                (change)="onNewAlertWarehouseChange(warehouseSelect.value)">
                 <option *ngFor="let warehouse of warehouses" [value]="warehouse.id">{{ warehouse.name }}</option>
+            </select>
+        </label>
+        <label>
+            Assigned User:
+            <select [(ngModel)]="newAlert.assignedUserId" name="assignedUserId">
+                <option value="">Unassigned</option>
+                <option *ngFor="let user of safePersonnelForSelectedWarehouse" [value]="user?.id">{{ user?.username }}
+                </option>
+
             </select>
         </label>
         <button type="submit" [disabled]="!alertForm.form.valid">Add Alert</button>
@@ -28,27 +38,29 @@
     <select (change)="onSelect($event)">
         <option *ngFor="let warehouse of warehouses" [value]="warehouse.name">{{warehouse.name}}</option>
     </select>
-    
+
 
     <ul>
         <li *ngFor="let alert of alerts">
-            <div *ngIf="alert.warehouse.name === selectedWarehouse">
+            <div *ngIf="alert.warehouse?.name === selectedWarehouse">
                 <strong>{{ alert.message }}</strong>
                 <ul>
                     <li>
-                      Status:
-                      <select [(ngModel)]="alert.status">
-                        <option value="NEW">New</option>
-                        <option value="ACTIVE">Active</option>
-                        <option value="CLOSED">Closed</option>
-                      </select>
+                        Status:
+                        <select [(ngModel)]="alert.status">
+                            <option value="NEW">New</option>
+                            <option value="ACTIVE">Active</option>
+                            <option value="CLOSED">Closed</option>
+                        </select>
                     </li>
                     <li>
-                      Assigned User:
-                      <select [(ngModel)]="alert.assignedUserId">
-                        <option value="">Unassigned</option>
-                        <option *ngFor="let user of users" [value]="user.id">{{ user.username }}</option>
-                      </select>
+                        Assigned User:
+                        <select [(ngModel)]="alert.assignedUserId">
+                            <option value="">Unassigned</option>
+                            <option *ngFor="let user of personnelForAlertWarehouse[alert.id]" [value]="user.id">
+                              {{ user.username }}
+                            </option>
+                        </select>
                     </li>
                     <li>Warehouse: {{ alert.warehouse.name }}</li>
                     <li>Time: {{ alert.formatTime() }}</li>

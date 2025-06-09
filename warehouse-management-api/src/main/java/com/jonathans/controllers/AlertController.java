@@ -40,7 +40,7 @@ public class AlertController {
 
     // CREATE NEW ALERT
     @PostMapping
-    public ResponseEntity<AlertDTO> createAlert(AlertDTO alertDTO) {
+    public ResponseEntity<AlertDTO> createAlert(@RequestBody AlertDTO alertDTO) {
         return alertService.createAlert(alertDTO);
     }
 

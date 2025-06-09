@@ -18,7 +18,7 @@ export class AlertService {
     return this.http.get<Alert[]>(this.apiUrl, { withCredentials: true });
   }
 
-  updateAlert(alert: Alert): Observable<Alert> {
+  updateAlert(alert: any): Observable<Alert> {
     return this.http.post<Alert>(`${this.apiUrl}/${alert.id}`, alert, { withCredentials: true });
   }
 
@@ -26,7 +26,7 @@ export class AlertService {
     return this.http.delete<void>(`${this.apiUrl}/${id}`, { withCredentials: true });
   }
 
-  createAlert(alert: Alert): Observable<Alert> {
+  createAlert(alert: any): Observable<Alert> {
     return this.http.post<Alert>(this.apiUrl, alert, { withCredentials: true });
   }
 }

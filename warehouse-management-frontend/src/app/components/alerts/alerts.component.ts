@@ -8,6 +8,7 @@ import { UserService } from '../../services/user.service';
 import { User } from '../../models/User';
 import { FormsModule } from '@angular/forms'; // <-- Add this import
 import { ToastrService } from 'ngx-toastr';
+import { WarehousePersonnelDTO } from '../../services/personnel.service';
 
 @Component({
   selector: 'app-alerts',
@@ -26,8 +27,12 @@ export class AlertsComponent implements OnInit {
   newAlert = {
     message: '',
     status: 'NEW',
-    warehouseId: ''
+    warehouseId: '',
+    assignedUserId: ''
   };
+
+  personnelForSelectedWarehouse: User[] = [];
+  personnelForAlertWarehouse: { [alertId: string]: User[] } = {};
 
   constructor(
     private alertService: AlertService,
@@ -54,6 +59,22 @@ export class AlertsComponent implements OnInit {
           obj.assignedUserId,
           obj.assignedUserName
         ));
+        // For each alert, load personnel for its warehouse
+        this.alerts.forEach(alert => {
+          if (alert.warehouse && alert.warehouse.id) {
+            this.userService.getUsersForWarehouse(alert.warehouse.id).subscribe((users: User[]) => {
+              this.personnelForAlertWarehouse[alert.id] = users.map(dto => new User(
+                dto.id,
+                dto.username,
+                '',
+                '',
+                '',
+                '',
+                ''
+              ));
+            });
+          }
+        });
       }
     );
   }
@@ -82,7 +103,7 @@ export class AlertsComponent implements OnInit {
       this.users = data.map((dto: any) => {
         // Adjust the mapping as per the User constructor's parameter order
         return new User(
-          dto.userId,           // id
+          dto.id,               // id
           dto.username,         // username
           dto.email || '',      // email (provide default if missing)
           dto.role || '',       // role (provide default if missing)
@@ -104,17 +125,39 @@ export class AlertsComponent implements OnInit {
     }
   }
 
+  // When warehouse is selected in the add alert form
+  onNewAlertWarehouseChange(warehouseId: string): void {
+    this.newAlert.warehouseId = warehouseId;
+    this.newAlert.assignedUserId = '';
+    // For add alert form
+    this.userService.getUsersForWarehouse(warehouseId).subscribe(data => {
+      this.personnelForSelectedWarehouse = data.map(dto => new User(
+        dto.id,               // <-- Use id, not userId
+        dto.username,
+        dto.email || '',
+        '',
+        '',
+        '',
+        ''
+      ));
+    });
+  }
+
   saveAlert(alert: Alert): void {
     // Convert empty string to null for unassigned user
-    if (alert.assignedUserId === '') {
-      alert.assignedUserId = undefined;
-    }
-    this.alertService.updateAlert(alert).subscribe({
+    const dto = {
+      id: alert.id,
+      message: alert.message,
+      status: alert.status,
+      warehouseId: alert.warehouse?.id,
+      assignedUserId: alert.assignedUserId || null
+    };
+    this.alertService.updateAlert(dto).subscribe({
       next: updated => {
-        this.toastr.success('Alert updated successfully!'); // <-- Show success message
+        this.toastr.success('Alert updated successfully!');
       },
       error: err => {
-        this.toastr.error('Failed to update alert.'); // <-- Show error message
+        this.toastr.error('Failed to update alert.');
       }
     });
   }
@@ -138,20 +181,26 @@ export class AlertsComponent implements OnInit {
       this.toastr.error('Please fill out all fields.');
       return;
     }
-    const alertToSend: any = {
+    const alertToSend = {
       message: this.newAlert.message,
       status: this.newAlert.status,
-      warehouse: this.warehouses.find(w => w.id === this.newAlert.warehouseId)
+      warehouseId: this.newAlert.warehouseId, // <-- send warehouseId directly
+      assignedUserId: this.newAlert.assignedUserId || null
     };
     this.alertService.createAlert(alertToSend).subscribe({
       next: () => {
         this.toastr.success('Alert created successfully!');
-        this.newAlert = { message: '', status: 'NEW', warehouseId: '' };
+        this.newAlert = { message: '', status: 'NEW', warehouseId: '', assignedUserId: '' };
+        this.personnelForSelectedWarehouse = [];
         this.loadAlerts();
       },
       error: () => {
         this.toastr.error('Failed to create alert.');
       }
     });
+  }
+
+  get safePersonnelForSelectedWarehouse(): User[] {
+    return this.personnelForSelectedWarehouse || [];
   }
 }

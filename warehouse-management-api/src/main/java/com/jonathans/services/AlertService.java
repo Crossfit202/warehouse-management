@@ -11,8 +11,10 @@ import org.springframework.stereotype.Service;
 
 import com.jonathans.DTOS.AlertDTO;
 import com.jonathans.models.Alert;
+import com.jonathans.models.Warehouse;
 import com.jonathans.repositories.AlertRepository;
 import com.jonathans.repositories.UserRepository;
+import com.jonathans.repositories.WarehouseRepository;
 
 import jakarta.transaction.Transactional;
 
@@ -21,10 +23,13 @@ public class AlertService {
 
     private final AlertRepository alertRepository;
     private final UserRepository userRepository;
+    private final WarehouseRepository warehouseRepository;
 
-    public AlertService(AlertRepository alertRepository, UserRepository userRepository) {
+    public AlertService(AlertRepository alertRepository, UserRepository userRepository,
+            WarehouseRepository warehouseRepository) {
         this.alertRepository = alertRepository;
         this.userRepository = userRepository;
+        this.warehouseRepository = warehouseRepository;
     }
 
     // GET ALL ALERTS
@@ -45,11 +50,18 @@ public class AlertService {
         Alert alert = new Alert();
         alert.setMessage(alertDTO.getMessage());
         alert.setStatus(alertDTO.getStatus());
-        alert.setWarehouse(alertDTO.getWarehouse());
+
+        // Fetch and set warehouse by ID
+        if (alertDTO.getWarehouseId() != null) {
+            Warehouse warehouse = warehouseRepository.findById(alertDTO.getWarehouseId()).orElse(null);
+            alert.setWarehouse(warehouse);
+        }
 
         // Set assigned user if provided
-        if (alertDTO.getAssignedUserId() != null) {
+        if (alertDTO.getAssignedUserId() != null && !alertDTO.getAssignedUserId().toString().isBlank()) {
             userRepository.findById(alertDTO.getAssignedUserId()).ifPresent(alert::setAssignedUser);
+        } else {
+            alert.setAssignedUser(null);
         }
 
         Alert savedAlert = alertRepository.save(alert);
@@ -72,9 +84,11 @@ public class AlertService {
             existingAlert.setMessage(alertDTO.getMessage());
         if (alertDTO.getStatus() != null)
             existingAlert.setStatus(alertDTO.getStatus());
-        if (alertDTO.getWarehouse() != null)
-            existingAlert.setWarehouse(alertDTO.getWarehouse());
-        if (alertDTO.getAssignedUserId() != null) {
+        if (alertDTO.getWarehouseId() != null) {
+            Warehouse warehouse = warehouseRepository.findById(alertDTO.getWarehouseId()).orElse(null);
+            existingAlert.setWarehouse(warehouse);
+        }
+        if (alertDTO.getAssignedUserId() != null && !alertDTO.getAssignedUserId().toString().isBlank()) {
             userRepository.findById(alertDTO.getAssignedUserId()).ifPresent(existingAlert::setAssignedUser);
         } else {
             existingAlert.setAssignedUser(null);
@@ -97,13 +111,13 @@ public class AlertService {
 
     // Convert to DTO
     private AlertDTO convertToDTO(Alert alert) {
-        return new AlertDTO(
-                alert.getId(),
-                alert.getWarehouse(),
-                alert.getMessage(),
-                alert.getStatus(),
-                alert.getTime(),
-                alert.getAssignedUser() != null ? alert.getAssignedUser().getId() : null // <-- Add this
-        );
+        AlertDTO dto = new AlertDTO();
+        dto.setId(alert.getId());
+        dto.setWarehouse(alert.getWarehouse());
+        dto.setMessage(alert.getMessage());
+        dto.setStatus(alert.getStatus());
+        dto.setTime(alert.getTime());
+        dto.setAssignedUserId(alert.getAssignedUser() != null ? alert.getAssignedUser().getId() : null);
+        return dto;
     }
 }

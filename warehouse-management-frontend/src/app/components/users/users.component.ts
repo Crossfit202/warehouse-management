@@ -90,8 +90,10 @@ export class UsersComponent implements OnInit {
           this.users[index] = updated;
         }
         // Save assignment/status as well!
-        this.saveWarehouseAssignment();
-        this.closeEditModal();
+        this.saveWarehouseAssignment(() => {
+          this.loadUsers(); // Always reload users and assignments after saving
+          this.closeEditModal();
+        });
       },
       error: (err) => console.error('Failed to update user:', err)
     });
@@ -109,8 +111,11 @@ export class UsersComponent implements OnInit {
     }
   }
 
-  saveWarehouseAssignment(): void {
-    if (!this.selectedAssignment) return;
+  saveWarehouseAssignment(afterSave?: () => void): void {
+    if (!this.selectedAssignment) {
+      if (afterSave) afterSave();
+      return;
+    }
 
     if (!this.selectedAssignment.warehouseId) {
       // If "Unassigned" is selected and there is an assignment, delete it
@@ -125,21 +130,28 @@ export class UsersComponent implements OnInit {
               warehouseName: '',
               status: PersonnelStatusEnum.UNASSIGNED
             };
+            if (afterSave) afterSave();
           });
+      } else {
+        if (afterSave) afterSave();
       }
     } else if (this.selectedAssignment.id) {
       // Update existing assignment
-      console.log('Updating assignment:', this.selectedAssignment);
       this.warehousePersonnelService.updateWarehousePersonnel(this.selectedAssignment.id, this.selectedAssignment)
-        .subscribe(() => this.loadUsers());
+        .subscribe(() => {
+          if (afterSave) afterSave();
+        });
     } else if (this.selectedAssignment.warehouseId) {
       // Create new assignment
-      // If status is not set, default to ACTIVE
       if (!this.selectedAssignment.status) {
         this.selectedAssignment.status = PersonnelStatusEnum.ACTIVE;
       }
       this.warehousePersonnelService.createWarehousePersonnel(this.selectedAssignment)
-        .subscribe();
+        .subscribe(() => {
+          if (afterSave) afterSave();
+        });
+    } else {
+      if (afterSave) afterSave();
     }
   }
   PersonnelStatusEnum = PersonnelStatusEnum; // for template access

@@ -12,18 +12,20 @@ public class AlertDTO {
     private String status;
     private LocalDateTime time;
     private UUID assignedUserId;
+    private UUID warehouseId;
 
     public AlertDTO() {
     }
 
     public AlertDTO(UUID id, Warehouse warehouse, String message, String status, LocalDateTime time,
-            UUID assignedUserId) {
+            UUID assignedUserId, UUID warehouseId) {
         this.id = id;
         this.warehouse = warehouse;
         this.message = message;
         this.status = status;
         this.time = time;
         this.assignedUserId = assignedUserId;
+        this.warehouseId = warehouseId;
     }
 
     public UUID getId() {
@@ -72,6 +74,14 @@ public class AlertDTO {
 
     public void setAssignedUserId(UUID assignedUserId) {
         this.assignedUserId = assignedUserId;
+    }
+
+    public UUID getWarehouseId() {
+        return warehouseId;
+    }
+
+    public void setWarehouseId(UUID warehouseId) {
+        this.warehouseId = warehouseId;
     }
 
     @Override
