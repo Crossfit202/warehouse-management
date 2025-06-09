@@ -13,12 +13,13 @@ import { WarehouseInventory } from '../../models/WarehouseInventory';
 import { WarehousePersonnelService } from '../../services/personnel.service';
 import { WarehousePersonnelDTO } from '../../services/personnel.service';
 import { RouterModule } from '@angular/router'; // <-- Add this import
+import { FormsModule } from '@angular/forms';
 
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule], // <-- Add RouterModule here
+  imports: [CommonModule, RouterModule, FormsModule], // <-- Add RouterModule here
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
@@ -36,6 +37,7 @@ export class DashboardComponent implements OnInit {
   warehouseCapacity: number = 0;
   warehouseLocation: string = '';
   personnel: WarehousePersonnelDTO[] = [];
+  alertStatusFilter: string = '';
 
 
   constructor(
@@ -141,5 +143,16 @@ export class DashboardComponent implements OnInit {
   onAddUser() {
     // TODO: Open modal or add logic here
     console.log('Add User clicked');
+  }
+
+  get filteredAlerts() {
+    if (!this.alertStatusFilter) {
+      return this.alerts.filter(alert => alert.warehouse?.name === this.selectedWarehouse);
+    }
+    return this.alerts.filter(
+      alert =>
+        alert.warehouse?.name === this.selectedWarehouse &&
+        alert.status === this.alertStatusFilter
+    );
   }
 }

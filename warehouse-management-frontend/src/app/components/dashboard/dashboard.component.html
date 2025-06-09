@@ -57,8 +57,18 @@
   <!-- Alerts Section -->
   <h4>Alerts</h4>
   <div class="dashboard-card mb-4">
+    <!-- Filter by Status -->
+    <div class="mb-2 d-flex align-items-center">
+      <select id="alertStatusFilter" class="form-select w-auto" [(ngModel)]="alertStatusFilter">
+        <option value="">All</option>
+        <option value="NEW">New</option>
+        <option value="ACTIVE">Active</option>
+        <option value="CLOSED">Closed</option>
+      </select>
+    </div>
+
     <ul class="list-group">
-      <ng-container *ngFor="let alert of alerts">
+      <ng-container *ngFor="let alert of filteredAlerts">
         <li *ngIf="alert.warehouse.name === selectedWarehouse" class="list-group-item d-flex justify-content-between">
           <ul>
             <li></li>
