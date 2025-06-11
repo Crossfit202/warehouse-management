@@ -5,6 +5,7 @@ import { UserService } from '../../services/user.service';
 import { FormsModule } from '@angular/forms';
 import { WarehousePersonnelService, WarehousePersonnelDTO } from '../../services/personnel.service';
 import { WarehouseService } from '../../services/warehouse.service';
+import { AuthService } from '../../services/auth.service';
 import { Warehouse } from '../../models/Warehouse';
 import { PersonnelStatusEnum } from '../../models/PersonnelStatusEnum';
 import { ToastrService } from 'ngx-toastr'; // <-- Add this import
@@ -42,6 +43,7 @@ export class UsersComponent implements OnInit {
     private userService: UserService,
     private warehousePersonnelService: WarehousePersonnelService,
     private warehouseService: WarehouseService,
+    private authService: AuthService,
     private toastr: ToastrService // <-- Inject ToastrService
   ) { }
 
@@ -127,6 +129,13 @@ export class UsersComponent implements OnInit {
 
   confirmDeleteUser(): void {
     if (!this.userToDelete) return;
+
+    // check so the user doesn't delete their own account
+    if (this.userToDelete.id === this.authService.getCurrentUser().id){
+      this.toastr.error("You cannot delete your own account");
+      return;
+    }
+
     this.userService.deleteUser(this.userToDelete.id).subscribe({
       next: () => {
         this.users = this.users.filter(u => u.id !== this.userToDelete!.id);
