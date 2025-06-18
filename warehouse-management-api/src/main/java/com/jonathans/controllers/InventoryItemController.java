@@ -34,7 +34,7 @@ public class InventoryItemController {
         return inventoryItemService.getItemById(id);
     }
 
-    @PostMapping
+    @PostMapping("/add")
     public ResponseEntity<InventoryItemDTO> createItem(@RequestBody InventoryItemDTO itemDTO) {
         return inventoryItemService.createItem(itemDTO);
     }

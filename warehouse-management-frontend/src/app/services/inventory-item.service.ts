@@ -11,4 +11,8 @@ export class InventoryItemService {
     getAllItems(): Observable<any[]> {
         return this.http.get<any[]>(this.apiUrl, { withCredentials: true });
     }
+
+    createItem(product: { sku: string; name: string; description: string }) {
+        return this.http.post(`${this.apiUrl}/add`, product, {withCredentials: true});
+    }
 }

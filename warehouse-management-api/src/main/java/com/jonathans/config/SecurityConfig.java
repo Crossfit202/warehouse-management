@@ -51,7 +51,7 @@ public class SecurityConfig {
                         .requestMatchers("/users", "/users/**", "/inventory", "/inventory/**", "/inventory-items",
                                 "/inventory-items/**", "/storage-locations/**",
                                 "/storage-locations", "/alerts", "/alerts/**", "/movements", "/movements/**",
-                                "/warehouses", "/warehouses/**")
+                                "/warehouses", "/warehouses/**", "/warehouse-inventory", "/warehouse-inventory/**")
                         .hasAnyAuthority("ROLE_USER", "ROLE_ADMIN", "ROLE_MANAGER", "ROLE_INV_CLERK")
                         .requestMatchers(HttpMethod.POST, "/warehouse-personnel", "/warehouse-personnel/**")
                         .hasAnyAuthority("ROLE_ADMIN", "ROLE_MANAGER")

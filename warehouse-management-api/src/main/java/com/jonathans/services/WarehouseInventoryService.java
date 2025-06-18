@@ -5,6 +5,7 @@ import com.jonathans.DTOS.MoveInventoryDTO;
 import com.jonathans.models.*;
 import com.jonathans.repositories.WarehouseInventoryRepository;
 import com.jonathans.repositories.InventoryMovementRepository;
+import com.jonathans.repositories.WarehouseStorageLocationsRepository;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,11 +20,16 @@ public class WarehouseInventoryService {
 
     private final WarehouseInventoryRepository inventoryRepository;
     private final InventoryMovementRepository movementRepository;
+    private final WarehouseStorageLocationsRepository storageLocationsRepository;
 
-    public WarehouseInventoryService(WarehouseInventoryRepository inventoryRepository,
-            InventoryMovementRepository movementRepository) {
+    public WarehouseInventoryService(
+            WarehouseInventoryRepository inventoryRepository,
+            InventoryMovementRepository movementRepository,
+            WarehouseStorageLocationsRepository storageLocationsRepository // <-- add this
+    ) {
         this.inventoryRepository = inventoryRepository;
         this.movementRepository = movementRepository;
+        this.storageLocationsRepository = storageLocationsRepository; // <-- add this
     }
 
     public List<WarehouseInventoryDTO> getInventoryByWarehouse(UUID warehouseId) {
@@ -136,9 +142,8 @@ public class WarehouseInventoryService {
     }
 
     private WarehouseStorageLocations buildStorageLocation(UUID locationId) {
-        WarehouseStorageLocations loc = new WarehouseStorageLocations();
-        loc.setId(locationId);
-        return loc;
+        return storageLocationsRepository.findById(locationId)
+            .orElseThrow(() -> new RuntimeException("Storage location not found: " + locationId));
     }
 
     private Warehouse buildWarehouse(UUID warehouseId) {

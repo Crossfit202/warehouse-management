@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { WarehouseInventory } from '../models/WarehouseInventory';
 import { MoveInventoryDTO } from '../models/MoveInventoryDTO'; // ✅ Use imported version only
+import { AddInventoryDTO } from '../models/AddInventoryDTO';
 
 @Injectable({
     providedIn: 'root'
@@ -18,6 +19,10 @@ export class InventoryService {
 
     moveInventory(dto: MoveInventoryDTO): Observable<any> {
         return this.http.post(`${this.apiUrl}/move`, dto, { withCredentials: true });
+    }
+
+    addInventoryItem(dto: AddInventoryDTO) {
+        return this.http.post(`${this.apiUrl}/add`, dto, { withCredentials: true });
     }
 
 }

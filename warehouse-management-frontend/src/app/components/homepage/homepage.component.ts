@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../../services/auth.service'; // Adjust path as needed
+import { CommonModule } from '@angular/common'; // Import CommonModule for ngIf, ngFor, etc.
 
 @Component({
   selector: 'app-homepage',
   standalone: true,
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './homepage.component.html',
   styleUrl: './homepage.component.css'
 })

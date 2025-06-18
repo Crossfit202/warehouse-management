@@ -6,9 +6,11 @@ import { WarehouseService } from '../../services/warehouse.service';
 import { StorageLocation } from '../../models/StorageLocation';
 import { WarehouseInventory } from '../../models/WarehouseInventory';
 import { MoveInventoryDTO } from '../../models/MoveInventoryDTO';
+import { AddInventoryDTO } from '../../models/AddInventoryDTO';
 import { AuthService } from '../../services/auth.service'; // ✅ To get logged-in user
 import { ToastrService } from 'ngx-toastr';
 import { AlertService } from '../../services/alert.service'; // Import your alert service
+import { InventoryItemService } from '../../services/inventory-item.service'; // <-- Add this import
 
 @Component({
   selector: 'app-inventory',
@@ -24,18 +26,22 @@ export class InventoryComponent implements OnInit {
 
   // Modal State
   showMoveModal: boolean = false;
+  showAddModal: boolean = false;
   selectedItem: WarehouseInventory | null = null;
   moveToWarehouseId: string = '';
   moveToLocationId: string = '';
   moveQuantity: number = 1;
   availableLocations: StorageLocation[] = [];
   availableToLocations: StorageLocation[] = [];
+  products: any[] = [];
+  newInventoryItem: any = {};
 
   userId: string = ''; // ✅ For logging movement
 
   constructor(
     private inventoryService: InventoryService,
     private warehouseService: WarehouseService,
+    private inventoryItemService: InventoryItemService, // <-- Inject here
     private authService: AuthService, // ✅ Inject auth service
     private toastr: ToastrService,
     private alertService: AlertService // Inject AlertService
@@ -53,6 +59,9 @@ export class InventoryComponent implements OnInit {
         this.loadInventoryForWarehouse(this.selectedWarehouse);
       }
     });
+
+    // Load products for the dropdown
+    this.inventoryItemService.getAllItems().subscribe((items: any[]) => this.products = items); // <-- Use correct service
   }
 
   onSelect(event: any): void {
@@ -100,6 +109,56 @@ export class InventoryComponent implements OnInit {
   closeMoveModal(): void {
     this.showMoveModal = false;
     this.selectedItem = null;
+  }
+
+  openAddModal(): void {
+    this.newInventoryItem = {};
+    this.showAddModal = true;
+  }
+
+  closeAddModal(): void {
+    this.showAddModal = false;
+  }
+
+  // When warehouse changes, update available locations
+  onAddWarehouseChange(): void {
+    if (this.newInventoryItem.warehouseId) {
+      this.warehouseService.getStorageLocationsForWarehouse(this.newInventoryItem.warehouseId)
+        .subscribe(locations => {
+          this.availableLocations = locations;
+          // Optionally set the first location as default
+          if (locations.length > 0) {
+            this.newInventoryItem.storageLocationId = locations[0].id;
+          }
+        });
+    } else {
+      this.availableLocations = [];
+      this.newInventoryItem.storageLocationId = null;
+    }
+  }
+
+  addInventoryItem(): void {
+    if (!this.newInventoryItem.storageLocationId) {
+      this.toastr.error('Please select a storage location.');
+      return;
+    }
+    const dto: AddInventoryDTO = {
+      warehouseId: this.newInventoryItem.warehouseId,
+      itemId: this.newInventoryItem.itemId,
+      storageLocationId: this.newInventoryItem.storageLocationId,
+      quantity: this.newInventoryItem.quantity,
+      minQuantity: this.newInventoryItem.minQuantity,
+      userId: this.userId
+    };
+    this.inventoryService.addInventoryItem(dto).subscribe({
+      next: () => {
+        this.closeAddModal();
+        this.loadInventoryForWarehouse(this.selectedWarehouse);
+      },
+      error: () => {
+        // handle error
+      }
+    });
   }
 
   confirmMove(): void {
