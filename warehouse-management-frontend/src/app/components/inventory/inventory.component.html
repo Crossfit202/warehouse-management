@@ -2,7 +2,7 @@
     <h1>Inventory Management</h1>
 
     <!-- Warehouse Selector -->
-    <label for="warehouseSelect"><strong>Select Warehouse:</strong></label>
+    <label for="warehouseSelect" style="margin-right: 8px;"><strong>Select Warehouse:</strong></label>
     <select id="warehouseSelect" (change)="onSelect($event)">
         <option *ngFor="let warehouse of warehouses" [value]="warehouse.id">
             {{ warehouse.name || warehouse.id }}
@@ -38,9 +38,14 @@
                     </span>
                 </td>
                 <td>
-                    <button class="btn btn-primary" (click)="openMoveModal(item) ">Move</button>
-                    <button class="btn btn-success" (click)=" openAddModal()">Add Inventory</button>
-                    <button class="btn btn-danger" (click)="openDeleteModal(item)">Delete Inventory</button>
+                    <div class="d-flex flex-column gap-2">
+                        <div class="d-flex flex-row gap-2">
+                            <button class="btn btn-primary" (click)="openMoveModal(item)">Move</button>
+                            <button class="btn btn-success" (click)="openAddModal()">Add Inventory</button>
+                            <button class="btn btn-danger" (click)="openDeleteModal(item)">Delete Inventory</button>
+                            <button class="btn btn-danger" (click)="openDeleteAllModal(item)">Delete All Inventory</button>
+                        </div>
+                    </div>
                 </td>
             </tr>
         </tbody>
@@ -129,6 +134,21 @@
             <div class="modal-actions">
                 <button class="btn btn-danger" (click)="confirmDeleteQuantity()">Remove</button>
                 <button class="btn btn-secondary" (click)="closeDeleteModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Inventory Modal -->
+    <div *ngIf="showDeleteAllModal" class="modal">
+        <div class="modal-content">
+            <h3>Remove Entire Quantity from Inventory</h3>
+            <p>
+                <strong>Item:</strong> {{ itemToDelete?.itemName || itemToDelete?.itemId }}<br>
+                <strong>Available:</strong> {{ itemToDelete?.quantity }}
+            </p>
+            <div class="modal-actions">
+                <button class="btn btn-danger" (click)="confirmDeleteAllQuantity()">Remove</button>
+                <button class="btn btn-secondary" (click)="closeDeleteAllModal()">Cancel</button>
             </div>
         </div>
     </div>

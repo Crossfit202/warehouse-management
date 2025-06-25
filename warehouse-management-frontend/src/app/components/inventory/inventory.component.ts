@@ -28,6 +28,7 @@ export class InventoryComponent implements OnInit {
   showMoveModal: boolean = false;
   showAddModal: boolean = false;
   showDeleteModal: boolean = false;
+  showDeleteAllModal: boolean = false;
   selectedItem: WarehouseInventory | null = null;
   moveToWarehouseId: string = '';
   moveToLocationId: string = '';
@@ -289,4 +290,35 @@ export class InventoryComponent implements OnInit {
       });
     }
   }
+
+  openDeleteAllModal(item: WarehouseInventory): void {
+    this.itemToDelete = item;
+    this.showDeleteAllModal = true;
+  }
+
+  closeDeleteAllModal(): void {
+    this.showDeleteAllModal = false;
+    this.itemToDelete = null;
+  }
+
+  confirmDeleteAllQuantity(): void {
+    // check it's not null
+    if (!this.itemToDelete) {
+      console.warn('Error trying to delete all items: Item to delete is Null');
+      return;
+    }
+
+    // Delete the inventory item
+    this.inventoryService.deleteInventoryItem(this.itemToDelete.warehouseInventoryId).subscribe({
+      next: () => {
+        this.closeDeleteAllModal();
+        this.loadInventoryForWarehouse(this.selectedWarehouse);
+        this.toastr.success('Inventory deleted.');
+      },
+      error: () => {
+        this.toastr.error('Failed to delete inventory.');
+      }
+    });
+  }
+
 }
