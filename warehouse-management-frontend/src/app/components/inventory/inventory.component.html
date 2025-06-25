@@ -38,8 +38,9 @@
                     </span>
                 </td>
                 <td>
-                    <button (click)="openMoveModal(item)">Move</button>
-                    <button (click)="openAddModal()">Add Inventory</button>
+                    <button class="btn btn-primary" (click)="openMoveModal(item) ">Move</button>
+                    <button class="btn btn-success" (click)=" openAddModal()">Add Inventory</button>
+                    <button class="btn btn-danger" (click)="openDeleteModal(item)">Delete Inventory</button>
                 </td>
             </tr>
         </tbody>
@@ -81,36 +82,54 @@
 
             <!-- Action Buttons -->
             <div class="modal-actions">
-                <button (click)="confirmMove()">Confirm</button>
-                <button (click)="closeMoveModal()">Cancel</button>
+                <button class="btn btn-success" (click)="confirmMove()">Confirm</button>
+                <button class="btn btn-danger" (click)="closeMoveModal()">Cancel</button>
             </div>
         </div>
     </div>
-</div>
 
-<!-- Add Modal -->
-<div *ngIf="showAddModal" class="modal">
-  <div class="modal-content">
-    <h3>Add Inventory Item</h3>
-    <label>Product</label>
-    <select [(ngModel)]="newInventoryItem.itemId">
-      <option *ngFor="let product of products" [value]="product.id">{{ product.name }} ({{ product.sku }})</option>
-    </select>
-    <label>Warehouse</label>
-    <select [(ngModel)]="newInventoryItem.warehouseId" (change)="onAddWarehouseChange()">
-      <option *ngFor="let warehouse of warehouses" [value]="warehouse.id">{{ warehouse.name }}</option>
-    </select>
-    <label>Location</label>
-    <select [(ngModel)]="newInventoryItem.storageLocationId">
-      <option *ngFor="let location of availableLocations" [value]="location.id">{{ location.name }}</option>
-    </select>
-    <label>Quantity</label>
-    <input type="number" [(ngModel)]="newInventoryItem.quantity" min="1" />
-    <label>Min Quantity</label>
-    <input type="number" [(ngModel)]="newInventoryItem.minQuantity" min="1" />
-    <div class="modal-actions">
-      <button (click)="addInventoryItem()">Add</button>
-      <button (click)="closeAddModal()">Cancel</button>
+    <!-- Add Modal -->
+    <div *ngIf="showAddModal" class="modal">
+        <div class="modal-content">
+            <h3>Add Inventory Item</h3>
+            <label>Product</label>
+            <select [(ngModel)]="newInventoryItem.itemId">
+                <option *ngFor="let product of products" [value]="product.id">{{ product.name }} ({{ product.sku }})
+                </option>
+            </select>
+            <label>Warehouse</label>
+            <select [(ngModel)]="newInventoryItem.warehouseId" (change)="onAddWarehouseChange()">
+                <option *ngFor="let warehouse of warehouses" [value]="warehouse.id">{{ warehouse.name }}</option>
+            </select>
+            <label>Location</label>
+            <select [(ngModel)]="newInventoryItem.storageLocationId">
+                <option *ngFor="let location of availableLocations" [value]="location.id">{{ location.name }}</option>
+            </select>
+            <label>Quantity</label>
+            <input type="number" [(ngModel)]="newInventoryItem.quantity" min="1" />
+            <label>Min Quantity</label>
+            <input type="number" [(ngModel)]="newInventoryItem.minQuantity" min="1" />
+            <div class="modal-actions">
+                <button (click)="addInventoryItem()">Add</button>
+                <button (click)="closeAddModal()">Cancel</button>
+            </div>
+        </div>
     </div>
-  </div>
+
+    <!-- Delete Inventory Modal -->
+    <div *ngIf="showDeleteModal" class="modal">
+        <div class="modal-content">
+            <h3>Remove Quantity from Inventory</h3>
+            <p>
+                <strong>Item:</strong> {{ itemToDelete?.itemName || itemToDelete?.itemId }}<br>
+                <strong>Available:</strong> {{ itemToDelete?.quantity }}
+            </p>
+            <label>Quantity to Remove</label>
+            <input type="number" [(ngModel)]="deleteQuantity" min="1" [max]="itemToDelete?.quantity || 1" />
+            <div class="modal-actions">
+                <button class="btn btn-danger" (click)="confirmDeleteQuantity()">Remove</button>
+                <button class="btn btn-secondary" (click)="closeDeleteModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
 </div>

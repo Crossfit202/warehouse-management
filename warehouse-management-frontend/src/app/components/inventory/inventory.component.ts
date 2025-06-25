@@ -27,10 +27,13 @@ export class InventoryComponent implements OnInit {
   // Modal State
   showMoveModal: boolean = false;
   showAddModal: boolean = false;
+  showDeleteModal: boolean = false;
   selectedItem: WarehouseInventory | null = null;
   moveToWarehouseId: string = '';
   moveToLocationId: string = '';
   moveQuantity: number = 1;
+  deleteQuantity: number = 1;
+  itemToDelete: WarehouseInventory | null = null;
   availableLocations: StorageLocation[] = [];
   availableToLocations: StorageLocation[] = [];
   products: any[] = [];
@@ -236,5 +239,54 @@ export class InventoryComponent implements OnInit {
         });
       }
     });
+  }
+
+  openDeleteModal(item: WarehouseInventory): void {
+    this.itemToDelete = item;
+    this.deleteQuantity = 1;
+    this.showDeleteModal = true;
+  }
+
+  closeDeleteModal(): void {
+    this.showDeleteModal = false;
+    this.itemToDelete = null;
+  }
+
+  confirmDeleteQuantity(): void {
+    if (!this.itemToDelete || this.deleteQuantity < 1) return;
+    if (this.deleteQuantity > this.itemToDelete.quantity) {
+      this.toastr.error('Cannot remove more than available quantity.');
+      return;
+    }
+    const newQuantity = this.itemToDelete.quantity - this.deleteQuantity;
+    if (newQuantity === 0) {
+      // Delete the inventory item
+      this.inventoryService.deleteInventoryItem(this.itemToDelete.warehouseInventoryId).subscribe({
+        next: () => {
+          this.closeDeleteModal();
+          this.loadInventoryForWarehouse(this.selectedWarehouse);
+          this.toastr.success('Inventory deleted.');
+        },
+        error: () => {
+          this.toastr.error('Failed to delete inventory.');
+        }
+      });
+    } else {
+      // Update the quantity
+      const updatedItem = {
+        ...this.itemToDelete,
+        quantity: newQuantity
+      };
+      this.inventoryService.editInventoryItem(updatedItem).subscribe({
+        next: () => {
+          this.closeDeleteModal();
+          this.loadInventoryForWarehouse(this.selectedWarehouse);
+          this.toastr.success('Inventory updated.');
+        },
+        error: () => {
+          this.toastr.error('Failed to update inventory.');
+        }
+      });
+    }
   }
 }

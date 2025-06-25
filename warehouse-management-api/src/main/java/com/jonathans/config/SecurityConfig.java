@@ -43,6 +43,7 @@ public class SecurityConfig {
         http.csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // <-- Add this line
                         .requestMatchers("/users/register", "/unauthorized", "/auth/login", "/auth/logout",
                                 "/auth/verify", "/oauth2/**", "/login/**")
                         .permitAll()

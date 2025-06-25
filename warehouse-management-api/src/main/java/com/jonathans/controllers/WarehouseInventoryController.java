@@ -35,6 +35,7 @@ public class WarehouseInventoryController {
         return warehouseInventoryService.editInventory(dto);
     }
 
+    // DELETE INVENTORY
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteInventory(@PathVariable UUID id) {
         warehouseInventoryService.deleteInventory(id);

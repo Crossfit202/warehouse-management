@@ -25,4 +25,12 @@ export class InventoryService {
         return this.http.post(`${this.apiUrl}/add`, dto, { withCredentials: true });
     }
 
+    editInventoryItem(dto: WarehouseInventory) {
+        return this.http.put(`${this.apiUrl}/edit`, dto, { withCredentials: true });
+    }
+
+    deleteInventoryItem(itemId: string) {
+        return this.http.delete(`${this.apiUrl}/${itemId}`, { withCredentials: true });
+    }
+
 }
