@@ -4,6 +4,7 @@
     <!-- Warehouse Selector -->
     <label for="warehouseSelect" style="margin-right: 8px;"><strong>Select Warehouse:</strong></label>
     <select id="warehouseSelect" (change)="onSelect($event)">
+        <option value="">All Warehouses</option>
         <option *ngFor="let warehouse of warehouses" [value]="warehouse.id">
             {{ warehouse.name || warehouse.id }}
         </option>
@@ -30,10 +31,49 @@
         <button (click)="setSort('status')" [class.active]="sortField==='status'">
             Sort by Status {{sortField==='status' ? (sortDirection==='asc' ? '↑' : '↓') : ''}}
         </button>
+        <button
+          *ngIf="isAllWarehousesSelected()"
+          (click)="setSort('warehouse')"
+          [class.active]="sortField==='warehouse'">
+          Sort by Warehouse {{sortField==='warehouse' ? (sortDirection==='asc' ? '↑' : '↓') : ''}}
+        </button>
     </div>
 
-    <!-- Inventory Table -->
-    <table class="table table-striped mt-3">
+    <!-- Inventory Table for All Warehouses -->
+    <table *ngIf="isAllWarehousesSelected()" class="table table-striped mt-3">
+        <thead>
+            <tr>
+                <th>Warehouse</th>
+                <th>Item</th>
+                <th>Storage Location</th>
+                <th>Quantity</th>
+                <th>Min Quantity</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let item of sortedInventory">
+                <td>{{ getWarehouseNameById(item.warehouseId) }}</td>
+                <td>{{ item.itemName || item.itemId }}</td>
+                <td>{{ item.storageLocationName || item.storageLocationId }}</td>
+                <td [ngStyle]="{ color: item.quantity < item.minQuantity ? 'red' : 'green' }">
+                    {{ item.quantity }}
+                </td>
+                <td>{{ item.minQuantity }}</td>
+                <td>
+                    <span *ngIf="item.quantity < item.minQuantity" style="color: red;" title="Reorder needed">
+                        🔴 Below Minimum | Order Soon
+                    </span>
+                    <span *ngIf="item.quantity >= item.minQuantity" style="color: green;" title="Stock sufficient">
+                        ✅ Sufficient Stock
+                    </span>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Inventory Table for Single Warehouse -->
+    <table *ngIf="!isAllWarehousesSelected()" class="table table-striped mt-3">
         <thead>
             <tr>
                 <th>Item</th>
@@ -71,7 +111,6 @@
                     <div class="d-flex flex-column gap-2">
                         <div class="d-flex flex-row gap-2">
                             <button class="btn btn-primary" (click)="openMoveModal(item)">Transfer Inventory</button>
-                            <!-- Removed Add Inventory button from here -->
                             <button class="btn btn-secondary" (click)="openDeleteModal(item)">Reduce Inventory</button>
                             <button class="btn btn-danger" (click)="openDeleteAllModal(item)">Delete
                                 Inventory</button>

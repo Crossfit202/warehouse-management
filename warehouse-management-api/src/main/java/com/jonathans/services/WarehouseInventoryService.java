@@ -39,6 +39,13 @@ public class WarehouseInventoryService {
                 .collect(Collectors.toList());
     }
 
+    public List<WarehouseInventoryDTO> getAllInventory() {
+        return inventoryRepository.findAll()
+            .stream()
+            .map(this::toDTO)
+            .collect(Collectors.toList());
+    }
+
     public WarehouseInventoryDTO addInventory(WarehouseInventoryDTO dto) {
         WarehouseInventory entity = new WarehouseInventory();
         entity.setItem(buildInventoryItem(dto.getItemId()));

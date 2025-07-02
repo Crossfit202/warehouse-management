@@ -33,4 +33,7 @@ export class InventoryService {
         return this.http.delete(`${this.apiUrl}/${itemId}?userId=${userId}`, { withCredentials: true });
     }
 
+    getAllInventory() {
+        return this.http.get<WarehouseInventory[]>(`${this.apiUrl}/all`, { withCredentials: true });
+    }
 }

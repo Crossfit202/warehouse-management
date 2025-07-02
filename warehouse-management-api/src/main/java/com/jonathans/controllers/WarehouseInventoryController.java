@@ -31,7 +31,7 @@ public class WarehouseInventoryController {
     }
 
     @PutMapping("/edit")
-    public WarehouseInventoryDTO editInventory(@RequestBody WarehouseInventoryDTO dto) {
+    public WarehouseInventoryDTO peditInventory(@RequestBody WarehouseInventoryDTO dto) {
         return warehouseInventoryService.editInventory(dto);
     }
 
@@ -46,5 +46,10 @@ public class WarehouseInventoryController {
     public ResponseEntity<?> moveInventory(@RequestBody MoveInventoryDTO dto) {
         warehouseInventoryService.moveInventory(dto);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/all")
+    public List<WarehouseInventoryDTO> getAllInventory() {
+        return warehouseInventoryService.getAllInventory();
     }
 }

@@ -45,7 +45,7 @@ export class InventoryComponent implements OnInit {
 
   // Search and Sort
   searchTerm: string = '';
-  sortField: 'itemName' | 'storageLocationName' | 'quantity' | 'status' = 'itemName';
+  sortField: 'itemName' | 'storageLocationName' | 'quantity' | 'status' | 'warehouse' = 'itemName';
   sortDirection: 'asc' | 'desc' = 'asc';
 
   constructor(
@@ -64,10 +64,8 @@ export class InventoryComponent implements OnInit {
     }
     this.warehouseService.getAllWarehouses().subscribe(data => {
       this.warehouses = data;
-      if (this.warehouses.length > 0) {
-        this.selectedWarehouse = this.warehouses[0].id;
-        this.loadInventoryForWarehouse(this.selectedWarehouse);
-      }
+      this.selectedWarehouse = ''; // Default to "All Warehouses"
+      this.loadAllInventory();
     });
 
     // Load products for the dropdown
@@ -76,7 +74,12 @@ export class InventoryComponent implements OnInit {
 
   onSelect(event: any): void {
     this.selectedWarehouse = event.target.value;
-    this.loadInventoryForWarehouse(this.selectedWarehouse);
+    if (!this.selectedWarehouse) {
+      // All Warehouses selected
+      this.loadAllInventory();
+    } else {
+      this.loadInventoryForWarehouse(this.selectedWarehouse);
+    }
   }
 
   loadInventoryForWarehouse(warehouseId: string): void {
@@ -94,6 +97,21 @@ export class InventoryComponent implements OnInit {
     this.warehouseService.getStorageLocationsForWarehouse(warehouseId).subscribe((locations: StorageLocation[]) => {
       this.availableLocations = locations;
     });
+  }
+
+  loadAllInventory(): void {
+    this.inventoryService.getAllInventory().subscribe(data => {
+      this.inventory = data;
+      this.inventory.forEach(item => {
+        if (item.quantity < item.minQuantity) {
+          this.createLowStockAlert(item);
+        } else {
+          this.closeLowStockAlertIfExists(item);
+        }
+      });
+    });
+    // Optionally clear availableLocations if you want to disable add for "All"
+    this.availableLocations = [];
   }
 
   onToWarehouseChange(): void {
@@ -465,16 +483,16 @@ export class InventoryComponent implements OnInit {
     if (!this.searchTerm.trim()) return this.inventory;
     const term = this.searchTerm.trim().toLowerCase();
     return this.inventory.filter(item =>
-      (item.itemName?.toLowerCase().includes(term) ||
-       item.itemId?.toLowerCase().includes(term) ||
-       item.storageLocationName?.toLowerCase().includes(term) ||
-       item.storageLocationId?.toLowerCase().includes(term) ||
-       item.quantity?.toString().includes(term) ||
-       item.minQuantity?.toString().includes(term))
+    (item.itemName?.toLowerCase().includes(term) ||
+      item.itemId?.toLowerCase().includes(term) ||
+      item.storageLocationName?.toLowerCase().includes(term) ||
+      item.storageLocationId?.toLowerCase().includes(term) ||
+      item.quantity?.toString().includes(term) ||
+      item.minQuantity?.toString().includes(term))
     );
   }
 
-  setSort(field: 'itemName' | 'storageLocationName' | 'quantity' | 'status') {
+  setSort(field: 'itemName' | 'storageLocationName' | 'quantity' | 'status' | 'warehouse') {
     if (this.sortField === field) {
       this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
     } else {
@@ -491,12 +509,15 @@ export class InventoryComponent implements OnInit {
         aVal = a.quantity ?? 0;
         bVal = b.quantity ?? 0;
       } else if (this.sortField === 'status') {
-        // Define your status order: Below Min < Sufficient
         const getStatus = (item: WarehouseInventory) =>
           item.quantity < item.minQuantity ? 'below' : 'sufficient';
         const order = { below: 1, sufficient: 2 };
         aVal = order[getStatus(a)];
         bVal = order[getStatus(b)];
+      } else if (this.sortField === 'warehouse') {
+        // Sort by warehouse name (fallback to warehouseId)
+        aVal = this.getWarehouseNameById(a.warehouseId).toLowerCase();
+        bVal = this.getWarehouseNameById(b.warehouseId).toLowerCase();
       } else {
         aVal = (a[this.sortField] || '').toString().toLowerCase();
         bVal = (b[this.sortField] || '').toString().toLowerCase();
@@ -506,5 +527,9 @@ export class InventoryComponent implements OnInit {
       return 0;
     });
     return arr;
+  }
+
+  isAllWarehousesSelected(): boolean {
+    return !this.selectedWarehouse;
   }
 }
