@@ -109,7 +109,9 @@ export class DashboardComponent implements OnInit {
 
   calculateOpenAlerts(): void {
     this.openAlertCount = this.alerts.filter(
-      alert => alert.warehouse?.name === this.selectedWarehouse
+      alert =>
+        alert.warehouse?.name === this.selectedWarehouse &&
+        alert.status !== 'CLOSED'
     ).length;
   }
 

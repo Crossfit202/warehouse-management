@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 public class WarehouseInventoryService {
@@ -40,13 +41,27 @@ public class WarehouseInventoryService {
     }
 
     public WarehouseInventoryDTO addInventory(WarehouseInventoryDTO dto) {
-        WarehouseInventory entity = new WarehouseInventory();
-        entity.setItem(buildInventoryItem(dto.getItemId()));
-        entity.setWarehouseStorageLocation(buildStorageLocation(dto.getStorageLocationId()));
-        entity.setQuantity(dto.getQuantity());
-        entity.setMinQuantity(dto.getMinQuantity());
-        entity = inventoryRepository.save(entity);
-        return toDTO(entity);
+        // Find existing inventory for this item and storage location
+        Optional<WarehouseInventory> existingOpt = inventoryRepository
+            .findByItem_IdAndWarehouseStorageLocation_Id(dto.getItemId(), dto.getStorageLocationId());
+
+        WarehouseInventory entity;
+        if (existingOpt.isPresent()) {
+            // Combine quantities and update minQuantity if needed
+            entity = existingOpt.get();
+            entity.setQuantity(entity.getQuantity() + dto.getQuantity());
+            entity.setMinQuantity(dto.getMinQuantity());
+        } else {
+            // Create new inventory record
+            entity = new WarehouseInventory();
+            entity.setItem(buildInventoryItem(dto.getItemId()));
+            entity.setWarehouseStorageLocation(buildStorageLocation(dto.getStorageLocationId()));
+            entity.setQuantity(dto.getQuantity());
+            entity.setMinQuantity(dto.getMinQuantity());
+        }
+
+        WarehouseInventory saved = inventoryRepository.save(entity);
+        return toDTO(saved);
     }
 
     public WarehouseInventoryDTO editInventory(WarehouseInventoryDTO dto) {

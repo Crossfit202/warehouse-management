@@ -41,6 +41,7 @@ export class InventoryComponent implements OnInit {
   newInventoryItem: any = {};
 
   userId: string = ''; // ✅ For logging movement
+  minQuantityDisabled: boolean = false; // Add this line
 
   constructor(
     private inventoryService: InventoryService,
@@ -116,7 +117,9 @@ export class InventoryComponent implements OnInit {
   }
 
   openAddModal(): void {
-    this.newInventoryItem = {};
+    this.newInventoryItem = {
+      warehouseId: this.selectedWarehouse // Set the currently selected warehouse
+    };
     this.showAddModal = true;
   }
 
@@ -141,28 +144,85 @@ export class InventoryComponent implements OnInit {
     }
   }
 
+  onProductOrLocationChange(): void {
+    if (!this.newInventoryItem.itemId || !this.newInventoryItem.storageLocationId || !this.newInventoryItem.warehouseId) {
+      this.minQuantityDisabled = false;
+      return;
+    }
+    const existing = this.inventory.find(
+      item =>
+        item.itemId === this.newInventoryItem.itemId &&
+        item.storageLocationId === this.newInventoryItem.storageLocationId &&
+        item.warehouseId === this.newInventoryItem.warehouseId
+    );
+    if (existing && existing.minQuantity != null) {
+      this.newInventoryItem.minQuantity = existing.minQuantity;
+      this.minQuantityDisabled = false; // Allow editing!
+    } else {
+      this.newInventoryItem.minQuantity = null;
+      this.minQuantityDisabled = false;
+    }
+  }
+
   addInventoryItem(): void {
     if (!this.newInventoryItem.storageLocationId) {
       this.toastr.error('Please select a storage location.');
       return;
     }
-    const dto: AddInventoryDTO = {
-      warehouseId: this.newInventoryItem.warehouseId,
-      itemId: this.newInventoryItem.itemId,
-      storageLocationId: this.newInventoryItem.storageLocationId,
-      quantity: this.newInventoryItem.quantity,
-      minQuantity: this.newInventoryItem.minQuantity,
-      userId: this.userId
-    };
-    this.inventoryService.addInventoryItem(dto).subscribe({
-      next: () => {
-        this.closeAddModal();
-        this.loadInventoryForWarehouse(this.selectedWarehouse);
-      },
-      error: () => {
-        // handle error
+
+    // Check if the item already exists in the selected warehouse/location
+    const existing = this.inventory.find(
+      item =>
+        item.itemId === this.newInventoryItem.itemId &&
+        item.storageLocationId === this.newInventoryItem.storageLocationId &&
+        item.warehouseId === this.newInventoryItem.warehouseId
+    );
+
+    if (!existing && !this.newInventoryItem.minQuantity) {
+      this.toastr.error('Please enter a minimum quantity.');
+      return;
+    }
+
+    if (existing) {
+      // Only update minQuantity if the user actually entered a value (field enabled)
+      const updatedItem: any = {
+        ...existing,
+        quantity: existing.quantity + Number(this.newInventoryItem.quantity)
+      };
+      if (!this.minQuantityDisabled && this.newInventoryItem.minQuantity != null && this.newInventoryItem.minQuantity !== '') {
+        updatedItem.minQuantity = Number(this.newInventoryItem.minQuantity);
       }
-    });
+      this.inventoryService.editInventoryItem(updatedItem).subscribe({
+        next: () => {
+          this.closeAddModal();
+          this.loadInventoryForWarehouse(this.selectedWarehouse);
+          this.toastr.success('Inventory quantity updated.');
+        },
+        error: () => {
+          this.toastr.error('Failed to update inventory.');
+        }
+      });
+    } else {
+      // Add as new inventory record
+      const dto: AddInventoryDTO = {
+        warehouseId: this.newInventoryItem.warehouseId,
+        itemId: this.newInventoryItem.itemId,
+        storageLocationId: this.newInventoryItem.storageLocationId,
+        quantity: Number(this.newInventoryItem.quantity),
+        minQuantity: Number(this.newInventoryItem.minQuantity),
+        userId: this.userId
+      };
+      this.inventoryService.addInventoryItem(dto).subscribe({
+        next: () => {
+          this.closeAddModal();
+          this.loadInventoryForWarehouse(this.selectedWarehouse);
+          this.toastr.success('Inventory added.');
+        },
+        error: () => {
+          this.toastr.error('Failed to add inventory.');
+        }
+      });
+    }
   }
 
   confirmMove(): void {
@@ -204,19 +264,30 @@ export class InventoryComponent implements OnInit {
   }
 
   createLowStockAlert(item: WarehouseInventory) {
-    const message = `Low stock: ${item.itemName || item.itemId} at ${item.storageLocationName || item.storageLocationId}. Reorder.`;
-    const alert = {
-      message,
-      status: 'NEW',
-      warehouseId: item.warehouseId,
-      assignedUserId: null
-    };
-    this.alertService.createAlert(alert).subscribe({
-      next: () => {
-        this.toastr.info(`Alert created for ${item.itemName || item.itemId} at ${item.storageLocationName || item.storageLocationId}`);
-      },
-      error: () => {
-        this.toastr.error('Failed to create low stock alert.');
+    // First, check if an alert already exists for this item/location with status NEW
+    this.alertService.getAllAlerts().subscribe(alerts => {
+      const exists = alerts.some(a =>
+        a.status === 'NEW' &&
+        a.message &&
+        a.message.includes(item.itemName || item.itemId) &&
+        a.message.includes(item.storageLocationName || item.storageLocationId)
+      );
+      if (!exists) {
+        const message = `Low stock: ${item.itemName || item.itemId} at ${item.storageLocationName || item.storageLocationId}. Reorder.`;
+        const alert = {
+          message,
+          status: 'NEW',
+          warehouseId: item.warehouseId,
+          assignedUserId: null
+        };
+        this.alertService.createAlert(alert).subscribe({
+          next: () => {
+            this.toastr.info(`Alert created for ${item.itemName || item.itemId} at ${item.storageLocationName || item.storageLocationId}`);
+          },
+          error: () => {
+            this.toastr.error('Failed to create low stock alert.');
+          }
+        });
       }
     });
   }

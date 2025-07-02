@@ -9,6 +9,11 @@
         </option>
     </select>
 
+    <!-- Add Inventory Button (top right) -->
+    <div class="d-flex justify-content-start mb-2 mt-3">
+        <button class="btn btn-success" (click)="openAddModal()">Add Inventory</button>
+    </div>
+
     <!-- Inventory Table -->
     <table class="table table-striped mt-3">
         <thead>
@@ -41,9 +46,10 @@
                     <div class="d-flex flex-column gap-2">
                         <div class="d-flex flex-row gap-2">
                             <button class="btn btn-primary" (click)="openMoveModal(item)">Move</button>
-                            <button class="btn btn-success" (click)="openAddModal()">Add Inventory</button>
-                            <button class="btn btn-danger" (click)="openDeleteModal(item)">Delete Inventory</button>
-                            <button class="btn btn-danger" (click)="openDeleteAllModal(item)">Delete All Inventory</button>
+                            <!-- Removed Add Inventory button from here -->
+                            <button class="btn btn-secondary" (click)="openDeleteModal(item)">Reduce Inventory</button>
+                            <button class="btn btn-danger" (click)="openDeleteAllModal(item)">Delete
+                                Inventory</button>
                         </div>
                     </div>
                 </td>
@@ -98,22 +104,26 @@
         <div class="modal-content">
             <h3>Add Inventory Item</h3>
             <label>Product</label>
-            <select [(ngModel)]="newInventoryItem.itemId">
+            <select [(ngModel)]="newInventoryItem.itemId" (change)="onProductOrLocationChange()">
                 <option *ngFor="let product of products" [value]="product.id">{{ product.name }} ({{ product.sku }})
                 </option>
             </select>
             <label>Warehouse</label>
-            <select [(ngModel)]="newInventoryItem.warehouseId" (change)="onAddWarehouseChange()">
+            <select [(ngModel)]="newInventoryItem.warehouseId"
+                (change)="onAddWarehouseChange(); onProductOrLocationChange()">
                 <option *ngFor="let warehouse of warehouses" [value]="warehouse.id">{{ warehouse.name }}</option>
             </select>
             <label>Location</label>
-            <select [(ngModel)]="newInventoryItem.storageLocationId">
+            <select [(ngModel)]="newInventoryItem.storageLocationId" (change)="onProductOrLocationChange()">
                 <option *ngFor="let location of availableLocations" [value]="location.id">{{ location.name }}</option>
             </select>
             <label>Quantity</label>
             <input type="number" [(ngModel)]="newInventoryItem.quantity" min="1" />
             <label>Min Quantity</label>
-            <input type="number" [(ngModel)]="newInventoryItem.minQuantity" min="1" />
+            <input type="number"
+                   [(ngModel)]="newInventoryItem.minQuantity"
+                   min="1"
+                   [required]="!minQuantityDisabled" />
             <div class="modal-actions">
                 <button (click)="addInventoryItem()">Add</button>
                 <button (click)="closeAddModal()">Cancel</button>
