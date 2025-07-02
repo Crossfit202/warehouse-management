@@ -2,7 +2,8 @@
     <h1>ALERTS</h1>
 
     <!-- Add Alert Form -->
-    <form (ngSubmit)="addAlert()" #alertForm="ngForm" style="margin-bottom:2rem;">
+    <form *ngIf="isAdmin || currentUser?.role === 'ROLE_MANAGER'" (ngSubmit)="addAlert()" #alertForm="ngForm"
+        style="margin-bottom:2rem;">
         <label>
             Message:
             <input type="text" [(ngModel)]="newAlert.message" name="message" required />
@@ -19,7 +20,9 @@
             Warehouse:
             <select #warehouseSelect [(ngModel)]="newAlert.warehouseId" name="warehouseId" required
                 (change)="onNewAlertWarehouseChange(warehouseSelect.value)">
-                <option *ngFor="let warehouse of warehouses" [value]="warehouse.id">{{ warehouse.name }}</option>
+                <option *ngFor="let warehouse of visibleWarehouses" [value]="warehouse.id">
+                    {{ warehouse.name }}
+                </option>
             </select>
         </label>
         <label>
@@ -37,6 +40,7 @@
 
     <!-- Dropdown list -->
     <select [(ngModel)]="selectedWarehouse" (change)="onSelect($event)">
+        <option *ngIf="isAdmin" value="">All Warehouses</option>
         <option *ngFor="let warehouse of visibleWarehouses" [value]="warehouse.name">{{ warehouse.name }}</option>
     </select>
 
@@ -76,8 +80,9 @@
                 </div>
             </div>
             <div class="alert-actions">
-                <button (click)="openEditModal(alert)" class="btn btn-primary">Edit</button>
-                <button (click)="openDeleteModal(alert.id)" class="btn btn-danger">Delete</button>
+                <button (click)="openEditModal(alert)" class="btn btn-primary">Update</button>
+                <button *ngIf="isAdmin || currentUser?.role === 'ROLE_MANAGER'" (click)="openDeleteModal(alert.id)"
+                    class="btn btn-danger">Delete</button>
             </div>
         </div>
     </div>
@@ -96,11 +101,12 @@
 
 <div class="modal" *ngIf="editAlert">
     <div class="modal-content">
-        <h2>Edit Alert</h2>
+        <h2>Update Alert</h2>
         <form (ngSubmit)="saveEdit()" #editForm="ngForm">
             <label>
                 Message:
-                <input type="text" [(ngModel)]="editAlert.message" name="editMessage" required />
+                <input type="text" [(ngModel)]="editAlert.message" name="editMessage" required
+                    [readonly]="currentUser?.role === 'ROLE_INV_CLERK'" />
             </label>
             <label>
                 Status:
@@ -110,7 +116,7 @@
                     <option value="CLOSED">Closed</option>
                 </select>
             </label>
-            <label>
+            <label *ngIf="currentUser?.role !== 'ROLE_INV_CLERK'">
                 Assigned User:
                 <select [(ngModel)]="editAlert.assignedUserId" name="editAssignedUserId">
                     <option value="">Unassigned</option>

@@ -202,6 +202,11 @@ export class AlertsComponent implements OnInit {
   }
 
   confirmDelete(): void {
+    if (this.currentUser?.role === 'ROLE_INV_CLERK') {
+      this.toastr.error('You do not have permission to delete alerts.');
+      this.closeDeleteModal();
+      return;
+    }
     if (this.deleteConfirmAlertId) {
       this.alertService.deleteAlert(this.deleteConfirmAlertId).subscribe({
         next: () => {
@@ -218,6 +223,10 @@ export class AlertsComponent implements OnInit {
   }
 
   addAlert(): void {
+    if (!(this.isAdmin || this.currentUser?.role === 'ROLE_MANAGER')) {
+      this.toastr.error('You do not have permission to create alerts.');
+      return;
+    }
     if (!this.newAlert.message || !this.newAlert.status || !this.newAlert.warehouseId) {
       this.toastr.error('Please fill out all fields.');
       return;
@@ -282,6 +291,30 @@ export class AlertsComponent implements OnInit {
 
   saveEdit(): void {
     if (!this.editAlert) return;
+
+    // If INV_CLERK, only allow status change
+    if (this.currentUser?.role === 'ROLE_INV_CLERK') {
+      const dto = {
+        id: this.editAlert.id,
+        message: this.editAlert.message, // send the current message
+        status: this.editAlert.status,
+        warehouseId: this.editAlert.warehouse?.id,
+        assignedUserId: this.editAlert.assignedUserId || null
+      };
+      this.alertService.updateAlert(dto).subscribe({
+        next: () => {
+          this.toastr.success('Alert updated successfully!');
+          this.closeEditModal();
+          this.loadAlerts();
+        },
+        error: () => {
+          this.toastr.error('Failed to update alert.');
+        }
+      });
+      return;
+    }
+
+    // Otherwise, allow full edit
     const dto = {
       id: this.editAlert.id,
       message: this.editAlert.message,
