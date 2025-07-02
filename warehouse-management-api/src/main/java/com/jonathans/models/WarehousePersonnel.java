@@ -23,7 +23,8 @@ public class WarehousePersonnel {
     @Column(nullable = false)
     private PersonnelStatusEnum status = PersonnelStatusEnum.ACTIVE;
 
-    public WarehousePersonnel() {}
+    public WarehousePersonnel() {
+    }
 
     public WarehousePersonnel(User user, Warehouse warehouse, PersonnelStatusEnum status) {
         this.user = user;

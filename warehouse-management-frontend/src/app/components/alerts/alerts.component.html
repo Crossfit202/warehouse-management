@@ -37,8 +37,7 @@
 
     <!-- Dropdown list -->
     <select [(ngModel)]="selectedWarehouse" (change)="onSelect($event)">
-        <option value="">All Warehouses</option>
-        <option *ngFor="let warehouse of warehouses" [value]="warehouse.name">{{ warehouse.name }}</option>
+        <option *ngFor="let warehouse of visibleWarehouses" [value]="warehouse.name">{{ warehouse.name }}</option>
     </select>
 
     <!-- Sort Buttons -->

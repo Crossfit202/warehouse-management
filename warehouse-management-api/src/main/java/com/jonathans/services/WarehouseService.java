@@ -1,12 +1,14 @@
 package com.jonathans.services;
 
 import com.jonathans.DTOS.WarehouseDTO;
+import com.jonathans.DTOS.WarehousePersonnelDTO;
 import com.jonathans.models.Warehouse;
 import com.jonathans.repositories.WarehouseRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,6 +19,9 @@ import java.util.stream.Collectors;
 public class WarehouseService {
 
     private final WarehouseRepository warehouseRepository;
+
+    @Autowired
+    private WarehousePersonnelService warehousePersonnelService;
 
     public WarehouseService(WarehouseRepository warehouseRepository) {
         this.warehouseRepository = warehouseRepository;
@@ -90,11 +95,15 @@ public class WarehouseService {
 
     // ✅ Convert Warehouse to WarehouseDTO
     private WarehouseDTO convertToDTO(Warehouse warehouse) {
-        return new WarehouseDTO(
-                warehouse.getId(),
-                warehouse.getName(),
-                warehouse.getLocation(),
-                warehouse.getMax_capacity()
+        WarehouseDTO dto = new WarehouseDTO(
+            warehouse.getId(),
+            warehouse.getName(),
+            warehouse.getLocation(),
+            warehouse.getMax_capacity()
         );
+        // Add personnel
+        List<WarehousePersonnelDTO> personnel = warehousePersonnelService.getUsersForWarehouse(warehouse.getId());
+        dto.setPersonnel(personnel);
+        return dto;
     }
 }

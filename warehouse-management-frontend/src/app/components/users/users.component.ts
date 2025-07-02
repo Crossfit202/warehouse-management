@@ -130,8 +130,13 @@ export class UsersComponent implements OnInit {
   confirmDeleteUser(): void {
     if (!this.userToDelete) return;
 
+    if (!this.canDeleteUser(this.userToDelete)) {
+      this.toastr.error("You do not have permission to delete this user.");
+      return;
+    }
+
     // check so the user doesn't delete their own account
-    if (this.userToDelete.id === this.authService.getCurrentUser().id){
+    if (this.userToDelete.id === this.authService.getCurrentUser().id) {
       this.toastr.error("You cannot delete your own account");
       return;
     }
@@ -247,6 +252,33 @@ export class UsersComponent implements OnInit {
         console.error('Create user failed:', err);
       }
     });
+  }
+
+  canDeleteUser(targetUser: User): boolean {
+    const currentUser = this.authService.getCurrentUser();
+    if (!currentUser) return false;
+
+    // Debug: Log roles
+    console.log(
+      'CurrentUser:', currentUser.username, '| Role:', currentUser.role,
+      'TargetUser:', targetUser.username, '| Role:', targetUser.role
+    );
+
+    // Admins can delete anyone except themselves
+    if (currentUser.role === 'ROLE_ADMIN') {
+      return targetUser.id !== currentUser.id;
+    }
+
+    // Managers can delete INV_CLERK and USER, but not ADMIN or themselves
+    if (currentUser.role === 'ROLE_MANAGER') {
+      return (
+        (targetUser.role === 'ROLE_INV_CLERK' || targetUser.role === 'ROLE_USER') &&
+        targetUser.id !== currentUser.id
+      );
+    }
+
+    // Other roles cannot delete users
+    return false;
   }
 
   PersonnelStatusEnum = PersonnelStatusEnum; // for template access

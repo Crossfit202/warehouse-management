@@ -1,5 +1,6 @@
 package com.jonathans.DTOS;
 
+import java.util.List;
 import java.util.UUID;
 
 public class WarehouseDTO {
@@ -7,6 +8,7 @@ public class WarehouseDTO {
 	private String name; 
 	private String location; 
 	private int max_capacity;
+	private List<WarehousePersonnelDTO> personnel;
 	
 	 public WarehouseDTO() {
 	    }
@@ -42,6 +44,12 @@ public class WarehouseDTO {
 	}
 	public void setMax_capacity(int max_capacity) {
 		this.max_capacity = max_capacity;
+	}
+	public List<WarehousePersonnelDTO> getPersonnel() {
+		return personnel;
+	}
+	public void setPersonnel(List<WarehousePersonnelDTO> personnel) {
+		this.personnel = personnel;
 	}
 	@Override
 	public String toString() {

@@ -9,6 +9,7 @@ import { User } from '../../models/User';
 import { FormsModule } from '@angular/forms'; // <-- Add this import
 import { ToastrService } from 'ngx-toastr';
 import { WarehousePersonnelDTO } from '../../services/personnel.service';
+import { AuthService } from '../../services/auth.service'; // Import AuthService
 
 @Component({
   selector: 'app-alerts',
@@ -44,16 +45,23 @@ export class AlertsComponent implements OnInit {
   sortField: 'time' | 'status' = 'time';
   sortDirection: 'asc' | 'desc' = 'desc';
 
+  currentUser: any = null;
+  isAdmin: boolean = false;
+  visibleWarehouses: Warehouse[] = [];
+
   constructor(
     private alertService: AlertService,
     private warehouseService: WarehouseService,
     private userService: UserService, // <-- Inject UserService
-    private toastr: ToastrService // <-- Inject ToastrService
+    private toastr: ToastrService, // <-- Inject ToastrService
+    private authService: AuthService
   ) { }
 
   ngOnInit(): void {
-    this.loadAlerts();
+    this.currentUser = this.authService.getCurrentUser();
+    this.isAdmin = this.currentUser?.role === 'ROLE_ADMIN';
     this.loadWarehouses();
+    this.loadAlerts();
     this.loadUsers(); // <-- Load users
   }
 
@@ -92,12 +100,19 @@ export class AlertsComponent implements OnInit {
   loadWarehouses(): void {
     this.warehouseService.getAllWarehouses().subscribe(data => {
       this.warehouses = data;
-
-      // input the first warehouse name to selectedWarehouse
-      if (this.warehouses.length > 0) {
-        this.selectedWarehouse = this.warehouses[0].name;
+      if (this.isAdmin) {
+        this.visibleWarehouses = data;
+      } else {
+        // Only show warehouses where user is active
+        this.visibleWarehouses = data.filter(w =>
+          w.personnel?.some((p: any) => p.userId === this.currentUser?.id && p.status === 'ACTIVE')
+        );
       }
-
+      if (this.visibleWarehouses.length > 0) {
+        this.selectedWarehouse = this.visibleWarehouses[0].name;
+      } else {
+        this.selectedWarehouse = '';
+      }
     });
   }
 
@@ -317,11 +332,27 @@ export class AlertsComponent implements OnInit {
   }
 
   get filteredAlerts(): Alert[] {
-    if (!this.selectedWarehouse) {
-      return this.alerts;
+    if (this.isAdmin) {
+      if (!this.selectedWarehouse) return this.alerts;
+      const selected = this.visibleWarehouses.find(w => w.name === this.selectedWarehouse);
+      if (!selected) return [];
+      return this.alerts.filter(alert => alert.warehouse?.id === selected.id);
+    } else if (this.currentUser?.role === 'ROLE_MANAGER') {
+      // Managers: all alerts for the selected warehouse
+      const selected = this.visibleWarehouses.find(w => w.name === this.selectedWarehouse);
+      if (!selected) return [];
+      return this.alerts.filter(alert => alert.warehouse?.id === selected.id);
+    } else if (this.currentUser?.role === 'ROLE_INV_CLERK') {
+      // Inventory Clerks: only alerts assigned to them for the selected warehouse
+      const selected = this.visibleWarehouses.find(w => w.name === this.selectedWarehouse);
+      if (!selected) return [];
+      return this.alerts.filter(alert =>
+        alert.warehouse?.id === selected.id &&
+        alert.assignedUserId === this.currentUser?.id
+      );
+    } else {
+      // Other roles: show nothing
+      return [];
     }
-    const selected = this.warehouses.find(w => w.name === this.selectedWarehouse);
-    if (!selected) return this.alerts;
-    return this.alerts.filter(alert => alert.warehouse?.id === selected.id);
   }
 }

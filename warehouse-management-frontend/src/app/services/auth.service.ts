@@ -32,6 +32,16 @@ export class AuthService {
           } else if (response?.id) {
             localStorage.setItem('userId', response.id); // ✅ Save userId from backend response
           }
+          // After successful login
+          if (response?.role) {
+            localStorage.setItem('role', response.role);
+          } else {
+            this.http.get<any>(`${this.baseUrl}/verify`, { withCredentials: true }).subscribe(verifyResp => {
+              if (verifyResp?.role) {
+                localStorage.setItem('role', verifyResp.role);
+              }
+            });
+          }
         }),
         catchError(error => {
           console.error('Login failed:', error);
@@ -127,7 +137,8 @@ export class AuthService {
   getCurrentUser(): any {
     const id = localStorage.getItem('userId');
     const username = localStorage.getItem('username');
-    return id ? { id, username } : null;
+    const role = localStorage.getItem('role'); // <-- Add this
+    return id ? { id, username, role } : null;
   }
 
 }
