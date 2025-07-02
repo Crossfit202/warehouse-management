@@ -1,30 +1,18 @@
-
-
 export class Warehouse {
-    id: string; // is UUID in DB 
+    id: string;
     name: string;
     location: string;
     max_capacity: number;
-    created_at: string; //LocalDateTime in DB 
 
-    constructor(
+    constructor(data: {
         id: string,
         name: string,
         location: string,
         max_capacity: number,
-        created_at: string
-    ) {
-        this.id = id;
-        this.name = name;
-        this.location = location;
-        this.max_capacity = max_capacity;
-        this.created_at = created_at;
+    }) {
+        this.id = data.id;
+        this.name = data.name;
+        this.location = data.location;
+        this.max_capacity = data.max_capacity;
     }
-
-    //Formatting the date
-    public formatCreatedAt(): string {
-        const date = new Date(this.created_at);
-        return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
-    }
-
 }

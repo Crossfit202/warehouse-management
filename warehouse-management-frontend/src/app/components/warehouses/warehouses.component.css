@@ -1,0 +1,68 @@
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1050;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    color: black;
+    display: block !important;
+    background: #fff;
+    border-radius: 8px;
+    padding: 2rem 2.5rem;
+    min-width: 30vw;
+    max-width: 60vw;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    position: relative;
+    animation: modalFadeIn 0.2s;
+}
+
+@keyframes modalFadeIn {
+    from {
+        transform: translateY(-40px) scale(0.98);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+}
+
+.modal-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    margin-top: 1.5rem;
+}
+
+.modal-content label {
+    display: block;
+    margin-top: 1rem;
+    font-weight: 500;
+}
+
+.modal-content input,
+.modal-content select {
+    width: 100%;
+    margin-top: 0.25rem;
+    padding: 0.5rem;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+}
+
+.modal-content h3 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+    font-weight: 600;
+}

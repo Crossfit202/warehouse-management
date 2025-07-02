@@ -21,4 +21,15 @@ export class WarehouseService {
     return this.http.get<any[]>(`http://localhost:8083/warehouses/${warehouseId}/storage-locations`, { withCredentials: true });
   }
 
+  createWarehouse(warehouse: Partial<Warehouse>) {
+    return this.http.post<Warehouse>(this.apiUrl, warehouse, { withCredentials: true });
+  }
+
+  updateWarehouse(id: string, warehouse: Warehouse) {
+    return this.http.put<Warehouse>(`${this.apiUrl}/${id}`, warehouse, { withCredentials: true });
+  }
+
+  deleteWarehouse(id: string) {
+    return this.http.delete(`${this.apiUrl}/${id}`, { withCredentials: true });
+  }
 }
