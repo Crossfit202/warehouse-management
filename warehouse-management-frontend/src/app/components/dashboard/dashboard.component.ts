@@ -167,16 +167,17 @@ export class DashboardComponent implements OnInit {
       this.filteredMovements = this.recentMovements;
       return;
     }
-    const start = this.movementStartDate ? new Date(this.movementStartDate) : null;
-    const end = this.movementEndDate ? new Date(this.movementEndDate) : null;
     this.filteredMovements = this.recentMovements.filter(movement => {
-      const movementDate = new Date(movement.time);
-      if (start && end) {
-        return movementDate >= start && movementDate <= end;
-      } else if (start) {
-        return movementDate >= start;
-      } else if (end) {
-        return movementDate <= end;
+      const movementDateStr = new Date(movement.time).toISOString().slice(0, 10);
+      if (this.movementStartDate && this.movementEndDate) {
+        return (
+          movementDateStr >= this.movementStartDate &&
+          movementDateStr <= this.movementEndDate
+        );
+      } else if (this.movementStartDate) {
+        return movementDateStr >= this.movementStartDate;
+      } else if (this.movementEndDate) {
+        return movementDateStr <= this.movementEndDate;
       }
       return true;
     });
