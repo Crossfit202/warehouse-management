@@ -15,4 +15,12 @@ export class InventoryItemService {
     createItem(product: { sku: string; name: string; description: string }) {
         return this.http.post(`${this.apiUrl}/add`, product, {withCredentials: true});
     }
+
+    updateItem(product: { id: string; sku: string; name: string; description: string }) {
+        return this.http.put(`${this.apiUrl}/${product.id}`, product, { withCredentials: true });
+    }
+
+    deleteItem(id: string) {
+        return this.http.delete(`${this.apiUrl}/${id}`, { withCredentials: true });
+    }
 }

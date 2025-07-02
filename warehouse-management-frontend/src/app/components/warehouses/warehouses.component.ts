@@ -3,6 +3,8 @@ import { Component, OnInit } from '@angular/core';
 import { WarehouseService } from '../../services/warehouse.service';
 import { Warehouse } from '../../models/Warehouse';
 import { FormsModule } from '@angular/forms';
+import { StorageLocationsService } from '../../services/storage-locations.service';
+import { StorageLocation } from '../../models/StorageLocation';
 
 @Component({
   selector: 'app-warehouses',
@@ -25,15 +27,34 @@ export class WarehousesComponent implements OnInit {
   expandedWarehouseId: string | null = null;
   storageLocations: { [warehouseId: string]: any[] } = {};
 
-  constructor(private warehouseService: WarehouseService) { }
+  newLocationName: string = '';
+  newLocationMax: number | null = null;
+
+  allStorageLocations: StorageLocation[] = [];
+  selectedLocationId: string = '';
+  newStorageLocationName: string = '';
+
+  constructor(
+    private warehouseService: WarehouseService,
+    private storageLocationsService: StorageLocationsService
+  ) { }
 
   ngOnInit(): void {
     this.loadWarehouses();
+    this.storageLocationsService.getAllStorageLocations().subscribe(data => {
+      this.allStorageLocations = data;
+    });
   }
 
   loadWarehouses(): void {
     this.warehouseService.getAllWarehouses().subscribe(data => {
       this.warehouses = data.map(w => new Warehouse(w));
+      // Load storage locations for each warehouse
+      this.warehouses.forEach(warehouse => {
+        this.warehouseService.getStorageLocationsForWarehouse(warehouse.id).subscribe(locations => {
+          this.storageLocations[warehouse.id] = locations;
+        });
+      });
     });
   }
 
@@ -92,16 +113,35 @@ export class WarehousesComponent implements OnInit {
     });
   }
 
-  toggleExpand(warehouse: Warehouse) {
-    if (this.expandedWarehouseId === warehouse.id) {
-      this.expandedWarehouseId = null;
-      return;
-    }
-    this.expandedWarehouseId = warehouse.id;
-    if (!this.storageLocations[warehouse.id]) {
-      this.warehouseService.getStorageLocationsForWarehouse(warehouse.id).subscribe(locations => {
-        this.storageLocations[warehouse.id] = locations;
-      });
-    }
+  addStorageLocation() {
+    if (!this.editWarehouse || !this.selectedLocationId || !this.newStorageLocationName) return;
+    const selectedLoc = this.allStorageLocations.find(loc => loc.id === this.selectedLocationId);
+    if (!selectedLoc) return;
+    this.warehouseService.createWarehouseStorageLocation({
+      warehouseId: this.editWarehouse.id,
+      storageLocationTemplateId: selectedLoc.id,
+      name: this.newStorageLocationName,
+      maxCapacity: selectedLoc.max_capacity
+    }).subscribe(loc => {
+      if (!this.storageLocations[this.editWarehouse!.id]) this.storageLocations[this.editWarehouse!.id] = [];
+      this.storageLocations[this.editWarehouse!.id].push(loc);
+      this.selectedLocationId = '';
+      this.newStorageLocationName = '';
+    });
+  }
+
+  removeStorageLocation(loc: any) {
+    if (!confirm(`Remove storage location "${loc.name}"?`)) return;
+    this.warehouseService.deleteStorageLocation(loc.id).subscribe(() => {
+      if (this.editWarehouse && this.storageLocations[this.editWarehouse.id]) {
+        this.storageLocations[this.editWarehouse.id] = this.storageLocations[this.editWarehouse.id].filter(l => l.id !== loc.id);
+      }
+    });
+  }
+
+  isLocationAssignedToEditWarehouse(locationId: string): boolean {
+    if (!this.editWarehouse) return false;
+    const assigned = this.storageLocations[this.editWarehouse.id] || [];
+    return assigned.some(sl => sl.id === locationId);
   }
 }

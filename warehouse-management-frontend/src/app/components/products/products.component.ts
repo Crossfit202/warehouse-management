@@ -17,6 +17,12 @@ export class ProductsComponent implements OnInit {
   showAddModal = false;
   newProduct = { sku: '', name: '', description: '' };
 
+  showEditModal = false;
+  editProduct: any = null;
+
+  showDeleteModal = false;
+  deleteProduct: any = null;
+
   constructor(private inventoryItemService: InventoryItemService) { }
 
   ngOnInit(): void {
@@ -53,6 +59,49 @@ export class ProductsComponent implements OnInit {
       },
       error: () => {
         alert('Failed to add product');
+      }
+    });
+  }
+
+  openEditModal(product: any) {
+    this.editProduct = { ...product };
+    this.showEditModal = true;
+  }
+  closeEditModal() {
+    this.showEditModal = false;
+  }
+
+  updateProduct() {
+    this.inventoryItemService.updateItem(this.editProduct).subscribe({
+      next: () => {
+        this.closeEditModal();
+        this.loadProducts();
+      },
+      error: () => {
+        alert('Failed to update product');
+      }
+    });
+  }
+
+  openDeleteModal(product: any) {
+    this.deleteProduct = product;
+    this.showDeleteModal = true;
+  }
+  closeDeleteModal() {
+    this.showDeleteModal = false;
+  }
+  deleteProductConfirmed() {
+    this.inventoryItemService.deleteItem(this.deleteProduct.id).subscribe({
+      next: () => {
+        this.closeDeleteModal();
+        this.loadProducts();
+      },
+      error: (err) => {
+        if (err.status === 409) {
+          alert(err.error || 'This product cannot be deleted because it is referenced in inventory or movements.');
+        } else {
+          alert('Failed to delete product');
+        }
       }
     });
   }

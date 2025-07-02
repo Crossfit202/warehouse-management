@@ -70,6 +70,16 @@ public class InventoryItemService {
 
     @Transactional
     public ResponseEntity<Object> deleteItem(UUID id) {
+        // Check if the item is referenced in warehouse inventory
+        boolean isInInventory = warehouseInventoryRepository.existsByItem_Id(id);
+        // TODO: Add similar checks for movements or other related tables if needed
+
+        if (isInInventory) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body("Cannot delete product: it is referenced in inventory.");
+        }
+
+        // If not referenced, proceed with deletion
         return inventoryItemRepository.findById(id).map(existingItem -> {
             inventoryItemRepository.delete(existingItem);
             return ResponseEntity.noContent().build();

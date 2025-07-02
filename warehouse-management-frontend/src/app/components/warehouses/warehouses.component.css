@@ -36,11 +36,28 @@
     }
 }
 
+.bottom-footer {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-top: 1.5rem;
+    min-height: 48px; /* Ensures enough height for buttons, adjust as needed */
+    gap: 1rem;
+}
+
+.add-sl {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
 .modal-actions {
     display: flex;
     gap: 1rem;
     justify-content: flex-end;
-    margin-top: 1.5rem;
+    align-items: flex-end;
+    margin-top: 0; /* Remove extra margin so it aligns with add-sl */
 }
 
 .modal-content label {
@@ -65,4 +82,42 @@
     margin-bottom: 1rem;
     font-size: 1.5rem;
     font-weight: 600;
+}
+
+.warehouse-cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+}
+
+.warehouse-card {
+    background: #fff;
+    color: black;
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    padding: 1.5rem 2rem;
+    min-width: 320px;
+    max-width: 400px;
+    flex: 1 1 320px;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1.5rem;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+}
+
+.card-body {
+    margin-top: 0.5rem;
+}
+
+.card-actions {
+    margin-top: auto;
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
 }

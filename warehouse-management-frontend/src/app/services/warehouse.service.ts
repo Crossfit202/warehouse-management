@@ -32,4 +32,33 @@ export class WarehouseService {
   deleteWarehouse(id: string) {
     return this.http.delete(`${this.apiUrl}/${id}`, { withCredentials: true });
   }
+
+  createStorageLocationForWarehouse(warehouseId: string, location: { name: string, max_capacity: number }) {
+    return this.http.post<any>(`http://localhost:8083/warehouses/${warehouseId}/storage-locations`, location, { withCredentials: true });
+  }
+
+  deleteStorageLocation(locationId: string) {
+    return this.http.delete(`http://localhost:8083/storage-locations/${locationId}`, { withCredentials: true });
+  }
+
+  associateStorageLocationWithWarehouse(warehouseId: string, locationId: string) {
+    return this.http.post<any>(
+      `http://localhost:8083/warehouses/${warehouseId}/storage-locations/${locationId}`,
+      {}, // empty body
+      { withCredentials: true }
+    );
+  }
+
+  createWarehouseStorageLocation(dto: {
+    warehouseId: string,
+    storageLocationTemplateId: string,
+    name: string,
+    maxCapacity: number
+  }) {
+    return this.http.post<any>(
+      'http://localhost:8083/warehouse-storage-locations',
+      dto,
+      { withCredentials: true }
+    );
+  }
 }

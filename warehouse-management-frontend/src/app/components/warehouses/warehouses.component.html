@@ -5,58 +5,37 @@
         <button class="btn btn-success" (click)="openAddModal()">Add Warehouse</button>
     </div>
 
-    <table class="table table-striped table-bordered">
-        <thead>
-            <tr>
-                <th></th>
-                <th>Name</th>
-                <th>Location</th>
-                <th>Max Capacity</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <ng-container *ngFor="let warehouse of warehouses">
-                <tr>
-                    <td>
-                        <button class="btn btn-link p-0" (click)="toggleExpand(warehouse)">
-                            <span *ngIf="expandedWarehouseId !== warehouse.id">▶️</span>
-                            <span *ngIf="expandedWarehouseId === warehouse.id">▼</span>
-                        </button>
-                    </td>
-                    <td>{{ warehouse.name }}</td>
-                    <td>{{ warehouse.location }}</td>
-                    <td>{{ warehouse.max_capacity }}</td>
-                    <td>
-                        <button class="btn btn-primary btn-sm me-2" (click)="openEditModal(warehouse)">Edit</button>
-                        <button class="btn btn-danger btn-sm" (click)="openDeleteModal(warehouse)">Delete</button>
-                    </td>
-                </tr>
-                <tr *ngIf="expandedWarehouseId === warehouse.id">
-                    <td colspan="5" style="background: #f9f9f9;">
-                        <div *ngIf="storageLocations[warehouse.id]; else loading">
-                            <strong>Storage Locations:</strong>
-                            <ul *ngIf="storageLocations[warehouse.id].length > 0; else noLocations">
-                                <li *ngFor="let loc of storageLocations[warehouse.id]">
-                                    <strong>{{ loc.name }}</strong>
-                                    <ul>
-                                        <li>Name: {{ loc.name }}</li>
-                                        <li>Max Capacity: {{ loc.max_capacity }}</li>
-                                    </ul>
-                                </li>
-                            </ul>
-                            <ng-template #noLocations>
-                                <em> No storage locations found.</em>
-                            </ng-template>
-                        </div>
-                        <ng-template #loading>
-                            <em>Loading storage locations...</em>
-                        </ng-template>
-                    </td>
-                </tr>
-            </ng-container>
-        </tbody>
-    </table>
+    <div class="warehouse-cards">
+        <div class="warehouse-card" *ngFor="let warehouse of warehouses">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <div>
+                    <h4>{{ warehouse.name }}</h4>
+                    <div><strong>Location:</strong> {{ warehouse.location }}</div>
+                    <div><strong>Max Capacity:</strong> {{ warehouse.max_capacity }}</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <strong>Storage Locations:</strong>
+                <ul *ngIf="(storageLocations[warehouse.id] || []).length > 0; else noLocations">
+                    <li *ngFor="let loc of (storageLocations[warehouse.id] || [])">
+                        <strong>{{ loc.name }}</strong>
+                        <ul>
+                            <li>Name: {{ loc.name }}</li>
+                            <li>Max Capacity: {{ loc.max_capacity }}</li>
+                        </ul>
+                    </li>
+                </ul>
+                <ng-template #noLocations>
+                    <em> No storage locations found.</em>
+                </ng-template>
+
+            </div>
+            <div>
+                <button class="btn btn-primary btn-sm me-2" (click)="openEditModal(warehouse)">Edit</button>
+                <button class="btn btn-danger btn-sm" (click)="openDeleteModal(warehouse)">Delete</button>
+            </div>
+        </div>
+    </div>
 
     <!-- Add Modal -->
     <div *ngIf="showAddModal" class="modal">
@@ -79,16 +58,39 @@
     <div *ngIf="showEditModal" class="modal">
         <div class="modal-content" *ngIf="editWarehouse">
             <h3>Edit Warehouse</h3>
-            <div>Modal is open!</div>
             <label>Name</label>
             <input type="text" [(ngModel)]="editWarehouse.name" class="form-control" />
             <label>Location</label>
             <input type="text" [(ngModel)]="editWarehouse.location" class="form-control" />
             <label>Max Capacity</label>
             <input type="number" [(ngModel)]="editWarehouse.max_capacity" class="form-control" min="1" />
-            <div class="modal-actions mt-3">
-                <button class="btn btn-primary" (click)="updateWarehouse()">Save</button>
-                <button class="btn btn-secondary" (click)="closeEditModal()">Cancel</button>
+            <label>Storage Locations</label>
+            <ul>
+                <li *ngFor="let loc of storageLocations[editWarehouse?.id || ''] || []">
+                    <span>{{ loc.name }}: Max Capacity: {{ loc.max_capacity }}</span>
+                    <button class="btn btn-link text-danger p-0 ms-2"
+                        (click)="removeStorageLocation(loc)">Remove</button>
+                </li>
+            </ul>
+            <div class="bottom-footer">
+                <div class="add-sl">
+                    <span style="margin-bottom:0;">Add a Storage Location: </span>
+                    <input type="text" [(ngModel)]="newStorageLocationName" placeholder="Storage Location Name"
+                        class="form-control add-sl-input" style="max-width: 180px;" />
+                    <select class="form-select add-sl-input" [(ngModel)]="selectedLocationId" style="max-width: 200px;">
+                        <option value="" disabled selected>Select type</option>
+                        <option *ngFor="let loc of allStorageLocations" [value]="loc.id"
+                            [disabled]="isLocationAssignedToEditWarehouse(loc.id)">
+                            {{ loc.name }} (Max: {{ loc.max_capacity }})
+                        </option>
+                    </select>
+                    <button class="btn btn-success btn-sm" [disabled]="!selectedLocationId || !newStorageLocationName"
+                        (click)="addStorageLocation()">Add</button>
+                </div>
+                <div class="modal-actions mt-3">
+                    <button class="btn btn-primary" (click)="updateWarehouse()">Save</button>
+                    <button class="btn btn-secondary" (click)="closeEditModal()">Cancel</button>
+                </div>
             </div>
         </div>
     </div>
