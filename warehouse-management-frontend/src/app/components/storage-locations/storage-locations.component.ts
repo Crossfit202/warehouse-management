@@ -18,6 +18,8 @@ export class StorageLocationsComponent implements OnInit {
   newLocation = { name: '', max_capacity: 0 };
   editLocation: any = null;
   deleteLocation: any = null;
+  searchTerm: string = '';
+  sortDirection: 'asc' | 'desc' = 'asc';
 
   constructor(private StorageLocationsService: StorageLocationsService) { }
 
@@ -83,5 +85,27 @@ export class StorageLocationsComponent implements OnInit {
         }
       }
     });
+  }
+
+  get filteredLocations(): any[] {
+    if (!this.searchTerm.trim()) return this.storagelocations;
+    const term = this.searchTerm.trim().toLowerCase();
+    return this.storagelocations.filter(loc =>
+      (loc.name?.toLowerCase().includes(term) ||
+       loc.max_capacity?.toString().toLowerCase().includes(term))
+    );
+  }
+
+  setSortByCapacity() {
+    this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+  }
+
+  get sortedLocations(): any[] {
+    const arr = [...this.filteredLocations];
+    arr.sort((a, b) => {
+      const cmp = a.max_capacity - b.max_capacity;
+      return this.sortDirection === 'asc' ? cmp : -cmp;
+    });
+    return arr;
   }
 }

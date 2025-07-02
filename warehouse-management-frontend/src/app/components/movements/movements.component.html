@@ -5,6 +5,27 @@
         <option *ngFor="let w of warehouses" [value]="w.id">{{ w.name }}</option>
     </select>
 
+    <div class="movement-search-sort" style="margin-bottom: 1rem; display: flex; gap: 1rem; align-items: center;">
+        <input
+            type="text"
+            [(ngModel)]="searchTerm"
+            placeholder="Search movements..."
+            style="padding: 0.5rem; border-radius: 4px; border: 1px solid #ccc;"
+        />
+        <button (click)="setSort('itemName')" [class.active]="sortField==='itemName'">
+            Sort by Item {{sortField==='itemName' ? (sortDirection==='asc' ? '↑' : '↓') : ''}}
+        </button>
+        <button (click)="setSort('quantity')" [class.active]="sortField==='quantity'">
+            Sort by Quantity {{sortField==='quantity' ? (sortDirection==='asc' ? '↑' : '↓') : ''}}
+        </button>
+        <button (click)="setSort('movementType')" [class.active]="sortField==='movementType'">
+            Sort by Type {{sortField==='movementType' ? (sortDirection==='asc' ? '↑' : '↓') : ''}}
+        </button>
+        <button (click)="setSort('time')" [class.active]="sortField==='time'">
+            Sort by Time {{sortField==='time' ? (sortDirection==='asc' ? '↑' : '↓') : ''}}
+        </button>
+    </div>
+
     <table class="table table-striped mt-3">
         <thead>
             <tr>
@@ -18,7 +39,7 @@
             </tr>
         </thead>
         <tbody>
-            <tr *ngFor="let m of movements">
+            <tr *ngFor="let m of sortedMovements">
                 <td>{{ m.itemName }}</td>
                 <td>{{ m.fromWarehouseName || 'N/A' }}</td>
                 <td>{{ m.toWarehouseName || 'N/A' }}</td>

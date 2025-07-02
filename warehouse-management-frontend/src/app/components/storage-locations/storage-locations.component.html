@@ -3,6 +3,14 @@
 
     <button class="btn btn-success mb-3" (click)="openAddModal()">Add Storage Location</button>
 
+    <div class="storage-search-sort" style="margin-bottom: 1rem; display: flex; gap: 1rem; align-items: center;">
+        <input type="text" [(ngModel)]="searchTerm" placeholder="Search locations..."
+            style="padding: 0.5rem; border-radius: 4px; border: 1px solid #ccc;" />
+        <button (click)="setSortByCapacity()" [class.active]="true">
+            Sort by Capacity {{ sortDirection === 'asc' ? '↑' : '↓' }}
+        </button>
+    </div>
+
     <table class="table table-striped">
         <thead>
             <tr>
@@ -12,7 +20,7 @@
             </tr>
         </thead>
         <tbody>
-            <tr *ngFor="let storagelocation of storagelocations">
+            <tr *ngFor="let storagelocation of sortedLocations">
                 <td>{{ storagelocation.name }}</td>
                 <td>{{ storagelocation.max_capacity }}</td>
                 <td>

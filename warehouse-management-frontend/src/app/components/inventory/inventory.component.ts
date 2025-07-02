@@ -43,6 +43,11 @@ export class InventoryComponent implements OnInit {
   userId: string = ''; // ✅ For logging movement
   minQuantityDisabled: boolean = false; // Add this line
 
+  // Search and Sort
+  searchTerm: string = '';
+  sortField: 'itemName' | 'storageLocationName' | 'quantity' | 'status' = 'itemName';
+  sortDirection: 'asc' | 'desc' = 'asc';
+
   constructor(
     private inventoryService: InventoryService,
     private warehouseService: WarehouseService,
@@ -455,4 +460,51 @@ export class InventoryComponent implements OnInit {
     });
   }
 
+  // Search and Sort
+  get filteredInventory(): WarehouseInventory[] {
+    if (!this.searchTerm.trim()) return this.inventory;
+    const term = this.searchTerm.trim().toLowerCase();
+    return this.inventory.filter(item =>
+      (item.itemName?.toLowerCase().includes(term) ||
+       item.itemId?.toLowerCase().includes(term) ||
+       item.storageLocationName?.toLowerCase().includes(term) ||
+       item.storageLocationId?.toLowerCase().includes(term) ||
+       item.quantity?.toString().includes(term) ||
+       item.minQuantity?.toString().includes(term))
+    );
+  }
+
+  setSort(field: 'itemName' | 'storageLocationName' | 'quantity' | 'status') {
+    if (this.sortField === field) {
+      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.sortField = field;
+      this.sortDirection = 'asc';
+    }
+  }
+
+  get sortedInventory(): WarehouseInventory[] {
+    const arr = [...this.filteredInventory];
+    arr.sort((a, b) => {
+      let aVal: any, bVal: any;
+      if (this.sortField === 'quantity') {
+        aVal = a.quantity ?? 0;
+        bVal = b.quantity ?? 0;
+      } else if (this.sortField === 'status') {
+        // Define your status order: Below Min < Sufficient
+        const getStatus = (item: WarehouseInventory) =>
+          item.quantity < item.minQuantity ? 'below' : 'sufficient';
+        const order = { below: 1, sufficient: 2 };
+        aVal = order[getStatus(a)];
+        bVal = order[getStatus(b)];
+      } else {
+        aVal = (a[this.sortField] || '').toString().toLowerCase();
+        bVal = (b[this.sortField] || '').toString().toLowerCase();
+      }
+      if (aVal < bVal) return this.sortDirection === 'asc' ? -1 : 1;
+      if (aVal > bVal) return this.sortDirection === 'asc' ? 1 : -1;
+      return 0;
+    });
+    return arr;
+  }
 }
