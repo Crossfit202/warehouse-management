@@ -2,6 +2,27 @@
   <h1>Products</h1>
   <div *ngIf="loading">Loading...</div>
   <button (click)="openAddModal()" class="btn btn-success mb-3">Add Product</button>
+
+  <!-- Search and Filter -->
+  <div class="product-search-filter" style="margin-bottom: 1rem; display: flex; gap: 1rem; align-items: center;">
+    <input
+      type="text"
+      [(ngModel)]="searchTerm"
+      placeholder="Search products..."
+      style="padding: 0.5rem; border-radius: 4px; border: 1px solid #ccc;"
+    />
+  </div>
+
+  <!-- Sort Buttons -->
+  <div class="product-sort-buttons" style="margin-bottom: 1rem;">
+    <button (click)="setSort('sku')" [class.active]="sortField==='sku'">
+      Sort by SKU {{sortField==='sku' ? (sortDirection==='asc' ? '↑' : '↓') : ''}}
+    </button>
+    <button (click)="setSort('name')" [class.active]="sortField==='name'">
+      Sort by Name {{sortField==='name' ? (sortDirection==='asc' ? '↑' : '↓') : ''}}
+    </button>
+  </div>
+
   <table *ngIf="!loading" class="table table-striped table-bordered">
     <thead>
       <tr>
@@ -12,7 +33,7 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let product of products">
+      <tr *ngFor="let product of sortedProducts">
         <td>{{ product.sku }}</td>
         <td>{{ product.name }}</td>
         <td>{{ product.description }}</td>
@@ -66,6 +87,17 @@
       <div class="modal-actions">
         <button class="btn btn-danger" (click)="deleteProductConfirmed()">Delete</button>
         <button class="btn btn-secondary" (click)="closeDeleteModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Error Modal -->
+  <div *ngIf="errorModalMessage" class="modal">
+    <div class="modal-content">
+      <h3>Error</h3>
+      <p>{{ errorModalMessage }}</p>
+      <div class="modal-actions">
+        <button (click)="closeErrorModal()">OK</button>
       </div>
     </div>
   </div>

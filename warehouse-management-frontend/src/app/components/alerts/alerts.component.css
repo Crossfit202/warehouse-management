@@ -79,6 +79,7 @@
 }
 
 .alert-sort-buttons button.active {
-  font-weight: bold;
-  background: #eaf3ff;
+    font-weight: bold;
+    background: #3b027b;
+    color: white;
 }

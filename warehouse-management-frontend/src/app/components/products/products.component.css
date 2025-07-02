@@ -47,6 +47,11 @@
   font-size: 1rem;
 }
 
+.product-search-filter input,
+.product-search-filter select {
+  font-size: 1rem;
+}
+
 .modal-actions {
   display: flex;
   gap: 1rem;
@@ -74,4 +79,9 @@
 
 .modal-actions button:last-child:hover {
   background: #888;
+}
+
+.product-sort-buttons button.active {
+  font-weight: bold;
+  background: #eaf3ff;
 }
