@@ -26,4 +26,6 @@ public interface WarehouseInventoryRepository extends JpaRepository<WarehouseInv
     Optional<WarehouseInventory> findByItem_IdAndWarehouseStorageLocation_Id(UUID itemId, UUID storageLocationId);
 
     boolean existsByItem_Id(UUID itemId);
+
+    boolean existsByWarehouseStorageLocation_Id(UUID warehouseStorageLocationId);
 }

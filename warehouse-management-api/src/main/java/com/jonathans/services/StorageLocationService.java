@@ -3,6 +3,8 @@ package com.jonathans.services;
 import com.jonathans.DTOS.StorageLocationDTO;
 import com.jonathans.models.StorageLocation;
 import com.jonathans.repositories.StorageLocationRepository;
+import com.jonathans.repositories.WarehouseInventoryRepository;
+import com.jonathans.repositories.WarehouseStorageLocationsRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -16,9 +18,17 @@ import java.util.stream.Collectors;
 public class StorageLocationService {
 
     private final StorageLocationRepository storageLocationRepository;
+    private final WarehouseInventoryRepository warehouseInventoryRepository;
+    private final WarehouseStorageLocationsRepository warehouseStorageLocationsRepository;
 
-    public StorageLocationService(StorageLocationRepository storageLocationRepository) {
+    public StorageLocationService(
+            StorageLocationRepository storageLocationRepository,
+            WarehouseInventoryRepository warehouseInventoryRepository,
+            WarehouseStorageLocationsRepository warehouseStorageLocationsRepository // <-- add this
+    ) {
         this.storageLocationRepository = storageLocationRepository;
+        this.warehouseInventoryRepository = warehouseInventoryRepository;
+        this.warehouseStorageLocationsRepository = warehouseStorageLocationsRepository; // <-- assign it
     }
 
     // ✅ GET ALL STORAGE LOCATIONS
@@ -84,5 +94,16 @@ public class StorageLocationService {
     private StorageLocationDTO convertToDTO(StorageLocation storageLocation) {
         return new StorageLocationDTO(storageLocation.getId(), storageLocation.getName(),
                 storageLocation.getMax_capacity());
+    }
+
+    public boolean isLocationReferenced(UUID id) {
+        return warehouseInventoryRepository.existsByWarehouseStorageLocation_Id(id);
+    }
+
+    @Transactional
+    public void removeStorageLocationFromWarehouse(UUID warehouseId, UUID warehouseStorageLocationId) {
+        // If you have a WarehouseStorageLocationsRepository, use it to delete the association.
+        // Example:
+        warehouseStorageLocationsRepository.deleteById(warehouseStorageLocationId);
     }
 }

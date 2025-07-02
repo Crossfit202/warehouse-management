@@ -69,7 +69,7 @@
                 <li *ngFor="let loc of storageLocations[editWarehouse?.id || ''] || []">
                     <span>{{ loc.name }}: Max Capacity: {{ loc.max_capacity }}</span>
                     <button class="btn btn-link text-danger p-0 ms-2"
-                        (click)="removeStorageLocation(loc)">Remove</button>
+                        (click)="openRemoveLocationModal(loc)">Remove</button>
                 </li>
             </ul>
             <div class="bottom-footer">
@@ -103,6 +103,18 @@
             <div class="modal-actions mt-3">
                 <button class="btn btn-danger" (click)="deleteWarehouseConfirmed()">Delete</button>
                 <button class="btn btn-secondary" (click)="closeDeleteModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Remove Storage Location Modal -->
+    <div *ngIf="showRemoveLocationModal" class="modal">
+        <div class="modal-content">
+            <h3>Remove Storage Location</h3>
+            <p>Are you sure you want to remove <strong>{{ locationToRemove?.name }}</strong> from this warehouse?</p>
+            <div class="modal-actions mt-3">
+                <button class="btn btn-danger" (click)="confirmRemoveLocation()">Remove</button>
+                <button class="btn btn-secondary" (click)="closeRemoveLocationModal()">Cancel</button>
             </div>
         </div>
     </div>

@@ -19,10 +19,12 @@ export class WarehousesComponent implements OnInit {
   showAddModal = false;
   showEditModal = false;
   showDeleteModal = false;
+  showRemoveLocationModal = false;
 
   newWarehouse: Partial<Warehouse> = {};
   editWarehouse: Warehouse | null = null;
   deleteWarehouse: Warehouse | null = null;
+  locationToRemove: any = null;
 
   expandedWarehouseId: string | null = null;
   storageLocations: { [warehouseId: string]: any[] } = {};
@@ -130,12 +132,23 @@ export class WarehousesComponent implements OnInit {
     });
   }
 
-  removeStorageLocation(loc: any) {
-    if (!confirm(`Remove storage location "${loc.name}"?`)) return;
-    this.warehouseService.deleteStorageLocation(loc.id).subscribe(() => {
-      if (this.editWarehouse && this.storageLocations[this.editWarehouse.id]) {
-        this.storageLocations[this.editWarehouse.id] = this.storageLocations[this.editWarehouse.id].filter(l => l.id !== loc.id);
+  openRemoveLocationModal(loc: any) {
+    this.locationToRemove = loc;
+    this.showRemoveLocationModal = true;
+  }
+
+  closeRemoveLocationModal() {
+    this.showRemoveLocationModal = false;
+    this.locationToRemove = null;
+  }
+
+  confirmRemoveLocation() {
+    if (!this.editWarehouse || !this.locationToRemove) return;
+    this.warehouseService.removeStorageLocationFromWarehouse(this.editWarehouse.id, this.locationToRemove.id).subscribe(() => {
+      if (this.editWarehouse?.id && this.storageLocations[this.editWarehouse.id]) {
+        this.storageLocations[this.editWarehouse.id] = this.storageLocations[this.editWarehouse.id].filter(l => l.id !== this.locationToRemove.id);
       }
+      this.closeRemoveLocationModal();
     });
   }
 

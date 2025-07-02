@@ -47,4 +47,20 @@ public class StorageLocationController {
     public ResponseEntity<Void> deleteStorageLocation(@PathVariable UUID id) {
         return storageLocationService.deleteStorageLocation(id);
     }
+
+    // ✅ CHECK IF LOCATION IS REFERENCED
+    @GetMapping("/{id}/referenced")
+    public ResponseEntity<Boolean> isLocationReferenced(@PathVariable UUID id) {
+        boolean referenced = storageLocationService.isLocationReferenced(id);
+        return ResponseEntity.ok(referenced);
+    }
+
+    // REMOVE STORAGE LOCATION FROM WAREHOUSE
+    @DeleteMapping("/{warehouseId}/storage-locations/{warehouseStorageLocationId}")
+    public ResponseEntity<Void> removeStorageLocationFromWarehouse(
+            @PathVariable UUID warehouseId,
+            @PathVariable UUID warehouseStorageLocationId) {
+        storageLocationService.removeStorageLocationFromWarehouse(warehouseId, warehouseStorageLocationId);
+        return ResponseEntity.noContent().build();
+    }
 }

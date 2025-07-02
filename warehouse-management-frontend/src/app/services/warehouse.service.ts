@@ -61,4 +61,11 @@ export class WarehouseService {
       { withCredentials: true }
     );
   }
+
+  removeStorageLocationFromWarehouse(warehouseId: string, warehouseStorageLocationId: string) {
+    return this.http.delete(
+      `http://localhost:8083/warehouse-storage-locations/${warehouseId}/storage-locations/${warehouseStorageLocationId}`,
+      { withCredentials: true }
+    );
+  }
 }

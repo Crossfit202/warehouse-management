@@ -1,13 +1,70 @@
 <div class="content">
     <h1>Locations</h1>
 
-    <ul>
-        <li *ngFor="let storagelocation of storagelocations">
-            <strong>{{ storagelocation.name }}</strong>
-            <ul>
-                <li>Name: {{ storagelocation.name }}</li>
-                <li>Max Capacity: {{ storagelocation.max_capacity }}</li>
-            </ul>
-        </li>
-    </ul>
+    <button class="btn btn-success mb-3" (click)="openAddModal()">Add Storage Location</button>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Max Capacity</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let storagelocation of storagelocations">
+                <td>{{ storagelocation.name }}</td>
+                <td>{{ storagelocation.max_capacity }}</td>
+                <td>
+                    <button class="btn btn-primary btn-sm me-2" (click)="openEditModal(storagelocation)">Edit</button>
+                    <button class="btn btn-danger btn-sm" [disabled]="storagelocation.isReferenced"
+                        (click)="openDeleteModal(storagelocation)">
+                        Delete
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Add Modal -->
+    <div *ngIf="showAddModal" class="modal">
+        <div class="modal-content">
+            <h3>Add Storage Location</h3>
+            <label>Name</label>
+            <input [(ngModel)]="newLocation.name" class="form-control" />
+            <label>Max Capacity</label>
+            <input type="number" [(ngModel)]="newLocation.max_capacity" class="form-control" />
+            <div class="modal-actions mt-3">
+                <button class="btn btn-success" (click)="addStorageLocation()">Add</button>
+                <button class="btn btn-secondary" (click)="closeAddModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div *ngIf="showEditModal" class="modal">
+        <div class="modal-content">
+            <h3>Edit Storage Location</h3>
+            <label>Name</label>
+            <input [(ngModel)]="editLocation.name" class="form-control" />
+            <label>Max Capacity</label>
+            <input type="number" [(ngModel)]="editLocation.max_capacity" class="form-control" />
+            <div class="modal-actions mt-3">
+                <button class="btn btn-primary" (click)="updateStorageLocation()">Save</button>
+                <button class="btn btn-secondary" (click)="closeEditModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Modal -->
+    <div *ngIf="showDeleteModal" class="modal">
+        <div class="modal-content">
+            <h3>Delete Storage Location</h3>
+            <p>Are you sure you want to delete {{ deleteLocation?.name }}?</p>
+            <div class="modal-actions mt-3">
+                <button class="btn btn-danger" (click)="deleteStorageLocation()">Delete</button>
+                <button class="btn btn-secondary" (click)="closeDeleteModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
 </div>

@@ -115,4 +115,10 @@ public class WarehouseStorageLocationService {
                     link.getMaxCapacity());
         }).toList();
     }
+
+    @Transactional
+    public void removeStorageLocationFromWarehouse(UUID warehouseId, UUID warehouseStorageLocationId) {
+        // Optionally: check if referenced in inventory for this warehouse, and block if so
+        warehouseStorageLocationsRepository.deleteById(warehouseStorageLocationId);
+    }
 }

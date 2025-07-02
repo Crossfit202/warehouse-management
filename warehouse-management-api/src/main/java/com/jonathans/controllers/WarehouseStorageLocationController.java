@@ -33,4 +33,12 @@ public class WarehouseStorageLocationController {
             @RequestBody WarehouseStorageLocationsDTO dto) {
         return warehouseStorageLocationService.createWarehouseStorageLocation(dto);
     }
+
+    @DeleteMapping("/{warehouseId}/storage-locations/{warehouseStorageLocationId}")
+    public ResponseEntity<Void> removeStorageLocationFromWarehouse(
+            @PathVariable UUID warehouseId,
+            @PathVariable UUID warehouseStorageLocationId) {
+        warehouseStorageLocationService.removeStorageLocationFromWarehouse(warehouseId, warehouseStorageLocationId);
+        return ResponseEntity.noContent().build();
+    }
 }
