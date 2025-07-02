@@ -75,7 +75,7 @@ public class WarehouseInventoryService {
         entity.setMinQuantity(dto.getMinQuantity());
         entity = inventoryRepository.save(entity);
 
-        // --- LOG MOVEMENT if quantity reduced ---
+        // --- LOG MOVEMENT if quantity changed ---
         if (dto.getQuantity() < oldQuantity) {
             InventoryMovement movement = new InventoryMovement();
             movement.setItem(entity.getItem());
@@ -83,6 +83,20 @@ public class WarehouseInventoryService {
             movement.setFromLocation(entity.getWarehouseStorageLocation());
             movement.setQuantity(oldQuantity - dto.getQuantity());
             movement.setMovementType("REDUCE");
+            if (dto.getUserId() != null) {
+                User user = new User();
+                user.setId(dto.getUserId());
+                movement.setUser(user);
+            }
+            movement.setTime(LocalDateTime.now());
+            movementRepository.save(movement);
+        } else if (dto.getQuantity() > oldQuantity) {
+            InventoryMovement movement = new InventoryMovement();
+            movement.setItem(entity.getItem());
+            movement.setToWarehouse(entity.getWarehouseStorageLocation().getWarehouse());
+            movement.setToLocation(entity.getWarehouseStorageLocation());
+            movement.setQuantity(dto.getQuantity() - oldQuantity);
+            movement.setMovementType("ADD");
             if (dto.getUserId() != null) {
                 User user = new User();
                 user.setId(dto.getUserId());

@@ -184,10 +184,10 @@ export class InventoryComponent implements OnInit {
     }
 
     if (existing) {
-      // Only update minQuantity if the user actually entered a value (field enabled)
       const updatedItem: any = {
         ...existing,
-        quantity: existing.quantity + Number(this.newInventoryItem.quantity)
+        quantity: existing.quantity + Number(this.newInventoryItem.quantity),
+        userId: this.userId // <-- Ensure userId is included
       };
       if (!this.minQuantityDisabled && this.newInventoryItem.minQuantity != null && this.newInventoryItem.minQuantity !== '') {
         updatedItem.minQuantity = Number(this.newInventoryItem.minQuantity);

@@ -138,15 +138,15 @@
     <!-- Delete Inventory Modal -->
     <div *ngIf="showDeleteModal" class="modal">
         <div class="modal-content">
-            <h3>Remove Quantity from Inventory</h3>
+            <h3>Reduce Quantity from Inventory</h3>
             <p>
                 <strong>Item:</strong> {{ itemToDelete?.itemName || itemToDelete?.itemId }}<br>
                 <strong>Available:</strong> {{ itemToDelete?.quantity }}
             </p>
-            <label>Quantity to Remove</label>
+            <label>Quantity to Reduce</label>
             <input type="number" [(ngModel)]="deleteQuantity" min="1" [max]="itemToDelete?.quantity || 1" />
             <div class="modal-actions">
-                <button class="btn btn-danger" (click)="confirmDeleteQuantity()">Remove</button>
+                <button class="btn btn-danger" (click)="confirmDeleteQuantity()">Reduce</button>
                 <button class="btn btn-secondary" (click)="closeDeleteModal()">Cancel</button>
             </div>
         </div>
@@ -155,13 +155,13 @@
     <!-- Delete Inventory Modal -->
     <div *ngIf="showDeleteAllModal" class="modal">
         <div class="modal-content">
-            <h3>Remove Entire Quantity from Inventory</h3>
+            <h3>Delete from Inventory</h3>
             <p>
                 <strong>Item:</strong> {{ itemToDelete?.itemName || itemToDelete?.itemId }}<br>
-                <strong>Available:</strong> {{ itemToDelete?.quantity }}
+                <strong>Quantity:</strong> {{ itemToDelete?.quantity }}
             </p>
             <div class="modal-actions">
-                <button class="btn btn-danger" (click)="confirmDeleteAllQuantity()">Remove</button>
+                <button class="btn btn-danger" (click)="confirmDeleteAllQuantity()">Delete</button>
                 <button class="btn btn-secondary" (click)="closeDeleteAllModal()">Cancel</button>
             </div>
         </div>

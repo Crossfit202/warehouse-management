@@ -11,4 +11,5 @@ export interface WarehouseInventory {
 
     // UI-only property for inline editing
     editingMinQuantity?: boolean;
+    userId?: string; // <-- Add this line
 }
