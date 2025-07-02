@@ -20,6 +20,8 @@ export class MovementsComponent implements OnInit {
   searchTerm: string = '';
   sortField: 'itemName' | 'quantity' | 'movementType' | 'time' = 'time';
   sortDirection: 'asc' | 'desc' = 'desc';
+  startDate: string = '';
+  endDate: string = '';
 
   constructor(
     private movementService: MovementService,
@@ -48,18 +50,38 @@ export class MovementsComponent implements OnInit {
   }
 
   get filteredMovements(): InventoryMovement[] {
-    if (!this.searchTerm.trim()) return this.movements;
-    const term = this.searchTerm.trim().toLowerCase();
-    return this.movements.filter(m =>
-      (m.itemName?.toLowerCase().includes(term) ||
-       m.fromWarehouseName?.toLowerCase().includes(term) ||
-       m.toWarehouseName?.toLowerCase().includes(term) ||
-       m.movementType?.toLowerCase().includes(term) ||
-       m.userName?.toLowerCase().includes(term) ||
-       m.quantity?.toString().includes(term) ||
-       (m.time && new Date(m.time).toLocaleString().toLowerCase().includes(term))
-      )
-    );
+    let filtered = this.movements;
+
+    // Date range filter
+    if (this.startDate) {
+      const start = new Date(this.startDate);
+      filtered = filtered.filter(m => new Date(m.time) >= start);
+    }
+    if (this.endDate) {
+      filtered = filtered.filter(m => {
+        const movementDate = new Date(m.time);
+        // Format both dates as YYYY-MM-DD for comparison
+        const movementDateStr = movementDate.toISOString().slice(0, 10);
+        return movementDateStr <= this.endDate;
+      });
+    }
+
+    // Search filter
+    if (this.searchTerm.trim()) {
+      const term = this.searchTerm.trim().toLowerCase();
+      filtered = filtered.filter(m =>
+        (m.itemName?.toLowerCase().includes(term) ||
+          m.fromWarehouseName?.toLowerCase().includes(term) ||
+          m.toWarehouseName?.toLowerCase().includes(term) ||
+          m.movementType?.toLowerCase().includes(term) ||
+          m.userName?.toLowerCase().includes(term) ||
+          m.quantity?.toString().includes(term) ||
+          (m.time && new Date(m.time).toLocaleString().toLowerCase().includes(term))
+        )
+      );
+    }
+
+    return filtered;
   }
 
   setSort(field: 'itemName' | 'quantity' | 'movementType' | 'time') {

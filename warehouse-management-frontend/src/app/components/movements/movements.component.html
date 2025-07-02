@@ -6,12 +6,14 @@
     </select>
 
     <div class="movement-search-sort" style="margin-bottom: 1rem; display: flex; gap: 1rem; align-items: center;">
-        <input
-            type="text"
-            [(ngModel)]="searchTerm"
-            placeholder="Search movements..."
-            style="padding: 0.5rem; border-radius: 4px; border: 1px solid #ccc;"
-        />
+        <label>
+            From:
+            <input type="date" [(ngModel)]="startDate" />
+        </label>
+        <label>
+            To:
+            <input type="date" [(ngModel)]="endDate" />
+        </label>
         <button (click)="setSort('itemName')" [class.active]="sortField==='itemName'">
             Sort by Item {{sortField==='itemName' ? (sortDirection==='asc' ? '↑' : '↓') : ''}}
         </button>
@@ -24,6 +26,8 @@
         <button (click)="setSort('time')" [class.active]="sortField==='time'">
             Sort by Time {{sortField==='time' ? (sortDirection==='asc' ? '↑' : '↓') : ''}}
         </button>
+        <input type="text" [(ngModel)]="searchTerm" placeholder="Search movements..."
+            style="padding: 0.5rem; border-radius: 4px; border: 1px solid #ccc;" />
     </div>
 
     <table class="table table-striped mt-3">
