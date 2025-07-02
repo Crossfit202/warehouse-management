@@ -47,6 +47,10 @@ public class AlertService {
     // CREATE ALERT
     @Transactional
     public ResponseEntity<AlertDTO> createAlert(AlertDTO alertDTO) {
+        System.out.println("Received assignedUserId: " + alertDTO.getAssignedUserId());
+        if (alertDTO.getAssignedUserId() != null) {
+            System.out.println("User exists: " + userRepository.findById(alertDTO.getAssignedUserId()).isPresent());
+        }
         Alert alert = new Alert();
         alert.setMessage(alertDTO.getMessage());
         alert.setStatus(alertDTO.getStatus());
@@ -130,6 +134,7 @@ public class AlertService {
         dto.setStatus(alert.getStatus());
         dto.setTime(alert.getTime());
         dto.setAssignedUserId(alert.getAssignedUser() != null ? alert.getAssignedUser().getId() : null);
+        dto.setAssignedUserName(alert.getAssignedUser() != null ? alert.getAssignedUser().getUsername() : null);
         return dto;
     }
 }

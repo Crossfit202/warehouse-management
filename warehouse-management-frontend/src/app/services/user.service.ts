@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { User } from '../models/User';
+import { WarehousePersonnelDTO } from '../models/WarehousePersonnelDTO';
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +15,7 @@ export class UserService {
 
   getAllUsers(): Observable<User[]> {
     return this.http.get<User[]>(this.apiUrl, {
-      withCredentials: true // ✅ THIS IS CRITICAL FOR AUTHORIZATION - SENDS THE JWT TOKEN TO THE JWTFILTER.JAVA
+      withCredentials: true
     });
   }
 
@@ -22,7 +23,7 @@ export class UserService {
     return this.http.put<User>(
       `${this.apiUrl}/${user.id}`,
       user,
-      { withCredentials: true } // <-- This ensures cookies (JWT) are sent!
+      { withCredentials: true }
     );
   }
 
@@ -32,8 +33,8 @@ export class UserService {
     });
   }
 
-  getUsersForWarehouse(warehouseId: string): Observable<User[]> {
-    return this.http.get<User[]>(`http://localhost:8083/warehouse-personnel/warehouse/${warehouseId}/users`, { withCredentials: true });
+  getUsersForWarehouse(warehouseId: string): Observable<WarehousePersonnelDTO[]> {
+    return this.http.get<WarehousePersonnelDTO[]>(`http://localhost:8083/warehouse-personnel/warehouse/${warehouseId}/users`, { withCredentials: true });
   }
 
   createUser(user: { username: string; email: string; password: string; role: string }) {

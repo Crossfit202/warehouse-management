@@ -1,4 +1,4 @@
-
+import { WarehousePersonnelDTO } from "../services/personnel.service";
 
 export class User {
     id: string; // is UUID in DB 
@@ -43,6 +43,15 @@ export class User {
         }
 
         return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+    }
+
+    static fromPersonnelDTO(dto: WarehousePersonnelDTO): User {
+        return new User(
+            dto.userId,
+            dto.username,
+            '',
+            '', '', '', ''
+        );
     }
 
 

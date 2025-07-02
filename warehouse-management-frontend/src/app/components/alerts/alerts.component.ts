@@ -62,9 +62,9 @@ export class AlertsComponent implements OnInit {
         // For each alert, load personnel for its warehouse
         this.alerts.forEach(alert => {
           if (alert.warehouse && alert.warehouse.id) {
-            this.userService.getUsersForWarehouse(alert.warehouse.id).subscribe((users: User[]) => {
-              this.personnelForAlertWarehouse[alert.id] = users.map(dto => new User(
-                dto.id,
+            this.userService.getUsersForWarehouse(alert.warehouse.id).subscribe((dtos: WarehousePersonnelDTO[]) => {
+              this.personnelForAlertWarehouse[alert.id] = dtos.map(dto => new User(
+                dto.userId, // <-- use userId, not id!
                 dto.username,
                 '',
                 '',
@@ -130,15 +130,11 @@ export class AlertsComponent implements OnInit {
     this.newAlert.warehouseId = warehouseId;
     this.newAlert.assignedUserId = '';
     // For add alert form
-    this.userService.getUsersForWarehouse(warehouseId).subscribe(data => {
-      this.personnelForSelectedWarehouse = data.map(dto => new User(
-        dto.id,               // <-- Use id, not userId
+    this.userService.getUsersForWarehouse(warehouseId).subscribe((dtos: WarehousePersonnelDTO[]) => {
+      this.personnelForSelectedWarehouse = dtos.map(dto => new User(
+        dto.userId,
         dto.username,
-        dto.email || '',
-        '',
-        '',
-        '',
-        ''
+        '', '', '', '', ''
       ));
     });
   }
@@ -184,9 +180,10 @@ export class AlertsComponent implements OnInit {
     const alertToSend = {
       message: this.newAlert.message,
       status: this.newAlert.status,
-      warehouseId: this.newAlert.warehouseId, // <-- send warehouseId directly
+      warehouseId: this.newAlert.warehouseId,
       assignedUserId: this.newAlert.assignedUserId || null
     };
+    console.log('Sending alert:', alertToSend);
     this.alertService.createAlert(alertToSend).subscribe({
       next: () => {
         this.toastr.success('Alert created successfully!');
@@ -202,5 +199,15 @@ export class AlertsComponent implements OnInit {
 
   get safePersonnelForSelectedWarehouse(): User[] {
     return this.personnelForSelectedWarehouse || [];
+  }
+
+  getAssignedUserName(alert: Alert): string {
+    return alert.assignedUserName || 'Unassigned';
+  }
+
+  openEditModal(alert: Alert): void {
+    // Placeholder for modal logic
+    // You can implement modal opening here later
+    console.log('Edit modal opened for alert:', alert);
   }
 }

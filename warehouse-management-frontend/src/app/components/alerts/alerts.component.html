@@ -26,7 +26,8 @@
             Assigned User:
             <select [(ngModel)]="newAlert.assignedUserId" name="assignedUserId">
                 <option value="">Unassigned</option>
-                <option *ngFor="let user of safePersonnelForSelectedWarehouse" [value]="user?.id">{{ user?.username }}
+                <option *ngFor="let user of safePersonnelForSelectedWarehouse" [value]="user.id">
+                    {{ user.username }}
                 </option>
 
             </select>
@@ -40,34 +41,31 @@
     </select>
 
 
-    <ul>
-        <li *ngFor="let alert of alerts">
-            <div *ngIf="alert.warehouse?.name === selectedWarehouse">
-                <strong>{{ alert.message }}</strong>
-                <ul>
-                    <li>
-                        Status:
-                        <select [(ngModel)]="alert.status">
-                            <option value="NEW">New</option>
-                            <option value="ACTIVE">Active</option>
-                            <option value="CLOSED">Closed</option>
-                        </select>
-                    </li>
-                    <li>
-                        Assigned User:
-                        <select [(ngModel)]="alert.assignedUserId">
-                            <option value="">Unassigned</option>
-                            <option *ngFor="let user of personnelForAlertWarehouse[alert.id]" [value]="user.id">
-                              {{ user.username }}
-                            </option>
-                        </select>
-                    </li>
-                    <li>Warehouse: {{ alert.warehouse.name }}</li>
-                    <li>Time: {{ alert.formatTime() }}</li>
-                </ul>
-                <button (click)="saveAlert(alert)">Save</button>
+    <div class="alert-cards">
+        <div class="alert-card" *ngFor="let alert of alerts">
+            <h3>{{ alert.message }}</h3>
+            <div class="alert-details">
+                <div>
+                    <label><strong>Status:</strong></label>
+                    <span> {{ alert.status }}</span>
+                </div>
+                <div>
+                    <label><strong>Assigned User:</strong></label>
+                    <span>{{ getAssignedUserName(alert) }}</span>
+                </div>
+                <div>
+                    <label><strong>Warehouse:</strong></label>
+                    <span> {{ alert.warehouse?.name || 'N/A' }}</span>
+                </div>
+                <div>
+                    <label><strong>Time:</strong></label>
+                    <span> {{ alert.formatTime() }}</span>
+                </div>
+            </div>
+            <div class="alert-actions">
+                <button (click)="openEditModal(alert)">Edit</button>
                 <button (click)="deleteAlert(alert.id)">Delete</button>
             </div>
-        </li>
-    </ul>
+        </div>
+    </div>
 </div>

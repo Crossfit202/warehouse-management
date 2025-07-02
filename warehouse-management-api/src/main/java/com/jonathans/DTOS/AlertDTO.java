@@ -13,6 +13,7 @@ public class AlertDTO {
     private LocalDateTime time;
     private UUID assignedUserId;
     private UUID warehouseId;
+    private String assignedUserName;
 
     public AlertDTO() {
     }
@@ -82,6 +83,14 @@ public class AlertDTO {
 
     public void setWarehouseId(UUID warehouseId) {
         this.warehouseId = warehouseId;
+    }
+
+    public String getAssignedUserName() {
+        return assignedUserName;
+    }
+
+    public void setAssignedUserName(String assignedUserName) {
+        this.assignedUserName = assignedUserName;
     }
 
     @Override

@@ -6,7 +6,7 @@ export class Alert {
     message: string;
     status: string;
     time: string;
-    assignedUserId?: string | null; // <-- Add this
+    assignedUserId?: string;
     assignedUserName?: string;
 
     constructor(
