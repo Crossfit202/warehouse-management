@@ -83,6 +83,14 @@ public class StorageLocationService {
     // ✅ DELETE STORAGE LOCATION
     @Transactional
     public ResponseEntity<Void> deleteStorageLocation(UUID id) {
+        // Block deletion if referenced in inventory
+        if (warehouseInventoryRepository.existsByWarehouseStorageLocation_Id(id)) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
+        // Block deletion if associated with any warehouse
+        if (warehouseStorageLocationsRepository.existsByStorageLocationTemplate_Id(id)) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
         if (!storageLocationRepository.existsById(id)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
@@ -97,7 +105,8 @@ public class StorageLocationService {
     }
 
     public boolean isLocationReferenced(UUID id) {
-        return warehouseInventoryRepository.existsByWarehouseStorageLocation_Id(id);
+        return warehouseInventoryRepository.existsByWarehouseStorageLocation_Id(id)
+            || warehouseStorageLocationsRepository.existsByStorageLocationTemplate_Id(id);
     }
 
     @Transactional

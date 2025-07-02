@@ -17,4 +17,6 @@ public interface WarehouseStorageLocationsRepository extends JpaRepository<Wareh
 
     @Query("SELECT wsl FROM WarehouseStorageLocations wsl WHERE wsl.maxCapacity = :maxCapacity")
     List<WarehouseStorageLocations> findByMaxCapacity(@Param("maxCapacity") int maxCapacity);
+
+    boolean existsByStorageLocationTemplate_Id(UUID storageLocationId);
 }

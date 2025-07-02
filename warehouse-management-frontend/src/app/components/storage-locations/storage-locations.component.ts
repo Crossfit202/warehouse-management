@@ -70,9 +70,18 @@ export class StorageLocationsComponent implements OnInit {
   closeDeleteModal() { this.showDeleteModal = false; }
 
   deleteStorageLocation() {
-    this.StorageLocationsService.deleteStorageLocation(this.deleteLocation.id).subscribe(() => {
-      this.closeDeleteModal();
-      this.loadStorageLocations();
+    this.StorageLocationsService.deleteStorageLocation(this.deleteLocation.id).subscribe({
+      next: () => {
+        this.closeDeleteModal();
+        this.loadStorageLocations();
+      },
+      error: (err) => {
+        if (err.status === 409) {
+          alert('Cannot delete: This storage location is in use by a warehouse or inventory.');
+        } else {
+          alert('Failed to delete storage location.');
+        }
+      }
     });
   }
 }
