@@ -1,4 +1,5 @@
 .alert-cards {
+    margin-top: 20px;
     display: flex;
     flex-wrap: wrap;
     gap: 1rem;
@@ -75,4 +76,9 @@
 .alert-closed {
     background: #eaffea !important;
     /* Light green */
+}
+
+.alert-sort-buttons button.active {
+  font-weight: bold;
+  background: #eaf3ff;
 }

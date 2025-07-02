@@ -32,19 +32,27 @@
 
             </select>
         </label>
-        <button type="submit" [disabled]="!alertForm.form.valid">Add Alert</button>
+        <button type="submit" [disabled]="!alertForm.form.valid" class="btn btn-success">Add Alert</button>
     </form>
 
     <!-- Dropdown list -->
-    <select (change)="onSelect($event)">
-        <option *ngFor="let warehouse of warehouses" [value]="warehouse.name">{{warehouse.name}}</option>
+    <select [(ngModel)]="selectedWarehouse" (change)="onSelect($event)">
+        <option value="">All Warehouses</option>
+        <option *ngFor="let warehouse of warehouses" [value]="warehouse.name">{{ warehouse.name }}</option>
     </select>
 
+    <!-- Sort Buttons -->
+    <div class="alert-sort-buttons" style="margin-bottom: 1rem;">
+        <button (click)="setSort('time')" [class.active]="sortField==='time'">
+            Sort by Time {{sortField==='time' ? (sortDirection==='asc' ? '↑' : '↓') : ''}}
+        </button>
+        <button (click)="setSort('status')" [class.active]="sortField==='status'">
+            Sort by Status {{sortField==='status' ? (sortDirection==='asc' ? '↑' : '↓') : ''}}
+        </button>
+    </div>
 
     <div class="alert-cards">
-        <div class="alert-card"
-             *ngFor="let alert of alerts"
-             [ngClass]="{
+        <div class="alert-card" *ngFor="let alert of sortedAlerts" [ngClass]="{
                'alert-new': alert.status === 'NEW',
                'alert-active': alert.status === 'ACTIVE',
                'alert-closed': alert.status === 'CLOSED'
@@ -88,34 +96,34 @@
 </div>
 
 <div class="modal" *ngIf="editAlert">
-  <div class="modal-content">
-    <h2>Edit Alert</h2>
-    <form (ngSubmit)="saveEdit()" #editForm="ngForm">
-      <label>
-        Message:
-        <input type="text" [(ngModel)]="editAlert.message" name="editMessage" required />
-      </label>
-      <label>
-        Status:
-        <select [(ngModel)]="editAlert.status" name="editStatus" required>
-          <option value="NEW">New</option>
-          <option value="ACTIVE">Active</option>
-          <option value="CLOSED">Closed</option>
-        </select>
-      </label>
-      <label>
-        Assigned User:
-        <select [(ngModel)]="editAlert.assignedUserId" name="editAssignedUserId">
-          <option value="">Unassigned</option>
-          <option *ngFor="let user of editPersonnel" [value]="user.id">
-            {{ user.username }}
-          </option>
-        </select>
-      </label>
-      <div class="modal-actions">
-        <button type="submit" class="btn btn-success" [disabled]="!editForm.form.valid">Save</button>
-        <button type="button" class="btn btn-secondary" (click)="closeEditModal()">Cancel</button>
-      </div>
-    </form>
-  </div>
+    <div class="modal-content">
+        <h2>Edit Alert</h2>
+        <form (ngSubmit)="saveEdit()" #editForm="ngForm">
+            <label>
+                Message:
+                <input type="text" [(ngModel)]="editAlert.message" name="editMessage" required />
+            </label>
+            <label>
+                Status:
+                <select [(ngModel)]="editAlert.status" name="editStatus" required>
+                    <option value="NEW">New</option>
+                    <option value="ACTIVE">Active</option>
+                    <option value="CLOSED">Closed</option>
+                </select>
+            </label>
+            <label>
+                Assigned User:
+                <select [(ngModel)]="editAlert.assignedUserId" name="editAssignedUserId">
+                    <option value="">Unassigned</option>
+                    <option *ngFor="let user of editPersonnel" [value]="user.id">
+                        {{ user.username }}
+                    </option>
+                </select>
+            </label>
+            <div class="modal-actions">
+                <button type="submit" class="btn btn-success" [disabled]="!editForm.form.valid">Save</button>
+                <button type="button" class="btn btn-secondary" (click)="closeEditModal()">Cancel</button>
+            </div>
+        </form>
+    </div>
 </div>

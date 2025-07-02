@@ -41,6 +41,9 @@ export class AlertsComponent implements OnInit {
   editAlert: Alert | null = null;
   editPersonnel: User[] = [];
 
+  sortField: 'time' | 'status' = 'time';
+  sortDirection: 'asc' | 'desc' = 'desc';
+
   constructor(
     private alertService: AlertService,
     private warehouseService: WarehouseService,
@@ -110,13 +113,13 @@ export class AlertsComponent implements OnInit {
       this.users = data.map((dto: any) => {
         // Adjust the mapping as per the User constructor's parameter order
         return new User(
-          dto.id,               // id
-          dto.username,         // username
-          dto.email || '',      // email (provide default if missing)
-          dto.role || '',       // role (provide default if missing)
-          dto.firstName || '',  // firstName (provide default if missing)
-          dto.lastName || '',   // lastName (provide default if missing)
-          dto.active ?? true    // active (provide default if missing)
+          dto.id,
+          dto.username,
+          dto.email || '',
+          dto.role || '',
+          dto.firstName || '',
+          dto.lastName || '',
+          dto.active ?? true
         );
       });
     });
@@ -124,12 +127,8 @@ export class AlertsComponent implements OnInit {
 
   // method to handle drop-down list change
   onSelect(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    this.selectedWarehouse = input.value;
-    const selected = this.warehouses.find(w => w.name === this.selectedWarehouse);
-    if (selected) {
-      this.loadUsersForWarehouse(selected.id);
-    }
+    const select = event.target as HTMLSelectElement;
+    this.selectedWarehouse = select.value;
   }
 
   // When warehouse is selected in the add alert form
@@ -285,5 +284,44 @@ export class AlertsComponent implements OnInit {
         this.toastr.error('Failed to update alert.');
       }
     });
+  }
+
+  setSort(field: 'time' | 'status') {
+    if (this.sortField === field) {
+      // Toggle direction if clicking the same field
+      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.sortField = field;
+      this.sortDirection = field === 'time' ? 'desc' : 'asc'; // default: newest first, status asc
+    }
+  }
+
+  get sortedAlerts(): Alert[] {
+    const arr = [...this.filteredAlerts];
+    if (this.sortField === 'time') {
+      arr.sort((a, b) => {
+        const at = new Date(a.time).getTime();
+        const bt = new Date(b.time).getTime();
+        return this.sortDirection === 'asc' ? at - bt : bt - at;
+      });
+    } else if (this.sortField === 'status') {
+      arr.sort((a, b) => {
+        const order = { NEW: 1, ACTIVE: 2, CLOSED: 3 };
+        const aOrder = order[a.status as keyof typeof order] ?? 99;
+        const bOrder = order[b.status as keyof typeof order] ?? 99;
+        const cmp = aOrder - bOrder;
+        return this.sortDirection === 'asc' ? cmp : -cmp;
+      });
+    }
+    return arr;
+  }
+
+  get filteredAlerts(): Alert[] {
+    if (!this.selectedWarehouse) {
+      return this.alerts;
+    }
+    const selected = this.warehouses.find(w => w.name === this.selectedWarehouse);
+    if (!selected) return this.alerts;
+    return this.alerts.filter(alert => alert.warehouse?.id === selected.id);
   }
 }
