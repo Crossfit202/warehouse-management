@@ -34,6 +34,13 @@ export class AlertsComponent implements OnInit {
   personnelForSelectedWarehouse: User[] = [];
   personnelForAlertWarehouse: { [alertId: string]: User[] } = {};
 
+  editingAlert: any = null;
+
+  deleteConfirmAlertId: string | null = null;
+
+  editAlert: Alert | null = null;
+  editPersonnel: User[] = [];
+
   constructor(
     private alertService: AlertService,
     private warehouseService: WarehouseService,
@@ -172,6 +179,30 @@ export class AlertsComponent implements OnInit {
     }
   }
 
+  openDeleteModal(alertId: string): void {
+    this.deleteConfirmAlertId = alertId;
+  }
+
+  closeDeleteModal(): void {
+    this.deleteConfirmAlertId = null;
+  }
+
+  confirmDelete(): void {
+    if (this.deleteConfirmAlertId) {
+      this.alertService.deleteAlert(this.deleteConfirmAlertId).subscribe({
+        next: () => {
+          this.toastr.success('Alert deleted successfully!', 'Success');
+          this.loadAlerts();
+          this.closeDeleteModal();
+        },
+        error: () => {
+          this.toastr.error('Failed to delete alert.', 'Error');
+          this.closeDeleteModal();
+        }
+      });
+    }
+  }
+
   addAlert(): void {
     if (!this.newAlert.message || !this.newAlert.status || !this.newAlert.warehouseId) {
       this.toastr.error('Please fill out all fields.');
@@ -206,8 +237,53 @@ export class AlertsComponent implements OnInit {
   }
 
   openEditModal(alert: Alert): void {
-    // Placeholder for modal logic
-    // You can implement modal opening here later
-    console.log('Edit modal opened for alert:', alert);
+    // Clone the alert to avoid mutating the list directly
+    this.editAlert = new Alert(
+      alert.id,
+      alert.warehouse,
+      alert.message,
+      alert.status,
+      alert.time,
+      alert.assignedUserId,
+      alert.assignedUserName
+    );
+    // Load users for the alert's warehouse
+    if (alert.warehouse && alert.warehouse.id) {
+      this.userService.getUsersForWarehouse(alert.warehouse.id).subscribe((dtos: WarehousePersonnelDTO[]) => {
+        this.editPersonnel = dtos.map(dto => new User(
+          dto.userId,
+          dto.username,
+          '', '', '', '', ''
+        ));
+      });
+    } else {
+      this.editPersonnel = [];
+    }
+  }
+
+  closeEditModal(): void {
+    this.editAlert = null;
+    this.editPersonnel = [];
+  }
+
+  saveEdit(): void {
+    if (!this.editAlert) return;
+    const dto = {
+      id: this.editAlert.id,
+      message: this.editAlert.message,
+      status: this.editAlert.status,
+      warehouseId: this.editAlert.warehouse?.id,
+      assignedUserId: this.editAlert.assignedUserId || null
+    };
+    this.alertService.updateAlert(dto).subscribe({
+      next: () => {
+        this.toastr.success('Alert updated successfully!');
+        this.closeEditModal();
+        this.loadAlerts();
+      },
+      error: () => {
+        this.toastr.error('Failed to update alert.');
+      }
+    });
   }
 }

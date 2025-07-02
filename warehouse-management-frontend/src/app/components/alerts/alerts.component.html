@@ -42,7 +42,13 @@
 
 
     <div class="alert-cards">
-        <div class="alert-card" *ngFor="let alert of alerts">
+        <div class="alert-card"
+             *ngFor="let alert of alerts"
+             [ngClass]="{
+               'alert-new': alert.status === 'NEW',
+               'alert-active': alert.status === 'ACTIVE',
+               'alert-closed': alert.status === 'CLOSED'
+             }">
             <h3>{{ alert.message }}</h3>
             <div class="alert-details">
                 <div>
@@ -63,9 +69,53 @@
                 </div>
             </div>
             <div class="alert-actions">
-                <button (click)="openEditModal(alert)">Edit</button>
-                <button (click)="deleteAlert(alert.id)">Delete</button>
+                <button (click)="openEditModal(alert)" class="btn btn-primary">Edit</button>
+                <button (click)="openDeleteModal(alert.id)" class="btn btn-danger">Delete</button>
             </div>
         </div>
     </div>
+</div>
+
+<div class="modal" *ngIf="deleteConfirmAlertId">
+    <div class="modal-content">
+        <h2>Confirm Delete</h2>
+        <p>Are you sure you want to delete this alert?</p>
+        <div class="modal-actions">
+            <button (click)="confirmDelete()" class="btn btn-danger">Yes, Delete</button>
+            <button (click)="closeDeleteModal()" class="btn btn-secondary">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal" *ngIf="editAlert">
+  <div class="modal-content">
+    <h2>Edit Alert</h2>
+    <form (ngSubmit)="saveEdit()" #editForm="ngForm">
+      <label>
+        Message:
+        <input type="text" [(ngModel)]="editAlert.message" name="editMessage" required />
+      </label>
+      <label>
+        Status:
+        <select [(ngModel)]="editAlert.status" name="editStatus" required>
+          <option value="NEW">New</option>
+          <option value="ACTIVE">Active</option>
+          <option value="CLOSED">Closed</option>
+        </select>
+      </label>
+      <label>
+        Assigned User:
+        <select [(ngModel)]="editAlert.assignedUserId" name="editAssignedUserId">
+          <option value="">Unassigned</option>
+          <option *ngFor="let user of editPersonnel" [value]="user.id">
+            {{ user.username }}
+          </option>
+        </select>
+      </label>
+      <div class="modal-actions">
+        <button type="submit" class="btn btn-success" [disabled]="!editForm.form.valid">Save</button>
+        <button type="button" class="btn btn-secondary" (click)="closeEditModal()">Cancel</button>
+      </div>
+    </form>
+  </div>
 </div>
