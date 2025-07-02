@@ -33,7 +33,14 @@
                 <td [ngStyle]="{ color: item.quantity < item.minQuantity ? 'red' : 'green' }">
                     {{ item.quantity }}
                 </td>
-                <td>{{ item.minQuantity }}</td>
+                <td>
+                    <span *ngIf="!item.editingMinQuantity" (click)="item.editingMinQuantity = true"
+                        style="cursor:pointer;">
+                        {{ item.minQuantity }} <i class="bi bi-pencil"></i>
+                    </span>
+                    <input *ngIf="item.editingMinQuantity" type="number" [(ngModel)]="item.minQuantity" min="1"
+                        (blur)="saveMinQuantity(item)" (keydown.enter)="saveMinQuantity(item)" style="width: 70px;" />
+                </td>
                 <td>
                     <span *ngIf="item.quantity < item.minQuantity" style="color: red;" title="Reorder needed">
                         🔴 Below Minimum | Order Soon
@@ -45,7 +52,7 @@
                 <td>
                     <div class="d-flex flex-column gap-2">
                         <div class="d-flex flex-row gap-2">
-                            <button class="btn btn-primary" (click)="openMoveModal(item)">Move</button>
+                            <button class="btn btn-primary" (click)="openMoveModal(item)">Transfer Inventory</button>
                             <!-- Removed Add Inventory button from here -->
                             <button class="btn btn-secondary" (click)="openDeleteModal(item)">Reduce Inventory</button>
                             <button class="btn btn-danger" (click)="openDeleteAllModal(item)">Delete
@@ -120,10 +127,7 @@
             <label>Quantity</label>
             <input type="number" [(ngModel)]="newInventoryItem.quantity" min="1" />
             <label>Min Quantity</label>
-            <input type="number"
-                   [(ngModel)]="newInventoryItem.minQuantity"
-                   min="1"
-                   [required]="!minQuantityDisabled" />
+            <input type="number" [(ngModel)]="newInventoryItem.minQuantity" min="1" [required]="!minQuantityDisabled" />
             <div class="modal-actions">
                 <button (click)="addInventoryItem()">Add</button>
                 <button (click)="closeAddModal()">Cancel</button>

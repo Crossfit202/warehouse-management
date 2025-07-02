@@ -392,4 +392,19 @@ export class InventoryComponent implements OnInit {
     });
   }
 
+  saveMinQuantity(item: WarehouseInventory) {
+    item.editingMinQuantity = false;
+    // Exclude UI-only property before sending to backend
+    const { editingMinQuantity, ...dto } = item;
+    this.inventoryService.editInventoryItem(dto).subscribe({
+      next: () => {
+        this.toastr.success('Min quantity updated.');
+        this.loadInventoryForWarehouse(this.selectedWarehouse);
+      },
+      error: () => {
+        this.toastr.error('Failed to update min quantity.');
+      }
+    });
+  }
+
 }

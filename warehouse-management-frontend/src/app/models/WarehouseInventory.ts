@@ -1,13 +1,14 @@
 export interface WarehouseInventory {
     warehouseInventoryId: string;
     warehouseId: string;
-    warehouseName?: string;
     itemId: string;
-    itemName: string;
-    itemSku?: string;           // <-- Add this
-    itemDescription?: string;   // <-- Add this
+    itemName?: string;
+    itemSku?: string;
     storageLocationId: string;
-    storageLocationName: string;
+    storageLocationName?: string;
     quantity: number;
     minQuantity: number;
+
+    // UI-only property for inline editing
+    editingMinQuantity?: boolean;
 }
