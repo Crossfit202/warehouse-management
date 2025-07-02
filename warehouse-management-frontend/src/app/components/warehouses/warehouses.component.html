@@ -18,11 +18,10 @@
                 <strong>Storage Locations:</strong>
                 <ul *ngIf="(storageLocations[warehouse.id] || []).length > 0; else noLocations">
                     <li *ngFor="let loc of (storageLocations[warehouse.id] || [])">
-                        <strong>{{ loc.name }}</strong>
-                        <ul>
-                            <li>Name: {{ loc.name }}</li>
-                            <li>Max Capacity: {{ loc.max_capacity }}</li>
-                        </ul>
+                        <div>
+                            <strong>{{ loc.name }}</strong>
+                        </div>
+                        <div>Max Capacity: {{ loc.max_capacity }}</div>
                     </li>
                 </ul>
                 <ng-template #noLocations>
