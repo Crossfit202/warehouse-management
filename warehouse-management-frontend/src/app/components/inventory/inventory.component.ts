@@ -170,23 +170,45 @@ export class InventoryComponent implements OnInit {
       return;
     }
 
+    // Find the selected storage location's max capacity
+    const selectedLocation = this.availableLocations.find(
+      loc => loc.id === this.newInventoryItem.storageLocationId
+    );
+    const maxCapacity = selectedLocation ? selectedLocation.max_capacity : null;
+
+    // Calculate the total quantity in the storage location (all products)
+    const totalCurrentQty = this.inventory
+      .filter(item =>
+        item.storageLocationId === this.newInventoryItem.storageLocationId &&
+        item.warehouseId === this.newInventoryItem.warehouseId
+      )
+      .reduce((sum, item) => sum + (item.quantity || 0), 0);
+
+    const newQty = Number(this.newInventoryItem.quantity);
+    const totalQtyAfterAdd = totalCurrentQty + newQty;
+
+    if (maxCapacity !== null && totalQtyAfterAdd > maxCapacity) {
+      this.toastr.error(`Cannot add inventory: would exceed max capacity (${maxCapacity}) for this location.`);
+      return;
+    }
+
     // Check if the item already exists in the selected warehouse/location
-    const existing = this.inventory.find(
+    const existingItem = this.inventory.find(
       item =>
         item.itemId === this.newInventoryItem.itemId &&
         item.storageLocationId === this.newInventoryItem.storageLocationId &&
         item.warehouseId === this.newInventoryItem.warehouseId
     );
 
-    if (!existing && !this.newInventoryItem.minQuantity) {
+    if (!existingItem && !this.newInventoryItem.minQuantity) {
       this.toastr.error('Please enter a minimum quantity.');
       return;
     }
 
-    if (existing) {
+    if (existingItem) {
       const updatedItem: any = {
-        ...existing,
-        quantity: existing.quantity + Number(this.newInventoryItem.quantity),
+        ...existingItem,
+        quantity: existingItem.quantity + Number(this.newInventoryItem.quantity),
         userId: this.userId // <-- Ensure userId is included
       };
       if (!this.minQuantityDisabled && this.newInventoryItem.minQuantity != null && this.newInventoryItem.minQuantity !== '') {
@@ -226,34 +248,58 @@ export class InventoryComponent implements OnInit {
   }
 
   confirmMove(): void {
-
     if (!this.selectedItem || !this.moveToWarehouseId || !this.moveToLocationId || this.moveQuantity < 1 || !this.userId) {
       console.warn('Missing required fields for transfer');
       return;
     }
 
-    const dto: MoveInventoryDTO = {
-      fromWarehouseId: this.selectedItem.warehouseId,
-      toWarehouseId: this.moveToWarehouseId,
-      itemId: this.selectedItem.itemId,
-      fromLocationId: this.selectedItem.storageLocationId,
-      toLocationId: this.moveToLocationId,
-      quantity: this.moveQuantity,
-      userId: this.userId
-    };
+    // Assign to local variable to satisfy TypeScript
+    const selectedItem = this.selectedItem;
 
-    console.log('DTO being sent:', dto);
-
-    this.inventoryService.moveInventory(dto).subscribe({
-      next: () => {
-        this.toastr.success('Inventory moved successfully!', 'Success');
-        this.closeMoveModal();
-        this.loadInventoryForWarehouse(this.selectedWarehouse);
-      },
-      error: (err) => {
-        this.toastr.error('Failed to move inventory.', 'Error');
-        console.error('Move failed:', err);
+    this.inventoryService.getInventoryForWarehouse(this.moveToWarehouseId).subscribe(destInventory => {
+      const toLocation = this.availableToLocations.find(loc => loc.id === this.moveToLocationId);
+      if (!toLocation) {
+        this.toastr.error('Receiving storage location not found.');
+        return;
       }
+      const maxCapacity = toLocation.max_capacity;
+
+      const totalReceivingQty = destInventory
+        .filter(item =>
+          item.storageLocationId === this.moveToLocationId &&
+          item.warehouseId === this.moveToWarehouseId
+        )
+        .reduce((sum, item) => sum + (item.quantity || 0), 0);
+
+      const totalQtyAfterMove = totalReceivingQty + this.moveQuantity;
+
+      if (maxCapacity !== null && totalQtyAfterMove > maxCapacity) {
+        this.toastr.error(`Cannot transfer: would exceed max capacity (${maxCapacity}) for the receiving location.`);
+        return;
+      }
+
+      // Use the local variable here
+      const dto: MoveInventoryDTO = {
+        fromWarehouseId: selectedItem.warehouseId,
+        toWarehouseId: this.moveToWarehouseId,
+        itemId: selectedItem.itemId,
+        fromLocationId: selectedItem.storageLocationId,
+        toLocationId: this.moveToLocationId,
+        quantity: this.moveQuantity,
+        userId: this.userId
+      };
+
+      this.inventoryService.moveInventory(dto).subscribe({
+        next: () => {
+          this.toastr.success('Inventory moved successfully!', 'Success');
+          this.closeMoveModal();
+          this.loadInventoryForWarehouse(this.selectedWarehouse);
+        },
+        error: (err) => {
+          this.toastr.error('Failed to move inventory.', 'Error');
+          console.error('Move failed:', err);
+        }
+      });
     });
   }
 
