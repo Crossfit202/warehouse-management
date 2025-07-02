@@ -29,8 +29,8 @@ export class InventoryService {
         return this.http.put(`${this.apiUrl}/edit`, dto, { withCredentials: true });
     }
 
-    deleteInventoryItem(itemId: string) {
-        return this.http.delete(`${this.apiUrl}/${itemId}`, { withCredentials: true });
+    deleteInventoryItem(itemId: string, userId: string) {
+        return this.http.delete(`${this.apiUrl}/${itemId}?userId=${userId}`, { withCredentials: true });
     }
 
 }

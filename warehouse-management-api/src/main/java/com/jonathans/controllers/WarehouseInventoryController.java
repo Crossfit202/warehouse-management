@@ -37,8 +37,8 @@ public class WarehouseInventoryController {
 
     // DELETE INVENTORY
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteInventory(@PathVariable UUID id) {
-        warehouseInventoryService.deleteInventory(id);
+    public ResponseEntity<?> deleteInventory(@PathVariable UUID id, @RequestParam(required = false) UUID userId) {
+        warehouseInventoryService.deleteInventory(id, userId);
         return ResponseEntity.ok().build();
     }
 

@@ -333,7 +333,7 @@ export class InventoryComponent implements OnInit {
     const newQuantity = this.itemToDelete.quantity - this.deleteQuantity;
     if (newQuantity === 0) {
       // Delete the inventory item
-      this.inventoryService.deleteInventoryItem(this.itemToDelete.warehouseInventoryId).subscribe({
+      this.inventoryService.deleteInventoryItem(this.itemToDelete.warehouseInventoryId, this.userId).subscribe({
         next: () => {
           this.closeDeleteModal();
           this.loadInventoryForWarehouse(this.selectedWarehouse);
@@ -347,7 +347,8 @@ export class InventoryComponent implements OnInit {
       // Update the quantity
       const updatedItem = {
         ...this.itemToDelete,
-        quantity: newQuantity
+        quantity: newQuantity,
+        userId: this.userId // <-- add this
       };
       this.inventoryService.editInventoryItem(updatedItem).subscribe({
         next: () => {
@@ -380,7 +381,7 @@ export class InventoryComponent implements OnInit {
     }
 
     // Delete the inventory item
-    this.inventoryService.deleteInventoryItem(this.itemToDelete.warehouseInventoryId).subscribe({
+    this.inventoryService.deleteInventoryItem(this.itemToDelete.warehouseInventoryId, this.userId).subscribe({
       next: () => {
         this.closeDeleteAllModal();
         this.loadInventoryForWarehouse(this.selectedWarehouse);
@@ -396,7 +397,8 @@ export class InventoryComponent implements OnInit {
     item.editingMinQuantity = false;
     // Exclude UI-only property before sending to backend
     const { editingMinQuantity, ...dto } = item;
-    this.inventoryService.editInventoryItem(dto).subscribe({
+    const updatedDto = { ...dto, userId: this.userId }; // <-- add userId properly
+    this.inventoryService.editInventoryItem(updatedDto).subscribe({
       next: () => {
         this.toastr.success('Min quantity updated.');
         this.loadInventoryForWarehouse(this.selectedWarehouse);

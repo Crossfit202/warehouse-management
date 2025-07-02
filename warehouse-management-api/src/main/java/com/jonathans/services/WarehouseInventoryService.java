@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 @Service
 public class WarehouseInventoryService {
@@ -41,42 +40,80 @@ public class WarehouseInventoryService {
     }
 
     public WarehouseInventoryDTO addInventory(WarehouseInventoryDTO dto) {
-        // Find existing inventory for this item and storage location
-        Optional<WarehouseInventory> existingOpt = inventoryRepository
-            .findByItem_IdAndWarehouseStorageLocation_Id(dto.getItemId(), dto.getStorageLocationId());
+        WarehouseInventory entity = new WarehouseInventory();
+        entity.setItem(buildInventoryItem(dto.getItemId()));
+        entity.setWarehouseStorageLocation(buildStorageLocation(dto.getStorageLocationId()));
+        entity.setQuantity(dto.getQuantity());
+        entity.setMinQuantity(dto.getMinQuantity());
+        entity = inventoryRepository.save(entity);
 
-        WarehouseInventory entity;
-        if (existingOpt.isPresent()) {
-            // Combine quantities and update minQuantity if needed
-            entity = existingOpt.get();
-            entity.setQuantity(entity.getQuantity() + dto.getQuantity());
-            entity.setMinQuantity(dto.getMinQuantity());
-        } else {
-            // Create new inventory record
-            entity = new WarehouseInventory();
-            entity.setItem(buildInventoryItem(dto.getItemId()));
-            entity.setWarehouseStorageLocation(buildStorageLocation(dto.getStorageLocationId()));
-            entity.setQuantity(dto.getQuantity());
-            entity.setMinQuantity(dto.getMinQuantity());
+        // --- LOG MOVEMENT ---
+        InventoryMovement movement = new InventoryMovement();
+        movement.setItem(entity.getItem());
+        movement.setToWarehouse(entity.getWarehouseStorageLocation().getWarehouse());
+        movement.setToLocation(entity.getWarehouseStorageLocation());
+        movement.setQuantity(dto.getQuantity());
+        movement.setMovementType("ADD");
+        if (dto.getUserId() != null) {
+            User user = new User();
+            user.setId(dto.getUserId());
+            movement.setUser(user);
         }
+        movement.setTime(LocalDateTime.now());
+        movementRepository.save(movement);
 
-        WarehouseInventory saved = inventoryRepository.save(entity);
-        return toDTO(saved);
+        return toDTO(entity);
     }
 
     public WarehouseInventoryDTO editInventory(WarehouseInventoryDTO dto) {
         WarehouseInventory entity = inventoryRepository.findById(dto.getWarehouseInventoryId())
                 .orElseThrow(() -> new RuntimeException("Inventory not found"));
 
+        int oldQuantity = entity.getQuantity();
         entity.setQuantity(dto.getQuantity());
         entity.setWarehouseStorageLocation(buildStorageLocation(dto.getStorageLocationId()));
         entity.setMinQuantity(dto.getMinQuantity());
         entity = inventoryRepository.save(entity);
+
+        // --- LOG MOVEMENT if quantity reduced ---
+        if (dto.getQuantity() < oldQuantity) {
+            InventoryMovement movement = new InventoryMovement();
+            movement.setItem(entity.getItem());
+            movement.setFromWarehouse(entity.getWarehouseStorageLocation().getWarehouse());
+            movement.setFromLocation(entity.getWarehouseStorageLocation());
+            movement.setQuantity(oldQuantity - dto.getQuantity());
+            movement.setMovementType("REDUCE");
+            if (dto.getUserId() != null) {
+                User user = new User();
+                user.setId(dto.getUserId());
+                movement.setUser(user);
+            }
+            movement.setTime(LocalDateTime.now());
+            movementRepository.save(movement);
+        }
+
         return toDTO(entity);
     }
 
-    public void deleteInventory(UUID id) {
-        inventoryRepository.deleteById(id);
+    public void deleteInventory(UUID id, UUID userId) {
+        WarehouseInventory entity = inventoryRepository.findById(id).orElse(null);
+        if (entity != null) {
+            InventoryMovement movement = new InventoryMovement();
+            movement.setItem(entity.getItem());
+            movement.setFromWarehouse(entity.getWarehouseStorageLocation().getWarehouse());
+            movement.setFromLocation(entity.getWarehouseStorageLocation());
+            movement.setQuantity(entity.getQuantity());
+            movement.setMovementType("DELETE");
+            if (userId != null) {
+                User user = new User();
+                user.setId(userId);
+                movement.setUser(user);
+            }
+            movement.setTime(LocalDateTime.now());
+            movementRepository.save(movement);
+
+            inventoryRepository.deleteById(id);
+        }
     }
 
     @Transactional
@@ -158,7 +195,7 @@ public class WarehouseInventoryService {
 
     private WarehouseStorageLocations buildStorageLocation(UUID locationId) {
         return storageLocationsRepository.findById(locationId)
-            .orElseThrow(() -> new RuntimeException("Storage location not found: " + locationId));
+                .orElseThrow(() -> new RuntimeException("Storage location not found: " + locationId));
     }
 
     private Warehouse buildWarehouse(UUID warehouseId) {

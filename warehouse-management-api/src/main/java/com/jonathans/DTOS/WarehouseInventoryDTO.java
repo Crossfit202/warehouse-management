@@ -14,6 +14,7 @@ public class WarehouseInventoryDTO {
     private int minQuantity;
     private String itemSku;
     private String itemDescription; // ✅ NEW
+    private UUID userId; // <-- Add this field
 
     // Constructors
     public WarehouseInventoryDTO() {
@@ -21,7 +22,7 @@ public class WarehouseInventoryDTO {
 
     public WarehouseInventoryDTO(UUID warehouseInventoryId, UUID warehouseId, String warehouseName, UUID itemId,
             String itemName, UUID storageLocationId, String storageLocationName, int quantity, int minQuantity,
-            String itemSku, String itemDescription) {
+            String itemSku, String itemDescription, UUID userId) {
         this.warehouseInventoryId = warehouseInventoryId;
         this.warehouseId = warehouseId;
         this.warehouseName = warehouseName;
@@ -33,6 +34,7 @@ public class WarehouseInventoryDTO {
         this.minQuantity = minQuantity;
         this.itemSku = itemSku;
         this.itemDescription = itemDescription; // ✅ NEW
+        this.userId = userId; // <-- Add this field
     }
 
     public UUID getWarehouseInventoryId() {
@@ -123,13 +125,22 @@ public class WarehouseInventoryDTO {
         this.itemDescription = itemDescription;
     }
 
+    public UUID getUserId() { // <-- Add getter
+        return userId;
+    }
+
+    public void setUserId(UUID userId) { // <-- Add setter
+        this.userId = userId;
+    }
+
     @Override
     public String toString() {
         return "WarehouseInventoryDTO [warehouseInventoryId=" + warehouseInventoryId + ", warehouseId=" + warehouseId
                 + ", warehouseName=" + warehouseName + ", itemId=" + itemId + ", itemName=" + itemName
                 + ", storageLocationId=" + storageLocationId + ", storageLocationName=" + storageLocationName
                 + ", quantity=" + quantity + ", minQuantity=" + minQuantity + ", itemSku=" + itemSku
-                + ", itemDescription=" + itemDescription + ", getWarehouseInventoryId()=" + getWarehouseInventoryId()
+                + ", itemDescription=" + itemDescription + ", userId=" + userId // <-- Add this field
+                + ", getWarehouseInventoryId()=" + getWarehouseInventoryId()
                 + ", getClass()=" + getClass() + ", getWarehouseId()=" + getWarehouseId() + ", getWarehouseName()="
                 + getWarehouseName() + ", getItemId()=" + getItemId() + ", getItemName()=" + getItemName()
                 + ", getStorageLocationId()=" + getStorageLocationId() + ", getStorageLocationName()="
