@@ -1,7 +1,13 @@
 <div class="content">
   <h1>Products</h1>
   <div *ngIf="loading">Loading...</div>
-  <button (click)="openAddModal()" class="btn btn-success mb-3">Add Product</button>
+
+  <!-- Add Product Button: Only for non-INV_CLERK -->
+  <button
+    *ngIf="!isInvClerk"
+    (click)="openAddModal()"
+    class="btn btn-success mb-3"
+  >Add Product</button>
 
   <!-- Search and Filter -->
   <div class="product-search-filter" style="margin-bottom: 1rem; display: flex; gap: 1rem; align-items: center;">
@@ -29,7 +35,7 @@
         <th>SKU</th>
         <th>Item Name</th>
         <th>Description</th>
-        <th>Actions</th> <!-- Add this -->
+        <th>Actions</th>
       </tr>
     </thead>
     <tbody>
@@ -38,8 +44,18 @@
         <td>{{ product.name }}</td>
         <td>{{ product.description }}</td>
         <td>
-          <button class="btn btn-primary btn-sm me-2" (click)="openEditModal(product)">Edit</button>
-          <button class="btn btn-danger btn-sm" (click)="openDeleteModal(product)">Delete</button>
+          <!-- Edit Button: Only for non-INV_CLERK -->
+          <button
+            *ngIf="!isInvClerk"
+            class="btn btn-primary btn-sm me-2"
+            (click)="openEditModal(product)"
+          >Edit</button>
+          <!-- Delete Button: Only for non-INV_CLERK -->
+          <button
+            *ngIf="!isManager && !isInvClerk"
+            class="btn btn-danger btn-sm"
+            (click)="openDeleteModal(product)"
+          >Delete</button>
         </td>
       </tr>
     </tbody>

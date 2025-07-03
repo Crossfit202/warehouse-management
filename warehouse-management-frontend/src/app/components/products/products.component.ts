@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { InventoryItemService } from '../../services/inventory-item.service';
 import { FormsModule } from '@angular/forms';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-products',
@@ -31,9 +32,15 @@ export class ProductsComponent implements OnInit {
   sortField: 'sku' | 'name' = 'sku';
   sortDirection: 'asc' | 'desc' = 'asc';
 
-  constructor(private inventoryItemService: InventoryItemService) { }
+  currentUser: any;
+
+  constructor(
+    private inventoryItemService: InventoryItemService,
+    private authService: AuthService
+  ) { }
 
   ngOnInit(): void {
+    this.currentUser = this.authService.getCurrentUser(); // <-- Add this line
     this.loadProducts();
   }
 
@@ -50,7 +57,7 @@ export class ProductsComponent implements OnInit {
   }
 
   openAddModal() {
-    console.log('Add modal opened for:');
+    if (this.isInvClerk) return;
     this.newProduct = { sku: '', name: '', description: '' };
     this.showAddModal = true;
   }
@@ -60,6 +67,7 @@ export class ProductsComponent implements OnInit {
   }
 
   addProduct() {
+    if (this.isInvClerk) return;
     this.inventoryItemService.createItem(this.newProduct).subscribe({
       next: () => {
         this.closeAddModal();
@@ -72,6 +80,7 @@ export class ProductsComponent implements OnInit {
   }
 
   openEditModal(product: any) {
+    if (this.isInvClerk) return;
     this.editProduct = { ...product };
     this.showEditModal = true;
   }
@@ -80,6 +89,7 @@ export class ProductsComponent implements OnInit {
   }
 
   updateProduct() {
+    if (this.isInvClerk) return;
     this.inventoryItemService.updateItem(this.editProduct).subscribe({
       next: () => {
         this.closeEditModal();
@@ -99,6 +109,11 @@ export class ProductsComponent implements OnInit {
     this.showDeleteModal = false;
   }
   deleteProductConfirmed() {
+    if (this.isInvClerk || this.isManager) {
+      this.openErrorModal('You do not have permission to delete products.');
+      this.closeDeleteModal();
+      return;
+    }
     this.inventoryItemService.deleteItem(this.deleteProduct.id).subscribe({
       next: () => {
         this.closeDeleteModal();
@@ -152,5 +167,13 @@ export class ProductsComponent implements OnInit {
       return 0;
     });
     return arr;
+  }
+
+  get isInvClerk() {
+    return this.currentUser?.role === 'ROLE_INV_CLERK';
+  }
+
+  get isManager() {
+    return this.currentUser?.role === 'ROLE_MANAGER';
   }
 }
