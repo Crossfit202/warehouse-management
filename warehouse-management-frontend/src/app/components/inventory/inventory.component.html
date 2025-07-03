@@ -3,8 +3,8 @@
 
     <!-- Warehouse Selector -->
     <label for="warehouseSelect" style="margin-right: 8px;"><strong>Select Warehouse:</strong></label>
-    <select id="warehouseSelect" (change)="onSelect($event)">
-        <option value="">All Warehouses</option>
+    <select id="warehouseSelect" (change)="onSelect($event)" [(ngModel)]="selectedWarehouse">
+        <option *ngIf="isAdmin" value="">All Warehouses</option>
         <option *ngFor="let warehouse of warehouses" [value]="warehouse.id">
             {{ warehouse.name || warehouse.id }}
         </option>
@@ -40,7 +40,7 @@
     </div>
 
     <!-- Inventory Table for All Warehouses -->
-    <table *ngIf="isAllWarehousesSelected()" class="table table-striped mt-3">
+    <table *ngIf="isAdmin && isAllWarehousesSelected()" class="table table-striped mt-3">
         <thead>
             <tr>
                 <th>Warehouse</th>
@@ -73,7 +73,7 @@
     </table>
 
     <!-- Inventory Table for Single Warehouse -->
-    <table *ngIf="!isAllWarehousesSelected()" class="table table-striped mt-3">
+    <table *ngIf="!isAdmin || !isAllWarehousesSelected()" class="table table-striped mt-3">
         <thead>
             <tr>
                 <th>Item</th>
@@ -108,14 +108,21 @@
                     </span>
                 </td>
                 <td>
-                    <div class="d-flex flex-column gap-2">
-                        <div class="d-flex flex-row gap-2">
-                            <button class="btn btn-primary" (click)="openMoveModal(item)">Transfer Inventory</button>
-                            <button class="btn btn-secondary" (click)="openDeleteModal(item)">Reduce Inventory</button>
-                            <button class="btn btn-danger" (click)="openDeleteAllModal(item)">Delete
-                                Inventory</button>
-                        </div>
+                  <div class="d-flex flex-column gap-2">
+                    <div class="d-flex flex-row gap-2">
+                      <button class="btn btn-primary" (click)="openMoveModal(item)">Transfer Inventory</button>
+                      <button
+                        *ngIf="!isInvClerk"
+                        class="btn btn-secondary"
+                        (click)="openDeleteModal(item)"
+                      >Reduce Inventory</button>
+                      <button
+                        *ngIf="!isInvClerk"
+                        class="btn btn-danger"
+                        (click)="openDeleteAllModal(item)"
+                      >Delete Inventory</button>
                     </div>
+                  </div>
                 </td>
             </tr>
         </tbody>

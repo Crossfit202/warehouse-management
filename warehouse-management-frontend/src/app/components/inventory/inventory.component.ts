@@ -63,13 +63,28 @@ export class InventoryComponent implements OnInit {
       this.userId = user.id;
     }
     this.warehouseService.getAllWarehouses().subscribe(data => {
-      this.warehouses = data;
-      this.selectedWarehouse = ''; // Default to "All Warehouses"
-      this.loadAllInventory();
+      if (this.isAdmin) {
+        this.warehouses = data;
+        this.selectedWarehouse = ''; // Default to "All Warehouses"
+        this.loadAllInventory();
+      } else {
+        // Only show warehouses where user is ACTIVE
+        this.warehouses = data.filter(w =>
+          w.personnel?.some((p: any) => (p.userId === user?.id || p.id === user?.id) && p.status === 'ACTIVE')
+        );
+        // Set default to first warehouse if available
+        if (this.warehouses.length > 0) {
+          this.selectedWarehouse = this.warehouses[0].id;
+          this.loadInventoryForWarehouse(this.selectedWarehouse);
+        } else {
+          this.selectedWarehouse = '';
+          this.inventory = [];
+        }
+      }
     });
 
     // Load products for the dropdown
-    this.inventoryItemService.getAllItems().subscribe((items: any[]) => this.products = items); // <-- Use correct service
+    this.inventoryItemService.getAllItems().subscribe((items: any[]) => this.products = items);
   }
 
   onSelect(event: any): void {
@@ -383,6 +398,7 @@ export class InventoryComponent implements OnInit {
   }
 
   openDeleteModal(item: WarehouseInventory): void {
+    if (this.isInvClerk) return;
     this.itemToDelete = item;
     this.deleteQuantity = 1;
     this.showDeleteModal = true;
@@ -394,6 +410,7 @@ export class InventoryComponent implements OnInit {
   }
 
   confirmDeleteQuantity(): void {
+    if (this.isInvClerk) return;
     if (!this.itemToDelete || this.deleteQuantity < 1) return;
     if (this.deleteQuantity > this.itemToDelete.quantity) {
       this.toastr.error('Cannot remove more than available quantity.');
@@ -433,6 +450,7 @@ export class InventoryComponent implements OnInit {
   }
 
   openDeleteAllModal(item: WarehouseInventory): void {
+    if (this.isInvClerk) return;
     this.itemToDelete = item;
     this.showDeleteAllModal = true;
   }
@@ -443,6 +461,7 @@ export class InventoryComponent implements OnInit {
   }
 
   confirmDeleteAllQuantity(): void {
+    if (this.isInvClerk) return;
     // check it's not null
     if (!this.itemToDelete) {
       console.warn('Error trying to delete all items: Item to delete is Null');
@@ -531,5 +550,15 @@ export class InventoryComponent implements OnInit {
 
   isAllWarehousesSelected(): boolean {
     return !this.selectedWarehouse;
+  }
+
+  get isAdmin(): boolean {
+    const user = this.authService.getCurrentUser();
+    return user?.role === 'ROLE_ADMIN';
+  }
+
+  get isInvClerk(): boolean {
+    const user = this.authService.getCurrentUser();
+    return user?.role === 'ROLE_INV_CLERK';
   }
 }
