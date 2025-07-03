@@ -22,6 +22,7 @@ import { InventoryItemService } from '../../services/inventory-item.service'; //
 export class InventoryComponent implements OnInit {
   inventory: WarehouseInventory[] = [];
   warehouses: any[] = [];
+  allWarehouses: any[] = []; // Store all warehouses
   selectedWarehouse: string = '';
 
   // Modal State
@@ -59,13 +60,13 @@ export class InventoryComponent implements OnInit {
 
   ngOnInit(): void {
     const user = this.authService.getCurrentUser();
-    if (user) {
-      this.userId = user.id;
-    }
+    this.userId = user?.id || ''; // <-- Add this line
     this.warehouseService.getAllWarehouses().subscribe(data => {
+      this.allWarehouses = data; // Save all warehouses for transfer modal
+
       if (this.isAdmin) {
         this.warehouses = data;
-        this.selectedWarehouse = ''; // Default to "All Warehouses"
+        this.selectedWarehouse = '';
         this.loadAllInventory();
       } else {
         // Only show warehouses where user is ACTIVE

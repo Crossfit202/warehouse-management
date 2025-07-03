@@ -14,6 +14,7 @@ import { WarehousePersonnelService } from '../../services/personnel.service';
 import { WarehousePersonnelDTO } from '../../services/personnel.service';
 import { RouterModule } from '@angular/router'; // <-- Add this import
 import { FormsModule } from '@angular/forms';
+import { AuthService } from '../../services/auth.service'; // Add this import
 
 
 @Component({
@@ -41,7 +42,7 @@ export class DashboardComponent implements OnInit {
   movementStartDate: string = '';
   movementEndDate: string = '';
   filteredMovements: InventoryMovement[] = [];
-
+  currentUser: any;
 
   constructor(
     private alertService: AlertService,
@@ -49,7 +50,8 @@ export class DashboardComponent implements OnInit {
     private inventoryService: InventoryService,
     private movementService: MovementService,
     private storageLocationService: StorageLocationsService,
-    private warehousePersonnelService: WarehousePersonnelService
+    private warehousePersonnelService: WarehousePersonnelService,
+    private authService: AuthService // Inject AuthService
   ) { }
 
   ngOnInit(): void {
@@ -64,8 +66,18 @@ export class DashboardComponent implements OnInit {
   }
 
   loadWarehouses(): void {
+    this.currentUser = this.authService.getCurrentUser();
     this.warehouseService.getAllWarehouses().subscribe(data => {
-      this.warehouses = data;
+      if (this.currentUser?.role === 'ROLE_MANAGER') {
+        // Only show warehouses where manager is ACTIVE
+        this.warehouses = data.filter(w =>
+          w.personnel?.some((p: any) =>
+            (p.userId === this.currentUser.id || p.id === this.currentUser.id) && p.status === 'ACTIVE'
+          )
+        );
+      } else {
+        this.warehouses = data;
+      }
 
       if (this.warehouses.length > 0) {
         const first = this.warehouses[0];

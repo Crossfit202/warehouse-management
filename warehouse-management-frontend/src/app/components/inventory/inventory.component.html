@@ -144,7 +144,7 @@
             <label for="toWarehouse"><strong>To Warehouse:</strong></label>
             <select id="toWarehouse" [(ngModel)]="moveToWarehouseId" (change)="onToWarehouseChange()">
                 <option value="" disabled>Select warehouse</option>
-                <option *ngFor="let warehouse of warehouses" [value]="warehouse.id">
+                <option *ngFor="let warehouse of allWarehouses" [value]="warehouse.id">
                     {{ warehouse.name || warehouse.id }}
                 </option>
             </select>
