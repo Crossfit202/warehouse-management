@@ -1,7 +1,13 @@
 <div class="content">
     <h1>Locations</h1>
 
-    <button class="btn btn-success mb-3" (click)="openAddModal()">Add Storage Location</button>
+    <button
+        class="btn btn-success mb-3"
+        (click)="openAddModal()"
+        *ngIf="!isInvClerk"
+    >
+        Add Storage Location
+    </button>
 
     <div class="storage-search-sort" style="margin-bottom: 1rem; display: flex; gap: 1rem; align-items: center;">
         <input type="text" [(ngModel)]="searchTerm" placeholder="Search locations..."
@@ -24,11 +30,17 @@
                 <td>{{ storagelocation.name }}</td>
                 <td>{{ storagelocation.max_capacity }}</td>
                 <td>
-                    <button class="btn btn-primary btn-sm me-2" (click)="openEditModal(storagelocation)">Edit</button>
-                    <button class="btn btn-danger btn-sm" [disabled]="storagelocation.isReferenced"
-                        (click)="openDeleteModal(storagelocation)">
-                        Delete
-                    </button>
+                    <button
+                        *ngIf="!isInvClerk"
+                        class="btn btn-primary btn-sm"
+                        (click)="openEditModal(storagelocation)"
+                    >Edit</button>
+                    <button
+                        *ngIf="!isInvClerk && !isManager"
+                        class="btn btn-danger btn-sm"
+                        [disabled]="storagelocation.isReferenced"
+                        (click)="openDeleteModal(storagelocation)"
+                    >Delete</button>
                 </td>
             </tr>
         </tbody>
