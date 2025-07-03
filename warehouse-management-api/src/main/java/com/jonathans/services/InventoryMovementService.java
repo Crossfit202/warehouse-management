@@ -29,4 +29,17 @@ public class InventoryMovementService {
                 m.getUser() != null ? m.getUser().getUsername() : "N/A",
                 m.getTime())).toList();
     }
+
+    public List<InventoryMovementViewDTO> getAllMovements() {
+        List<InventoryMovement> movements = movementRepo.findAllMovementsOrdered();
+        return movements.stream().map(m -> new InventoryMovementViewDTO(
+                m.getId(),
+                m.getItem() != null ? m.getItem().getName() : "N/A",
+                m.getFromWarehouse() != null ? m.getFromWarehouse().getName() : "N/A",
+                m.getToWarehouse() != null ? m.getToWarehouse().getName() : "N/A",
+                m.getQuantity(),
+                m.getMovementType(),
+                m.getUser() != null ? m.getUser().getUsername() : "N/A",
+                m.getTime())).toList();
+    }
 }

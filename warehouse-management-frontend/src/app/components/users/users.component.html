@@ -23,7 +23,12 @@
                     }}
                 </p>
                 <p class="card-text mb-3"><strong>Created:</strong> {{ user.created_at | date:'medium' }}</p>
-                <button class="btn btn-primary me-2 btn-sm" (click)="openEditModal(user)">Edit</button>
+                <button
+                  class="btn btn-primary me-2 btn-sm"
+                  (click)="openEditModal(user)"
+                  *ngIf="canEditUser(user)">
+                  Edit
+                </button>
                 <button
                   class="btn btn-danger btn-sm"
                   (click)="openDeleteModal(user)"

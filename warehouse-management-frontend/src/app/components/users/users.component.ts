@@ -72,6 +72,11 @@ export class UsersComponent implements OnInit {
   }
 
   openEditModal(user: User): void {
+    if (!this.canEditUser(user)) {
+      this.toastr.error('You do not have permission to edit this user.');
+      return;
+    }
+
     this.selectedUser = new User(
       user.id, user.username, user.email, user.password, user.role, user.created_at, user.updated_at
     );
@@ -278,6 +283,22 @@ export class UsersComponent implements OnInit {
     }
 
     // Other roles cannot delete users
+    return false;
+  }
+
+  canEditUser(targetUser: User): boolean {
+    const currentUser = this.authService.getCurrentUser();
+    if (!currentUser) return false;
+
+    // Admins can edit anyone
+    if (currentUser.role === 'ROLE_ADMIN') return true;
+
+    // Managers can edit anyone except admins
+    if (currentUser.role === 'ROLE_MANAGER') {
+      return targetUser.role !== 'ROLE_ADMIN';
+    }
+
+    // Other roles cannot edit users
     return false;
   }
 

@@ -25,4 +25,10 @@ public class InventoryMovementController {
         List<InventoryMovementViewDTO> movements = movementService.getMovementsForWarehouse(warehouseId);
         return ResponseEntity.ok(movements);
     }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<InventoryMovementViewDTO>> getAllMovements() {
+        List<InventoryMovementViewDTO> movements = movementService.getAllMovements();
+        return ResponseEntity.ok(movements);
+    }
 }

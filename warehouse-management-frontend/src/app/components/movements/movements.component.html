@@ -2,6 +2,7 @@
     <h2>Inventory Movements</h2>
 
     <select id="warehouse" (change)="onWarehouseSelect($event)">
+        <option *ngIf="isAdmin" value="">All Warehouses</option>
         <option *ngFor="let w of warehouses" [value]="w.id">{{ w.name }}</option>
     </select>
 

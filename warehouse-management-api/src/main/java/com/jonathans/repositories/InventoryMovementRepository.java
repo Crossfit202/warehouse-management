@@ -13,4 +13,7 @@ public interface InventoryMovementRepository extends JpaRepository<InventoryMove
             "WHERE m.fromWarehouse.id = :warehouseId OR m.toWarehouse.id = :warehouseId " +
             "ORDER BY m.time DESC")
     List<InventoryMovement> findByWarehouseId(UUID warehouseId);
+
+    @Query("SELECT m FROM InventoryMovement m ORDER BY m.time DESC")
+    List<InventoryMovement> findAllMovementsOrdered();
 }

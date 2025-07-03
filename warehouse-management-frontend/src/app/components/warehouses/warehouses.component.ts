@@ -5,6 +5,7 @@ import { Warehouse } from '../../models/Warehouse';
 import { FormsModule } from '@angular/forms';
 import { StorageLocationsService } from '../../services/storage-locations.service';
 import { StorageLocation } from '../../models/StorageLocation';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-warehouses',
@@ -36,12 +37,24 @@ export class WarehousesComponent implements OnInit {
   selectedLocationId: string = '';
   newStorageLocationName: string = '';
 
+  currentUser: any;
+  isAdmin = false;
+  isManager = false;
+  isInvClerk = false;
+  activeWarehouseIds: string[] = [];
+
   constructor(
     private warehouseService: WarehouseService,
-    private storageLocationsService: StorageLocationsService
+    private storageLocationsService: StorageLocationsService,
+    private authService: AuthService
   ) { }
 
   ngOnInit(): void {
+    this.currentUser = this.authService.getCurrentUser();
+    this.isAdmin = this.currentUser?.role === 'ROLE_ADMIN';
+    this.isManager = this.currentUser?.role === 'ROLE_MANAGER';
+    this.isInvClerk = this.currentUser?.role === 'ROLE_INV_CLERK';
+
     this.loadWarehouses();
     this.storageLocationsService.getAllStorageLocations().subscribe(data => {
       this.allStorageLocations = data;
@@ -51,6 +64,14 @@ export class WarehousesComponent implements OnInit {
   loadWarehouses(): void {
     this.warehouseService.getAllWarehouses().subscribe(data => {
       this.warehouses = data.map(w => new Warehouse(w));
+      // Find warehouses where manager is ACTIVE
+      if (this.isManager) {
+        this.activeWarehouseIds = this.warehouses
+          .filter(w => w.personnel?.some((p: any) =>
+            (p.userId === this.currentUser?.id || p.id === this.currentUser?.id) && p.status === 'ACTIVE'
+          ))
+          .map(w => w.id);
+      }
       // Load storage locations for each warehouse
       this.warehouses.forEach(warehouse => {
         this.warehouseService.getStorageLocationsForWarehouse(warehouse.id).subscribe(locations => {
@@ -62,6 +83,7 @@ export class WarehousesComponent implements OnInit {
 
   // Add Modal
   openAddModal() {
+    if (!this.isAdmin) return;
     this.newWarehouse = {};
     this.showAddModal = true;
   }
@@ -69,6 +91,7 @@ export class WarehousesComponent implements OnInit {
     this.showAddModal = false;
   }
   addWarehouse() {
+    if (!this.isAdmin) return;
     if (!this.newWarehouse.name || !this.newWarehouse.location || !this.newWarehouse.max_capacity) return;
     this.warehouseService.createWarehouse(this.newWarehouse).subscribe(() => {
       this.loadWarehouses();
@@ -78,6 +101,7 @@ export class WarehousesComponent implements OnInit {
 
   // Edit Modal
   openEditModal(warehouse: Warehouse) {
+    if (!this.canEditOrDelete(warehouse)) return;
     console.log('Edit clicked:', warehouse);
     this.editWarehouse = new Warehouse({
       id: warehouse.id,
@@ -91,7 +115,7 @@ export class WarehousesComponent implements OnInit {
     this.showEditModal = false;
   }
   updateWarehouse() {
-    if (!this.editWarehouse) return;
+    if (!this.editWarehouse || !this.canEditOrDelete(this.editWarehouse)) return;
     this.warehouseService.updateWarehouse(this.editWarehouse.id, this.editWarehouse).subscribe(() => {
       this.loadWarehouses();
       this.closeEditModal();
@@ -100,7 +124,7 @@ export class WarehousesComponent implements OnInit {
 
   // Delete Modal
   openDeleteModal(warehouse: Warehouse) {
-    console.log('Delete clicked:', warehouse);
+    if (!this.isAdmin) return;
     this.deleteWarehouse = warehouse;
     this.showDeleteModal = true;
   }
@@ -108,7 +132,7 @@ export class WarehousesComponent implements OnInit {
     this.showDeleteModal = false;
   }
   deleteWarehouseConfirmed() {
-    if (!this.deleteWarehouse) return;
+    if (!this.isAdmin || !this.deleteWarehouse) return;
     this.warehouseService.deleteWarehouse(this.deleteWarehouse.id).subscribe(() => {
       this.loadWarehouses();
       this.closeDeleteModal();
@@ -156,5 +180,18 @@ export class WarehousesComponent implements OnInit {
     if (!this.editWarehouse) return false;
     const assigned = this.storageLocations[this.editWarehouse.id] || [];
     return assigned.some(sl => sl.id === locationId);
+  }
+
+  // Helper for template
+  canEditOrDelete(warehouse: Warehouse): boolean {
+    if (this.isAdmin) return true;
+    if (this.isManager) return this.activeWarehouseIds.includes(warehouse.id);
+    return false;
+  }
+
+  canEditWarehouse(warehouse: Warehouse): boolean {
+    if (this.isAdmin) return true;
+    if (this.isManager) return this.activeWarehouseIds.includes(warehouse.id);
+    return false;
   }
 }

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { MovementService } from '../../services/movement.service';
 import { WarehouseService } from '../../services/warehouse.service';
+import { AuthService } from '../../services/auth.service';
 import { InventoryMovement } from '../../models/InventoryMovement';
 import { Warehouse } from '../../models/Warehouse';
 import { CommonModule } from '@angular/common';
@@ -25,13 +26,29 @@ export class MovementsComponent implements OnInit {
 
   constructor(
     private movementService: MovementService,
-    private warehouseService: WarehouseService
+    private warehouseService: WarehouseService,
+    private authService: AuthService
   ) { }
 
   ngOnInit(): void {
+    const user = this.authService.getCurrentUser();
     this.warehouseService.getAllWarehouses().subscribe(data => {
-      this.warehouses = data;
-      if (this.warehouses.length > 0) {
+      if (this.isAdmin) {
+        this.warehouses = data;
+        this.selectedWarehouseId = '';
+        this.loadAllMovements();
+      } else if (user && user.role === 'ROLE_MANAGER') {
+        // Only show warehouses where manager is ACTIVE
+        this.warehouses = data.filter(w =>
+          w.personnel?.some((p: any) =>
+            (p.userId === user.id || p.id === user.id) && p.status === 'ACTIVE'
+          )
+        );
+        if (this.warehouses.length > 0) {
+          this.selectedWarehouseId = this.warehouses[0].id;
+          this.loadMovements(this.selectedWarehouseId);
+        }
+      } else if (this.warehouses.length > 0) {
         this.selectedWarehouseId = this.warehouses[0].id;
         this.loadMovements(this.selectedWarehouseId);
       }
@@ -40,11 +57,21 @@ export class MovementsComponent implements OnInit {
 
   onWarehouseSelect(event: any): void {
     this.selectedWarehouseId = event.target.value;
-    this.loadMovements(this.selectedWarehouseId);
+    if (this.isAdmin && !this.selectedWarehouseId) {
+      this.loadAllMovements();
+    } else {
+      this.loadMovements(this.selectedWarehouseId);
+    }
   }
 
   loadMovements(warehouseId: string): void {
     this.movementService.getMovementsForWarehouse(warehouseId).subscribe(data => {
+      this.movements = data;
+    });
+  }
+
+  loadAllMovements(): void {
+    this.movementService.getAllMovements().subscribe(data => {
       this.movements = data;
     });
   }
@@ -70,14 +97,14 @@ export class MovementsComponent implements OnInit {
     if (this.searchTerm.trim()) {
       const term = this.searchTerm.trim().toLowerCase();
       filtered = filtered.filter(m =>
-        (m.itemName?.toLowerCase().includes(term) ||
-          m.fromWarehouseName?.toLowerCase().includes(term) ||
-          m.toWarehouseName?.toLowerCase().includes(term) ||
-          m.movementType?.toLowerCase().includes(term) ||
-          m.userName?.toLowerCase().includes(term) ||
-          m.quantity?.toString().includes(term) ||
-          (m.time && new Date(m.time).toLocaleString().toLowerCase().includes(term))
-        )
+      (m.itemName?.toLowerCase().includes(term) ||
+        m.fromWarehouseName?.toLowerCase().includes(term) ||
+        m.toWarehouseName?.toLowerCase().includes(term) ||
+        m.movementType?.toLowerCase().includes(term) ||
+        m.userName?.toLowerCase().includes(term) ||
+        m.quantity?.toString().includes(term) ||
+        (m.time && new Date(m.time).toLocaleString().toLowerCase().includes(term))
+      )
       );
     }
 
@@ -112,5 +139,10 @@ export class MovementsComponent implements OnInit {
       return 0;
     });
     return arr;
+  }
+
+  get isAdmin(): boolean {
+    const user = this.authService.getCurrentUser();
+    return user?.role === 'ROLE_ADMIN';
   }
 }

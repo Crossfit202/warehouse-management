@@ -18,7 +18,7 @@
       </div>
     </div>
     <div class="col-md-3">
-      <div class="dashboard-card">
+      <div class="dashboard-card"><a href="/products" routerLinkActive="active">Products</a>
         <h5>Capacity</h5>
         <p class="fw-bold">{{ totalQuantity }} / {{ warehouseCapacity }}</p>
       </div>
@@ -26,8 +26,7 @@
     <div class="col-md-3">
       <div class="dashboard-card">
         <h5>Open Alerts</h5>
-        <p class="fw-bold"
-           [ngClass]="openAlertCount > 0 ? 'text-danger' : 'text-success'">
+        <p class="fw-bold" [ngClass]="openAlertCount > 0 ? 'text-danger' : 'text-success'">
           {{ openAlertCount }}
         </p>
       </div>
@@ -47,7 +46,7 @@
       <button class="btn btn-primary w-100" [routerLink]="['/inventory']"> 📦 Manage Inventory</button>
     </div>
     <div class="col-md-2">
-      <button class="btn btn-secondary w-100"> 📋 View Logs</button>
+      <button class="btn btn-secondary w-100" [routerLink]="['/movements']"> 📋 View Logs</button>
     </div>
     <div class="col-md-2">
       <a class="btn btn-danger w-100" [routerLink]="['/alerts']">⚠️ Create Alert</a>

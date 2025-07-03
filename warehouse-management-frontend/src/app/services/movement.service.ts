@@ -14,4 +14,8 @@ export class MovementService {
     getMovementsForWarehouse(warehouseId: string): Observable<InventoryMovement[]> {
         return this.http.get<InventoryMovement[]>(`${this.apiUrl}/by-warehouse/${warehouseId}`, { withCredentials: true });
     }
+
+    getAllMovements(): Observable<InventoryMovement[]> {
+        return this.http.get<InventoryMovement[]>(`${this.apiUrl}/all`, { withCredentials: true });
+    }
 }

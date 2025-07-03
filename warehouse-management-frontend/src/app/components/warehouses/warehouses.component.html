@@ -2,7 +2,7 @@
     <h1>Warehouses</h1>
 
     <div class="d-flex justify-content-start mb-3">
-        <button class="btn btn-success" (click)="openAddModal()">Add Warehouse</button>
+        <button class="btn btn-success" (click)="openAddModal()" *ngIf="isAdmin">Add Warehouse</button>
     </div>
 
     <div class="warehouse-cards">
@@ -30,8 +30,16 @@
 
             </div>
             <div>
-                <button class="btn btn-primary btn-sm me-2" (click)="openEditModal(warehouse)">Edit</button>
-                <button class="btn btn-danger btn-sm" (click)="openDeleteModal(warehouse)">Delete</button>
+                <button
+                  class="btn btn-primary btn-sm me-2"
+                  (click)="openEditModal(warehouse)"
+                  *ngIf="canEditWarehouse(warehouse)"
+                >Edit</button>
+                <button
+                  class="btn btn-danger btn-sm"
+                  (click)="openDeleteModal(warehouse)"
+                  *ngIf="isAdmin"
+                >Delete</button>
             </div>
         </div>
     </div>
