@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { UserService } from '../../services/user.service';
 import { CommonModule } from '@angular/common';
-import { ToastrService } from 'ngx-toastr'; // Add this if you want toast messages
+import { ToastrService } from 'ngx-toastr';
 import { FormsModule } from '@angular/forms';
 
 @Component({
@@ -15,17 +15,14 @@ export class ProfileComponent implements OnInit {
   currentUser: any = {};
   editUser: any = {};
   isEditMode = false;
-  avatarColor: string = '#6c63ff'; // default
+  avatarColor: string = '#6c63ff';
 
   constructor(private userService: UserService, private toastr: ToastrService) { }
 
   ngOnInit(): void {
-    const id = localStorage.getItem('userId');
-    if (id) {
-      this.userService.getUserById(id).subscribe(user => {
-        this.currentUser = user;
-      });
-    }
+    this.userService.getCurrentUser().subscribe(user => {
+      this.currentUser = user;
+    });
     this.avatarColor = this.getRandomColor();
   }
 

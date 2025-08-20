@@ -8,7 +8,6 @@ public class UserDTO {
     private UUID id;
     private String username;
     private String email;
-    private String password;
     private String role;
     private LocalDateTime created_at;
     private LocalDateTime updated_at;
@@ -17,12 +16,11 @@ public class UserDTO {
     public UserDTO() {
     }
 
-    public UserDTO(UUID id, String username, String email, String password, String role,
+    public UserDTO(UUID id, String username, String email, String role,
             LocalDateTime created_at, LocalDateTime updated_at) {
         this.id = id;
         this.username = username;
         this.email = email;
-        this.password = password;
         this.role = role;
         this.created_at = created_at;
         this.updated_at = updated_at;
@@ -51,14 +49,6 @@ public class UserDTO {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public String getRole() {
@@ -91,7 +81,6 @@ public class UserDTO {
                 "id=" + id +
                 ", username='" + username + '\'' +
                 ", email='" + email + '\'' +
-                ", password='" + password + '\'' +
                 ", role='" + role + '\'' +
                 ", created_at=" + created_at +
                 ", updated_at=" + updated_at +

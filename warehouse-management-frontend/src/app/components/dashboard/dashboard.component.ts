@@ -12,15 +12,17 @@ import { StorageLocationCapacity } from '../../models/StorageLocationCapacity';
 import { WarehouseInventory } from '../../models/WarehouseInventory';
 import { WarehousePersonnelService } from '../../services/personnel.service';
 import { WarehousePersonnelDTO } from '../../services/personnel.service';
-import { RouterModule } from '@angular/router'; // <-- Add this import
+import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { AuthService } from '../../services/auth.service'; // Add this import
+import { AuthService } from '../../services/auth.service';
+import { Router } from '@angular/router';
+
 
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule], // <-- Add RouterModule here
+  imports: [CommonModule, RouterModule, FormsModule],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
@@ -51,7 +53,8 @@ export class DashboardComponent implements OnInit {
     private movementService: MovementService,
     private storageLocationService: StorageLocationsService,
     private warehousePersonnelService: WarehousePersonnelService,
-    private authService: AuthService // Inject AuthService
+    private authService: AuthService,
+    private router: Router // Inject Router
   ) { }
 
   ngOnInit(): void {
@@ -66,7 +69,6 @@ export class DashboardComponent implements OnInit {
   }
 
   loadWarehouses(): void {
-    this.currentUser = this.authService.getCurrentUser();
     this.warehouseService.getAllWarehouses().subscribe(data => {
       if (this.currentUser?.role === 'ROLE_MANAGER') {
         // Only show warehouses where manager is ACTIVE

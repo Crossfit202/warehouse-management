@@ -44,4 +44,8 @@ export class UserService {
   getUserById(id: string) {
     return this.http.get<User>(`${this.apiUrl}/${id}`, { withCredentials: true });
   }
+
+  getCurrentUser() {
+    return this.http.get<any>('http://localhost:8083/users/me', { withCredentials: true });
+  }
 }

@@ -105,6 +105,7 @@ export const routes: Routes = [
         data: { role: ['ADMIN', 'MANAGER', 'INV_CLERK'] }
     },
 
+
     // Fallback Route
     {
         path: '**',

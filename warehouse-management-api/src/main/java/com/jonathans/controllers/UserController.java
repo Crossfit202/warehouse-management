@@ -5,6 +5,7 @@ import com.jonathans.DTOS.UserRequestDTO;
 import com.jonathans.services.UserService;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -56,5 +57,12 @@ public class UserController {
     @DeleteMapping("/{userId}")
     public ResponseEntity<Void> deleteUser(@PathVariable UUID userId) {
         return userService.deleteUser(userId);
+    }
+
+    // ✅ GET CURRENT USER ("/users/me")
+    @GetMapping("/me")
+    public ResponseEntity<UserDTO> getCurrentUser(Authentication authentication) {
+        String username = authentication.getName();
+        return userService.getUserByUsernameDTO(username);
     }
 }

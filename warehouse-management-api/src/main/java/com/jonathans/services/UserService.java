@@ -119,7 +119,6 @@ public class UserService {
                 user.getId(),
                 user.getUsername(),
                 user.getEmail(),
-                user.getPassword(),
                 user.getRole(),
                 user.getCreatedAt(),
                 user.getUpdatedAt());
@@ -187,10 +186,16 @@ public class UserService {
             User newUser = new User();
             newUser.setUsername(name);
             newUser.setEmail(email);
-            newUser.setRole("USER"); // Default role for OAuth users
+            newUser.setRole("ROLE_USER"); // Default role for OAuth users
             newUser.setPassword(""); // Optional: skip setting a password
             return userRepository.save(newUser);
         });
+    }
+
+    public ResponseEntity<UserDTO> getUserByUsernameDTO(String username) {
+        User user = getUserByUsername(username);
+        UserDTO dto = convertToDTO(user);
+        return ResponseEntity.ok(dto);
     }
 
 }
