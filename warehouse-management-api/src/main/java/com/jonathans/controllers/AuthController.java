@@ -48,14 +48,14 @@ public class AuthController {
 
                 response.addHeader("Set-Cookie", cookie.toString());
                 return ResponseEntity.ok(Map.of(
-                    "message", "Login successful!",
-                    "username", username,
-                    "userId", user.getId() // <-- Add this line
-                ));
+                        "message", "Login successful!",
+                        "username", username,
+                        "userId", user.getId()));
             }
             return result;
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Invalid credentials"));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("error", "Invalid username and password combination"));
         }
     }
 
